@@ -5,6 +5,7 @@
 
 import sgMail from '@sendgrid/mail';
 import dotenv from 'dotenv';
+import { supabase } from '../config/supabase';
 
 dotenv.config();
 
@@ -34,7 +35,7 @@ const getPaymentLink = (insuranceName: string): string => {
 /**
  * Función para enviar enlace de pago por correo electrónico usando SendGrid
  */
-export const sendPaymentLinkEmail = async (clientName: string, clientEmail: string, insuranceName: string) => {
+export const sendPaymentLinkEmail = async (clientName: string, clientEmail: string, insuranceName: string, clientNumber: string) => {
   try {
     console.log(`Enviando enlace de pago a ${clientName} (${clientEmail}) para ${insuranceName}`);
     
@@ -108,6 +109,23 @@ export const sendPaymentLinkEmail = async (clientName: string, clientEmail: stri
     // Enviar el correo
     await sgMail.send(msg);
     
+    // Actualizar chat_history
+    try {
+      console.log(`Actualizando payment_link_sent_at para el cliente ${clientNumber}`);
+      const { error } = await supabase
+        .from('chat_history')
+        .update({ payment_link_sent_at: new Date().toISOString() })
+        .eq('client_number', clientNumber);
+        
+      if (error) {
+        console.error("Error actualizando chat_history:", error);
+      } else {
+        console.log("chat_history actualizado exitosamente");
+      }
+    } catch (dbError) {
+      console.error("Excepción al actualizar base de datos:", dbError);
+    }
+
     return `✅ Enlace de pago enviado exitosamente a ${clientEmail}. El cliente ${clientName} recibirá instrucciones para completar la compra de ${insuranceName}.`;
     
   } catch (error: any) {
