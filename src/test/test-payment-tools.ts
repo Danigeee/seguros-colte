@@ -108,7 +108,8 @@ async function testEmailFunction() {
     const result = await sendPaymentLinkEmail(
       "Juan Pérez Test",
       "test@email.com", 
-      "Bienestar Plus"
+      "Bienestar Plus",
+      "+573001234567"
     );
     
     console.log('✅ Función de email ejecutada:', typeof result === 'string' ? result.substring(0, 100) + '...' : result);

@@ -8,7 +8,7 @@ dotenv.config();
 async function runTest() {
     console.log('🧪 INICIANDO PRUEBA DE COBERTURA BIENESTAR PLUS\n');
 
-    const userQuery = "Hola Lucia, una duda Bienestar plus cubre solo al titular o también a mis familiares?";
+    const userQuery = "Como es el proceso de atención para acompañamiento de enfermería";
     console.log(`👤 Usuario: "${userQuery}"\n`);
 
     const initialState = {

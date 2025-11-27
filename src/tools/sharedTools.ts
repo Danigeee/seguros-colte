@@ -7,13 +7,14 @@ import { sendPaymentLinkEmail} from "../functions/sharedFunctions";
  * Usa automáticamente los datos del cliente identificado si están disponibles
  */
 export const sendPaymentLinkEmailTool = tool(
-  async ({ clientName, clientEmail, insuranceName }: { clientName: string; clientEmail: string; insuranceName: string; }) => {
+  async ({ clientName, clientEmail, insuranceName, clientNumber }: { clientName: string; clientEmail: string; insuranceName: string; clientNumber: string }) => {
     console.log(`📧 ENVIANDO EMAIL DE PAGO:`);
     console.log(`   Cliente: ${clientName}`);
     console.log(`   Email: ${clientEmail}`);
     console.log(`   Seguro: ${insuranceName}`);
+    console.log(`   Teléfono: ${clientNumber}`);
     
-    const result = await sendPaymentLinkEmail(clientName, clientEmail, insuranceName);
+    const result = await sendPaymentLinkEmail(clientName, clientEmail, insuranceName, clientNumber);
     return result;
   },
   {
@@ -23,6 +24,7 @@ export const sendPaymentLinkEmailTool = tool(
       clientName: z.string().describe("El nombre completo del cliente (usar datos del cliente identificado si están disponibles)"),
       clientEmail: z.string().describe("El correo electrónico del cliente (usar datos del cliente identificado si están disponibles)"),
       insuranceName: z.string().describe("El nombre del seguro que el cliente está adquiriendo (ej: 'Bienestar Plus')"),
+      clientNumber: z.string().describe("El número de teléfono del cliente (formato internacional, ej: +573001234567). Necesario para registrar el envío en el historial."),
     }),
   }
 );
@@ -55,6 +57,7 @@ export const sendPaymentToIdentifiedClientTool = tool(
 - clientName: [Usar nombre del cliente identificado]
 - clientEmail: [Usar email del cliente identificado] 
 - insuranceName: ${insuranceName}
+- clientNumber: [Usar teléfono del cliente identificado]
 
 IMPORTANTE: Los datos del cliente deben estar disponibles del sistema de identificación.`;
   },

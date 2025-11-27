@@ -282,6 +282,7 @@ export type Database = {
           origin: string | null
           is_archived: boolean | null
           advisor_id: string | null // uuid
+          payment_link_sent_at: string | null
         }
         Insert: {
           id?: number
@@ -309,6 +310,7 @@ export type Database = {
           origin?: string | null
           is_archived?: boolean | null
           advisor_id?: string | null
+          payment_link_sent_at?: string | null
         }
         Update: {
           id?: number
@@ -336,6 +338,7 @@ export type Database = {
           origin?: string | null
           is_archived?: boolean | null
           advisor_id?: string | null
+          payment_link_sent_at?: string | null
         }
         Relationships: []
       }
