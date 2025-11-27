@@ -24,22 +24,7 @@ export const consultBienestarSpecialistTool = tool(
       console.error("Error consultando documentos de Bienestar Plus:", error);
       
       // Información de respaldo básica para Bienestar Plus
-      return `BIENESTAR PLUS - Información Básica
-
-COBERTURA PRINCIPAL:
-✅ Consultas médicas especializadas 
-✅ Exámenes diagnósticos y laboratorio
-✅ Procedimientos ambulatorios
-✅ Medicina preventiva y chequeos
-✅ Telemedicina 24/7
-✅ Red de especialistas certificados
-
-PLANES DISPONIBLES:
-• Plan Básico: Cobertura esencial
-• Plan Completo: Cobertura ampliada  
-• Plan Familiar: Para toda la familia
-
-¿Te interesa información específica sobre precios, coberturas detalladas o proceso de registro?`;
+      return `No se encontró información específica sobre tu consulta en la base de datos oficial de Bienestar Plus.`;
     }
   },
   {
@@ -70,28 +55,7 @@ export const searchBienestarDocumentsTool = tool(
     } catch (error: any) {
       console.error("Error en búsqueda de documentos:", error);
       
-      // Información de respaldo específica según el término buscado
-      if (searchQuery.toLowerCase().includes('precio') || searchQuery.toLowerCase().includes('tarifa') || searchQuery.toLowerCase().includes('costo')) {
-        return `TARIFAS BIENESTAR PLUS:
 
-Plan Básico: $45,000/mes
-- Consultas médicas generales
-- Exámenes básicos de laboratorio
-- Telemedicina
-
-Plan Completo: $65,000/mes  
-- Todo lo del Plan Básico
-- Especialistas sin límite
-- Procedimientos ambulatorios
-- Exámenes diagnósticos avanzados
-
-Plan Familiar: $120,000/mes
-- Cobertura para toda la familia
-- Todas las especialidades
-- Sin copagos adicionales
-
-¿Te interesa algún plan específico?`;
-      }
       
       return "Error técnico temporal. Te puedo ayudar con información sobre Bienestar Plus. ¿Qué necesitas saber?";
     }
