@@ -7,5 +7,5 @@ export const llm = new ChatOpenAI({
     temperature: 0,
     model: "gpt-4o-mini",
     apiKey: process.env.OPENAI_API_KEY,
-    maxTokens: 200,
+    maxTokens: 400,
   });
