@@ -5,44 +5,37 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-const openAIApiKey = process.env.OPENAI_API_KEY;
-
-const embeddings = new OpenAIEmbeddings({ openAIApiKey });
-const supabaseUrl = process.env.SUPABASE_URL as string;
-const supabaseApiKey = process.env.SUPABASE_SERVICE_ROLE_KEY as string;
+const embeddings = new OpenAIEmbeddings({ openAIApiKey: process.env.OPENAI_API_KEY });
+const supabaseUrl = process.env.SUPABASE_URL!;
+const supabaseApiKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 
 export const searchBienestarDocuments = async (query: string) => {
     try {
         const client = createClient(supabaseUrl, supabaseApiKey);
 
-        // Configuración apuntando a tu tabla y función corregida
         const vectorStore = new SupabaseVectorStore(embeddings, {
             client,
-            tableName: 'documents_bienestar_test',
-            queryName: 'match_documents_bienestar_test' 
+            tableName: 'documents_bienestar_final',       // <--- TABLA NUEVA
+            queryName: 'match_documents_bienestar_final'  // <--- FUNCIÓN NUEVA
         });
 
-        // Hacemos la búsqueda
-        // match_threshold ya no es obligatorio en la DB, así que esto funcionará
+        console.log(`🔍 Buscando: "${query}"...`);
+        
+        // Recuperamos 6 chunks para asegurar que la IA lea las "letras pequeñas"
         const results = await vectorStore.similaritySearch(query, 6);
 
-        const combineDocuments = (results: any[]) => {
-            return results.map(doc => doc.pageContent).join('\n\n');
+        if (results.length === 0) {
+            console.log("⚠️ No se encontró información relevante en el PDF.");
+            return ""; // Retornar vacío es mejor que inventar
         }
 
-        console.log(`✅ Documentos encontrados: ${results.length}`);
+        const context = results.map(doc => doc.pageContent).join('\n\n---\n\n');
+        console.log(`✅ ${results.length} fragmentos recuperados.`);
         
-        if (results.length > 0) {
-             // Retorna el contenido real del PDF
-            return combineDocuments(results);
-        } else {
-            console.log("⚠️ No se encontraron coincidencias en el vector store.");
-            return ""; // Retornar vacío para que la IA diga "No sé" en lugar de inventar.
-        }
+        return context;
         
     } catch (error) {
-        console.error('❌ Error CRÍTICO consultando Supabase:', error);
-        // Retornamos cadena vacía para evitar que el bot alucine con datos falsos
-        return ""; 
+        console.error('❌ Error fatal en búsqueda vectorial:', error);
+        return ""; // En caso de error técnico, silencio para evitar alucinación
     }
 }
