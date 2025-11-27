@@ -9,7 +9,11 @@
     "build": "tsc",
     "test": "tsx src/test-agents.ts",
     "test:logs": "tsx src/test-logs.ts",
-    "test:mcp": "tsx src/mcp/testMCP.ts"
+    "test:mcp": "tsx src/mcp/testMCP.ts",
+    "test:bienestar": "tsx src/test/run-bienestar-test.ts",
+    "test:bienestar:quick": "tsx src/test/quick-bienestar-test.ts",
+    "test:client": "tsx src/test/test-client-identification.ts",
+    "test:payment": "tsx src/test/test-payment-tools.ts"
   },
   "keywords": [],
   "author": "",
@@ -36,6 +40,7 @@
     "@langchain/mcp-adapters": "^0.5.3",
     "@langchain/openai": "^0.3.17",
     "@modelcontextprotocol/sdk": "^1.14.0",
+    "@sendgrid/mail": "^8.1.6",
     "@supabase/supabase-js": "^2.84.0",
     "axios": "^1.7.7",
     "body-parser": "^1.20.3",

@@ -1,5 +1,6 @@
 import { BaseMessage } from "@langchain/core/messages";
 import { Annotation } from "@langchain/langgraph";
+import { ClientData } from "../functions/clientFunctions";
 
 export const AgentState = Annotation.Root({
   messages: Annotation<BaseMessage[]>({
@@ -17,6 +18,10 @@ export const AgentState = Annotation.Root({
   activeClientId: Annotation<string>({
     reducer: (x, y) => y ?? x,
     default: () => "no-client-id",
+  }),
+  clientData: Annotation<ClientData | null>({
+    reducer: (x, y) => y ?? x,
+    default: () => null,
   }),
   next: Annotation<string>({
     reducer: (x, y) => y ?? x,

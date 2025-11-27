@@ -7,9 +7,15 @@ import { HumanMessage } from '@langchain/core/messages';
 
 const router = Router();
 const chatService = new ChatHistoryService();
+
+// Verificar configuración de Twilio
+console.log('🔧 CONFIGURACIÓN TWILIO:');
+console.log(`   Account SID: ${process.env.TWILIO_ACCOUNT_SID ? process.env.TWILIO_ACCOUNT_SID.substring(0, 10) + '...' : 'NO CONFIGURADO'}`);
+console.log(`   Auth Token: ${process.env.TWILIO_AUTH_TOKEN ? 'CONFIGURADO' : 'NO CONFIGURADO'}`);
+
 const twilioClient = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
 
-router.post('/cemtech/receive-message', async (req: Request, res: Response) => {
+router.post('/seguros-colte/receive-message', async (req: Request, res: Response) => {
   const twiml = new twilio.twiml.MessagingResponse();
 
   try {
@@ -120,7 +126,11 @@ router.post('/cemtech/receive-message', async (req: Request, res: Response) => {
     const sendTo = From.startsWith('whatsapp:') ? From : `whatsapp:${From}`;
     const sendFrom = To.startsWith('whatsapp:') ? To : `whatsapp:${To}`;
 
-    console.log(`Enviando a Twilio: De ${sendFrom} para ${sendTo}`);
+    console.log(`📱 PREPARANDO ENVÍO A TWILIO:`);
+    console.log(`   From: ${sendFrom}`);
+    console.log(`   To: ${sendTo}`);
+    console.log(`   Message: ${botResponse}`);
+    console.log(`   Message Length: ${botResponse.length}`);
 
     const messageOptions: any = {
         body: botResponse,
@@ -134,7 +144,26 @@ router.post('/cemtech/receive-message', async (req: Request, res: Response) => {
 
     const sentMsg = await twilioClient.messages.create(messageOptions);
 
-    console.log(`Twilio aceptó el mensaje. SID: ${sentMsg.sid} | Status: ${sentMsg.status}`);
+    console.log(`✅ TWILIO RESPUESTA:`);
+    console.log(`   SID: ${sentMsg.sid}`);
+    console.log(`   Status: ${sentMsg.status}`);
+    console.log(`   Direction: ${sentMsg.direction}`);
+    console.log(`   Date Created: ${sentMsg.dateCreated}`);
+    console.log(`   From: ${sentMsg.from}`);
+    console.log(`   To: ${sentMsg.to}`);
+    
+    // Verificar el estado del mensaje después de unos segundos
+    setTimeout(async () => {
+        try {
+            const messageStatus = await twilioClient.messages(sentMsg.sid).fetch();
+            console.log(`🔄 ESTADO DEL MENSAJE ${sentMsg.sid}:`);
+            console.log(`   Status: ${messageStatus.status}`);
+            console.log(`   Error Code: ${messageStatus.errorCode}`);
+            console.log(`   Error Message: ${messageStatus.errorMessage}`);
+        } catch (error) {
+            console.error('❌ Error verificando estado del mensaje:', error);
+        }
+    }, 5000);
 
     await chatService.saveMessage({
         conversationId: conversation.id,
@@ -150,6 +179,72 @@ router.post('/cemtech/receive-message', async (req: Request, res: Response) => {
     console.error('Error en webhook:', error);
     res.writeHead(200, { 'Content-Type': 'text/xml' });
     res.end(twiml.toString());
+  }
+});
+
+// Webhook para recibir estados de entrega de mensajes
+router.post('/seguros-colte/message-status', async (req: Request, res: Response) => {
+  try {
+    const { MessageSid, MessageStatus, ErrorCode, ErrorMessage, From, To, Body } = req.body;
+    
+    console.log(`📨 ESTADO DEL MENSAJE RECIBIDO:`);
+    console.log(`   SID: ${MessageSid}`);
+    console.log(`   Status: ${MessageStatus}`);
+    console.log(`   From: ${From}`);
+    console.log(`   To: ${To}`);
+    console.log(`   Body Preview: ${Body ? Body.substring(0, 50) + '...' : 'N/A'}`);
+    
+    if (ErrorCode) {
+      console.log(`❌ ERROR EN MENSAJE:`);
+      console.log(`   Error Code: ${ErrorCode}`);
+      console.log(`   Error Message: ${ErrorMessage}`);
+    }
+    
+    // Actualizar el estado en la base de datos si es necesario
+    await chatService.updateMessageStatus(MessageSid, MessageStatus);
+    
+    res.status(200).send('OK');
+  } catch (error) {
+    console.error('Error procesando estado del mensaje:', error);
+    res.status(200).send('OK'); // Siempre responder OK a Twilio
+  }
+});
+
+// Endpoint de prueba para verificar la conexión con Twilio
+router.get('/seguros-colte/test-twilio', async (req: Request, res: Response) => {
+  try {
+    console.log('🧪 INICIANDO PRUEBA DE TWILIO...');
+    
+    // Verificar configuración
+    console.log(`Account SID: ${process.env.TWILIO_ACCOUNT_SID ? 'Configurado' : 'NO CONFIGURADO'}`);
+    console.log(`Auth Token: ${process.env.TWILIO_AUTH_TOKEN ? 'Configurado' : 'NO CONFIGURADO'}`);
+    
+    // Probar obtener el account
+    const accountSid = process.env.TWILIO_ACCOUNT_SID;
+    if (!accountSid) throw new Error('TWILIO_ACCOUNT_SID no configurado');
+    const account = await twilioClient.api.accounts(accountSid).fetch();
+    console.log(`✅ Conexión exitosa a Twilio. Status: ${account.status}`);
+    
+    // Listar números de WhatsApp disponibles
+    const phoneNumbers = await twilioClient.incomingPhoneNumbers.list({ limit: 5 });
+    console.log(`📞 Números disponibles: ${phoneNumbers.length}`);
+    phoneNumbers.forEach(number => {
+      console.log(`   ${number.phoneNumber} - ${number.friendlyName}`);
+    });
+    
+    res.json({
+      success: true,
+      account_status: account.status,
+      numbers_available: phoneNumbers.length,
+      test_time: new Date().toISOString()
+    });
+    
+  } catch (error) {
+    console.error('❌ ERROR EN PRUEBA DE TWILIO:', error);
+    res.status(500).json({
+      success: false,
+      error: error instanceof Error ? error.message : 'Error desconocido'
+    });
   }
 });
 

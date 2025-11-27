@@ -228,12 +228,39 @@ export type Database = {
         }
         Relationships: []
       }
+      dentix_clients: {
+        Row: {
+          id: number // bigint
+          created_at: string // timestamp with time zone
+          name: string | null
+          email: string | null
+          document_id: string | null
+          phone_number: string | null
+        }
+        Insert: {
+          id?: number
+          created_at?: string
+          name?: string | null
+          email?: string | null
+          document_id?: string | null
+          phone_number?: string | null
+        }
+        Update: {
+          id?: number
+          created_at?: string
+          name?: string | null
+          email?: string | null
+          document_id?: string | null
+          phone_number?: string | null
+        }
+        Relationships: []
+      }
       chat_history: {
         Row: {
           id: number // bigint
           created_at: string // timestamp with time zone
           client_number: string
-          messages_backup: Json | null
+          messages: Json | null
           audio: boolean | null
           client_name: string | null
           chat_on: boolean | null
@@ -260,7 +287,7 @@ export type Database = {
           id?: number
           created_at?: string
           client_number: string
-          messages_backup?: Json | null
+          messages?: Json | null
           audio?: boolean | null
           client_name?: string | null
           chat_on?: boolean | null
@@ -287,7 +314,7 @@ export type Database = {
           id?: number
           created_at?: string
           client_number?: string
-          messages_backup?: Json | null
+          messages?: Json | null
           audio?: boolean | null
           client_name?: string | null
           chat_on?: boolean | null

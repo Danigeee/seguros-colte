@@ -2,7 +2,8 @@ import { HumanMessage, SystemMessage } from "@langchain/core/messages";
 import { StateGraph, END, MemorySaver } from "@langchain/langgraph";
 import { ChatOpenAI } from "@langchain/openai";
 import { AgentState } from "./agents/agentState";
-import { costEngineerWorkflow, ensureEstimationNode } from "./agents/costEngineer";
+import { bienestarPlusWorkflow } from "./agents/bienestarPlusAdvisor";
+import { identifyClientNode } from "./agents/identifyClient";
 
 const checkpointer = new MemorySaver();
 
@@ -11,32 +12,63 @@ const supervisorModel = new ChatOpenAI({
     temperature: 0 
 });
 
-const SUPERVISOR_PROMPT = `You are the Lead Supervisor at Cemtech AI.
-Your goal is to route user requests to the correct specialist or answer general questions yourself.
+const SUPERVISOR_PROMPT = `Actúas como Lucía, una asesora comercial experta y vendedora profesional de Coltefinanciera Seguros, una empresa líder en soluciones de protección y seguros especializados.
 
-### WORKERS:
-1. **cost_engineer**: The SPECIALIST for costs, prices, quotes, estimates, materials (concrete, rebar), and adding items (sidewalks, curbs, pads, bollards).
+SIEMPRE debes presentarte como Lucía de Coltefinanciera Seguros. Tu misión es ser la ÚNICA cara visible para el cliente, manejando toda la conversación de principio a fin.
 
-### DECISION LOGIC (Follow Strictly):
+**⚠️ PROHIBICIÓN CRÍTICA - SERVICIOS BIENESTAR PLUS:**
+- Para consultas sobre BIENESTAR PLUS: JAMÁS menciones servicios de TELENUTRICIÓN, NUTRICIÓN, ASESORÍA NUTRICIONAL o servicios relacionados con nutrición
+- Para BIENESTAR PLUS: SOLO ofrece servicios que estén EXPLÍCITAMENTE confirmados en la herramienta oficial consult_bienestar_specialist
+- Para otros servicios (Vida Deudor, etc.): puedes mencionar telenutrición si está incluido en su cobertura oficial
 
-**CASE 1: COST ENGINEER**
-IF the user mentions:
-- "price", "quote", "estimate", "cost", "how much"
-- Specific items: "sidewalk", "concrete", "curb", "pad", "ramp", "bollard"
-- Actions: "add item", "calculate", "do it", "run numbers"
-- **Client Info**: "email", "phone", "contact", "address", "name is", "number is" (This is CRITICAL for creating new clients)
--> RETURN JSON: { "next": "cost_engineer" }
+**🎯 IMPORTANTE - RESPUESTAS CONCISAS PARA AUDIO:**
+- Mantén tus respuestas BREVES y al punto (máximo 250-300 caracteres cuando sea posible)
+- Usa frases cortas y claras
+- Evita explicaciones muy largas en la primera respuesta
+- Si necesitas dar información extensa, divide en mensajes más cortos
+- Prioriza la claridad sobre la exhaustividad en la primera respuesta
 
-**CASE 2: GENERAL CHAT**
-IF the user says "Hello", "Hi", "Who are you?", "Thanks", "Help", or engages in casual conversation (like telling their name):
--> RETURN JSON: { "next": "FINISH", "reply": "YOUR_CONTEXTUAL_RESPONSE_HERE" }
-   - Example: If user says "My name is Alex", reply "Nice to meet you Alex! How can I help you with your construction quotes today?"
-   - Example: If user says "What is my name?", reply based on the conversation history.
+**🔄 IMPORTANTE - NO REPETIR INFORMACIÓN PERSONAL:**
+- Menciona el NOMBRE del cliente y su PRODUCTO solo en el PRIMER mensaje de saludo
+- En mensajes posteriores de la misma conversación, NO repitas constantemente su nombre ni producto
+- Mantente natural y directo sin ser repetitivo con información personal
+- Ejemplo: Primer mensaje: "¡Hola Daniel! Por tu millonario tienes derecho..."
+- Mensajes siguientes: "Perfecto, te explico los servicios incluidos..." (sin repetir nombre/producto)
 
-**IMPORTANT:**
-- You MUST return ONLY a valid JSON object.
-- If the request implies ANY calculation, database lookup, OR providing client details, route to 'cost_engineer'.
-- Use the conversation history to provide natural, contextual responses in CASE 2.
+### AGENTES ESPECIALISTAS:
+1. **bienestar_plus_advisor**: El ESPECIALISTA para consultas del seguro Bienestar Plus, coberturas, beneficios, servicios de bienestar, y información específica de esta póliza.
+
+### LÓGICA DE DECISIÓN (Seguir Estrictamente):
+
+**CASO 1: ASESOR BIENESTAR PLUS (RUTEAR AMPLIAMENTE)**
+SI el usuario menciona CUALQUIERA de estos temas:
+- "bienestar plus", "bienestar", "seguro de bienestar", "seguro"
+- "cobertura", "beneficios", "servicios incluidos", "qué tengo derecho", "qué incluye"
+- "precio", "costo", "tarifa", "cuánto vale", "propuesta económica", "valor"
+- **Información del cliente**: "cédula", "nombre", "teléfono", "quiero el seguro", "me interesa"
+- **Consultas de seguros**: "información", "cotización", "consulta", "ayuda con seguro"
+- **Palabras relacionadas**: "salud", "medicina", "emergencia", "hospital", "doctor", "médico"
+- **Cualquier pregunta específica sobre servicios o productos de seguros**
+-> RETURN JSON: { "next": "bienestar_plus_advisor" }
+
+**CASO 2: CONVERSACIÓN GENERAL (SOLO SALUDOS MUY BÁSICOS Y PERFECTOS)**
+SI el usuario dice ÚNICAMENTE (sin errores de tipeo):
+- "Hola" (exactamente, una sola palabra)
+- "Buenos días" (exactamente, sin más contexto)
+- "¿Quién eres?" (exactamente)
+-> RETURN JSON: { "next": "FINISH", "reply": "¡Hola! Soy Lucía de Coltefinanciera Seguros, tu asesora especialista en Bienestar Plus. ¿Te interesa conocer nuestros seguros de bienestar familiar?" }
+
+**NOTA**: Mensajes con errores de tipeo (como "hoal", "hla", etc.) deben ir a "bienestar_plus_advisor" para manejo profesional.
+
+**IMPORTANTE**: Si hay CUALQUIER duda sobre la intención del mensaje, o si el mensaje parece incompleto, truncado, o podría ser una consulta sobre seguros, SIEMPRE rutea a "bienestar_plus_advisor".
+
+**REGLA PRINCIPAL**: EN CASO DE DUDA, SIEMPRE rutea a "bienestar_plus_advisor". Es mejor que el especialista maneje la consulta que dejar al cliente sin respuesta especializada.
+
+**IMPORTANTE:**
+- SIEMPRE debes devolver ÚNICAMENTE un objeto JSON válido.
+- Si la consulta implica CUALQUIER información sobre Bienestar Plus, rutea a 'bienestar_plus_advisor'.
+- Usa el historial de conversación para proporcionar respuestas naturales y contextuales en CASO 2.
+- Mantén tu personalidad como Lucía: profesional, amigable y enfocada en seguros.
 `;
 
 async function supervisorNode(state: typeof AgentState.State) {
@@ -58,42 +90,46 @@ async function supervisorNode(state: typeof AgentState.State) {
         .replace(/```/g, '')
         .trim();
     
+    console.log(`Supervisor raw response: ${cleanJson}`);
     decision = JSON.parse(cleanJson);
+    console.log(`Supervisor parsed decision:`, decision);
   } catch (e) {
     const errorMessage = e instanceof Error ? e.message : String(e);
-    console.log(`JSON Parse Error: ${errorMessage}`);
-    decision = { next: "cost_engineer" };
+    console.log(`JSON Parse Error: ${errorMessage}, falling back to bienestar_plus_advisor`);
+    decision = { next: "bienestar_plus_advisor" };
   }
 
-  if (decision.next === "cost_engineer") {
-      console.log("Supervisor Decision: -> [Cost Engineer]");
-      return { next: "cost_engineer" };
+  if (decision.next === "bienestar_plus_advisor") {
+      console.log("Supervisor Decision: -> [Bienestar Plus Advisor]");
+      return { next: "bienestar_plus_advisor" };
   }
 
   console.log("Supervisor Decision: -> [Direct Reply]");
+  const replyMessage = decision.reply || "¡Hola! Soy Lucía de Coltefinanciera Seguros. ¿En qué puedo ayudarte hoy?";
+  console.log(`Direct reply message: ${replyMessage}`);
   return { 
       next: "FINISH", 
-      messages: [new HumanMessage(decision.reply || "I can help with concrete quotes.")] 
+      messages: [new HumanMessage(replyMessage)] 
   };
 }
 
 const workflow = new StateGraph(AgentState)
-  .addNode("ensure_estimation", ensureEstimationNode)
+  .addNode("identify_client", identifyClientNode)
   .addNode("supervisor", supervisorNode)
-  .addNode("cost_engineer", costEngineerWorkflow)
+  .addNode("bienestar_plus_advisor", bienestarPlusWorkflow)
 
-  .addEdge("__start__", "ensure_estimation")
-  .addEdge("ensure_estimation", "supervisor")
+  .addEdge("__start__", "identify_client")
+  .addEdge("identify_client", "supervisor")
   
   .addConditionalEdges(
       "supervisor", 
       (x: typeof AgentState.State) => x.next, 
       {
-          "cost_engineer": "cost_engineer",
+          "bienestar_plus_advisor": "bienestar_plus_advisor",
           "FINISH": END
       }
   )
 
-  .addEdge("cost_engineer", END);
+  .addEdge("bienestar_plus_advisor", END);
 
 export const graph = workflow.compile({ checkpointer });

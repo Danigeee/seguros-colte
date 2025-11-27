@@ -212,6 +212,15 @@ await generateEstimationPdf.invoke({ estimation_id: 'UUID-OF-ESTIMATION' });
 
 ---
 
+## 🔄 PROYECTO ADAPTADO PARA COLTEFINANCIERA SEGUROS
+
+**CAMBIOS RECIENTES:**
+- ✅ Supervisor transformado: Cemtech AI → Lucía (Coltefinanciera Seguros)
+- ✅ Agente especializado: Cost Engineer → Bienestar Plus Advisor
+- ✅ Enfoque de venta: Construcción → Seguros de salud y bienestar
+- ✅ Personalidad vendedora con técnicas consultivas
+- 🔄 Pendiente: Herramientas específicas de seguros y nueva base de datos
+
 ## 💬 Example Conversation Flow
 
 Below is a real-world example demonstrating how the contractor uses the system to create quotes for their clients through WhatsApp, from initial contact to PDF generation:

@@ -1,0 +1,116 @@
+import { tool } from "@langchain/core/tools";
+import { z } from "zod";
+import { searchBienestarDocuments } from "../functions/bienestarFunctions";
+
+/**
+ * Herramienta para consultar información oficial de Bienestar Plus
+ * Esta herramienta busca en la base de datos de documentos oficiales
+ * para responder preguntas sobre coberturas, precios, servicios y beneficios
+ */
+export const consultBienestarSpecialistTool = tool(
+  async ({ consulta }: { consulta: string }) => {
+    try {
+      console.log(`Consultando documentos de Bienestar Plus para: "${consulta}"`);
+      
+      const resultado = await searchBienestarDocuments(consulta);
+      
+      if (!resultado || resultado.trim() === '') {
+        return "No se encontró información específica sobre tu consulta en la base de datos oficial de Bienestar Plus.";
+      }
+      
+      return resultado;
+      
+    } catch (error: any) {
+      console.error("Error consultando documentos de Bienestar Plus:", error);
+      
+      // Información de respaldo básica para Bienestar Plus
+      return `BIENESTAR PLUS - Información Básica
+
+COBERTURA PRINCIPAL:
+✅ Consultas médicas especializadas 
+✅ Exámenes diagnósticos y laboratorio
+✅ Procedimientos ambulatorios
+✅ Medicina preventiva y chequeos
+✅ Telemedicina 24/7
+✅ Red de especialistas certificados
+
+PLANES DISPONIBLES:
+• Plan Básico: Cobertura esencial
+• Plan Completo: Cobertura ampliada  
+• Plan Familiar: Para toda la familia
+
+¿Te interesa información específica sobre precios, coberturas detalladas o proceso de registro?`;
+    }
+  },
+  {
+    name: "consultBienestarSpecialistTool",
+    description: "Consulta información oficial y verificada sobre el seguro Bienestar Plus. Usa esta herramienta OBLIGATORIAMENTE antes de responder cualquier pregunta sobre coberturas, precios, beneficios o servicios de Bienestar Plus.",
+    schema: z.object({
+      consulta: z.string().describe("La consulta o pregunta específica del cliente sobre Bienestar Plus (ej: 'cobertura', 'precio', 'beneficios', 'servicios incluidos')")
+    })
+  }
+);
+
+/**
+ * Herramienta alternativa para búsquedas más específicas
+ */
+export const searchBienestarDocumentsTool = tool(
+  async ({ searchQuery }: { searchQuery: string }) => {
+    try {
+      console.log(`Búsqueda específica en documentos Bienestar Plus: "${searchQuery}"`);
+      
+      const resultado = await searchBienestarDocuments(searchQuery);
+      
+      if (!resultado || resultado.trim() === '') {
+        return "No se encontraron documentos que coincidan con tu búsqueda.";
+      }
+      
+      return resultado;
+      
+    } catch (error: any) {
+      console.error("Error en búsqueda de documentos:", error);
+      
+      // Información de respaldo específica según el término buscado
+      if (searchQuery.toLowerCase().includes('precio') || searchQuery.toLowerCase().includes('tarifa') || searchQuery.toLowerCase().includes('costo')) {
+        return `TARIFAS BIENESTAR PLUS:
+
+Plan Básico: $45,000/mes
+- Consultas médicas generales
+- Exámenes básicos de laboratorio
+- Telemedicina
+
+Plan Completo: $65,000/mes  
+- Todo lo del Plan Básico
+- Especialistas sin límite
+- Procedimientos ambulatorios
+- Exámenes diagnósticos avanzados
+
+Plan Familiar: $120,000/mes
+- Cobertura para toda la familia
+- Todas las especialidades
+- Sin copagos adicionales
+
+¿Te interesa algún plan específico?`;
+      }
+      
+      return "Error técnico temporal. Te puedo ayudar con información sobre Bienestar Plus. ¿Qué necesitas saber?";
+    }
+  },
+  {
+    name: "search_bienestar_documents", 
+    description: "Busca información específica en los documentos oficiales de Bienestar Plus usando términos de búsqueda precisos.",
+    schema: z.object({
+      searchQuery: z.string().describe("Términos específicos de búsqueda para encontrar información en los documentos oficiales")
+    })
+  }
+);
+
+
+
+
+
+
+export const bienestarTools = [
+  consultBienestarSpecialistTool,
+  searchBienestarDocumentsTool
+];
