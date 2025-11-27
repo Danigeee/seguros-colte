@@ -46,7 +46,7 @@ PLANES DISPONIBLES:
     name: "consultBienestarSpecialistTool",
     description: "Consulta información oficial y verificada sobre el seguro Bienestar Plus. Usa esta herramienta OBLIGATORIAMENTE antes de responder cualquier pregunta sobre coberturas, precios, beneficios o servicios de Bienestar Plus.",
     schema: z.object({
-      consulta: z.string().describe("La consulta o pregunta específica del cliente sobre Bienestar Plus (ej: 'cobertura', 'precio', 'beneficios', 'servicios incluidos')")
+      consulta: z.string().describe("La pregunta completa del cliente o una frase de búsqueda detallada para encontrar la información en los documentos (ej: 'cubre a mis familiares', 'precio del plan familiar', 'servicios de odontología incluidos'). NO uses palabras sueltas como 'cobertura' o 'precio', sé específico.")
     })
   }
 );

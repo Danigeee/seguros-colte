@@ -21,13 +21,21 @@ export const searchBienestarDocuments = async (query: string) => {
 
         console.log(`🔍 Buscando: "${query}"...`);
         
-        // Recuperamos 6 chunks para asegurar que la IA lea las "letras pequeñas"
-        const results = await vectorStore.similaritySearch(query, 6);
+        // Recuperamos 8 chunks para asegurar que la IA lea las "letras pequeñas" y tenga más contexto
+        const results = await vectorStore.similaritySearch(query, 12);
 
         if (results.length === 0) {
             console.log("⚠️ No se encontró información relevante en el PDF.");
             return ""; // Retornar vacío es mejor que inventar
         }
+
+        // AGREGA ESTO PARA VER QUÉ RECUPERÓ REALMENTE:
+        console.log("--- DEBUG: CONTENIDO DE LOS CHUNKS ---");
+        results.forEach((doc, i) => {
+        console.log(`\n[FRAGMENTO ${i + 1} - Score: ${doc.metadata.score || 'N/A'}]`);
+        console.log(doc.pageContent.substring(0, 300) + "..."); // Muestra los primeros 300 caracteres
+        });
+        console.log("----------------------------------------");
 
         const context = results.map(doc => doc.pageContent).join('\n\n---\n\n');
         console.log(`✅ ${results.length} fragmentos recuperados.`);
