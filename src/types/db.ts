@@ -237,6 +237,7 @@ export type Database = {
           document_id: string | null
           phone_number: string | null
           service: string | null
+          product: string | null
         }
         Insert: {
           id?: number
@@ -246,6 +247,7 @@ export type Database = {
           document_id?: string | null
           phone_number?: string | null
           service?: string | null
+          product?: string | null
         }
         Update: {
           id?: number
@@ -255,6 +257,7 @@ export type Database = {
           document_id?: string | null
           phone_number?: string | null
           service?: string | null
+          product?: string | null
         }
         Relationships: []
       }

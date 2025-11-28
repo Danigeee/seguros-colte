@@ -3,6 +3,7 @@ import { StateGraph, END, MemorySaver } from "@langchain/langgraph";
 import { ChatOpenAI } from "@langchain/openai";
 import { AgentState } from "./agents/agentState";
 import { bienestarPlusWorkflow } from "./agents/bienestarPlusAdvisor";
+import { vidaDeudorWorkflow } from "./agents/vidaDeudorAgent";
 import { identifyClientNode } from "./agents/identifyClient";
 
 const checkpointer = new MemorySaver();
@@ -37,10 +38,19 @@ SIEMPRE debes presentarte como Lucía de Coltefinanciera Seguros. Tu misión es 
 
 ### AGENTES ESPECIALISTAS:
 1. **bienestar_plus_advisor**: El ESPECIALISTA para consultas del seguro Bienestar Plus, coberturas, beneficios, servicios de bienestar, y información específica de esta póliza.
+2. **vida_deudor_advisor**: El ESPECIALISTA para consultas sobre el seguro/asistencia Vida Deudor, protección de créditos, deudas, saldos, y beneficios asociados a productos financieros.
 
 ### LÓGICA DE DECISIÓN (Seguir Estrictamente):
 
-**CASO 1: ASESOR BIENESTAR PLUS (RUTEAR AMPLIAMENTE)**
+**CASO 1: ASESOR VIDA DEUDOR (PRIORIDAD ALTA)**
+SI el usuario menciona CUALQUIERA de estos temas:
+- "vida deudor", "seguro de vida", "seguro deuda", "protección crédito"
+- "saldo", "deuda", "crédito", "préstamo", "cuánto debo"
+- "activar beneficio", "activar seguro", "activar asistencia"
+- "farmacias", "descuento medicamentos" (si el contexto es vida deudor)
+-> RETURN JSON: { "next": "vida_deudor_advisor" }
+
+**CASO 2: ASESOR BIENESTAR PLUS (RUTEAR AMPLIAMENTE)**
 SI el usuario menciona CUALQUIERA de estos temas:
 - "bienestar plus", "bienestar", "seguro de bienestar", "seguro"
 - "cobertura", "beneficios", "servicios incluidos", "qué tengo derecho", "qué incluye"
@@ -51,12 +61,18 @@ SI el usuario menciona CUALQUIERA de estos temas:
 - **Cualquier pregunta específica sobre servicios o productos de seguros**
 -> RETURN JSON: { "next": "bienestar_plus_advisor" }
 
-**CASO 2: CONVERSACIÓN GENERAL (SOLO SALUDOS MUY BÁSICOS Y PERFECTOS)**
+**CASO 3: CONVERSACIÓN GENERAL (SOLO SALUDOS MUY BÁSICOS Y PERFECTOS)**
 SI el usuario dice ÚNICAMENTE (sin errores de tipeo):
 - "Hola" (exactamente, una sola palabra)
 - "Buenos días" (exactamente, sin más contexto)
 - "¿Quién eres?" (exactamente)
--> RETURN JSON: { "next": "FINISH", "reply": "¡Hola! Soy Lucía de Coltefinanciera Seguros, tu asesora especialista en Bienestar Plus. ¿Te interesa conocer nuestros seguros de bienestar?" }
+-> RETURN JSON: { "next": "FINISH", "reply": "¡Hola! Soy Lucía de Coltefinanciera Seguros. ¿Te interesa conocer nuestros seguros de bienestar familiar o protección de créditos?" }
+
+**NOTA**: Mensajes con errores de tipeo (como "hoal", "hla", etc.) deben ir a "bienestar_plus_advisor" para manejo profesional.
+
+**IMPORTANTE**: Si hay CUALQUIER duda sobre la intención del mensaje, o si el mensaje parece incompleto, truncado, o podría ser una consulta sobre seguros, SIEMPRE rutea a "bienestar_plus_advisor".
+
+**REGLA PRINCIPAL**: EN CASO DE DUDA, SIEMPRE rutea a "bienestar_plus_advisor". Es mejor que el especialista maneje la consulta que dejar al cliente sin respuesta especializada.
 
 **IMPORTANTE:**
 - SIEMPRE debes devolver ÚNICAMENTE un objeto JSON válido.
@@ -93,6 +109,11 @@ async function supervisorNode(state: typeof AgentState.State) {
     decision = { next: "bienestar_plus_advisor" };
   }
 
+  if (decision.next === "vida_deudor_advisor") {
+      console.log("Supervisor Decision: -> [Vida Deudor Advisor]");
+      return { next: "vida_deudor_advisor" };
+  }
+
   if (decision.next === "bienestar_plus_advisor") {
       console.log("Supervisor Decision: -> [Bienestar Plus Advisor]");
       return { next: "bienestar_plus_advisor" };
@@ -111,6 +132,7 @@ const workflow = new StateGraph(AgentState)
   .addNode("identify_client", identifyClientNode)
   .addNode("supervisor", supervisorNode)
   .addNode("bienestar_plus_advisor", bienestarPlusWorkflow)
+  .addNode("vida_deudor_advisor", vidaDeudorWorkflow)
 
   .addEdge("__start__", "identify_client")
   .addEdge("identify_client", "supervisor")
@@ -120,10 +142,12 @@ const workflow = new StateGraph(AgentState)
       (x: typeof AgentState.State) => x.next, 
       {
           "bienestar_plus_advisor": "bienestar_plus_advisor",
+          "vida_deudor_advisor": "vida_deudor_advisor",
           "FINISH": END
       }
   )
 
-  .addEdge("bienestar_plus_advisor", END);
+  .addEdge("bienestar_plus_advisor", END)
+  .addEdge("vida_deudor_advisor", END);
 
 export const graph = workflow.compile({ checkpointer });

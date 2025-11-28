@@ -5,7 +5,8 @@ export interface ClientData {
   email: string;
   document_id: string;
   phone_number: string;
-  service: string; // Por ahora será "Bienestar Plus" por defecto
+  service?: string;
+  product?: string;
 }
 
 /**
@@ -13,30 +14,40 @@ export interface ClientData {
  */
 export async function getClientByPhoneNumber(phoneNumber: string): Promise<ClientData | null> {
   try {
-    console.log(`🔍 Buscando cliente con número: ${phoneNumber}`);
+    console.log(`Buscando cliente con número: ${phoneNumber}`);
     
     // Asegurar que el número tenga el formato correcto con +57
     const formattedNumber = phoneNumber.startsWith('+57') ? phoneNumber : `+57${phoneNumber.replace(/^\+/, '')}`;
     
-    console.log(`📱 Número formateado: ${formattedNumber}`);
+    console.log(`Número formateado: ${formattedNumber}`);
     
-    const { data: client, error } = await supabase
+    const { data, error } = await supabase
       .from('dentix_clients')
-      .select('name, email, document_id, phone_number, service')
+      .select('name, email, document_id, phone_number, service, product')
       .eq('phone_number', formattedNumber)
       .single();
       
     if (error) {
       if (error.code === 'PGRST116') {
-        console.log(`ℹ️  Cliente no encontrado para el número: ${formattedNumber}`);
+        console.log(`Cliente no encontrado para el número: ${formattedNumber}`);
         return null;
       }
       console.error('Error buscando cliente:', error);
       throw error;
     }
     
+    // Casteamos explícitamente para evitar errores de inferencia de tipos si la definición de DB no está sincronizada
+    const client = data as unknown as {
+      name: string | null;
+      email: string | null;
+      document_id: string | null;
+      phone_number: string | null;
+      service: string | null;
+      product: string | null;
+    };
+    
     if (!client) {
-      console.log(`ℹ️  No se encontró cliente para el número: ${formattedNumber}`);
+      console.log(`No se encontró cliente para el número: ${formattedNumber}`);
       return null;
     }
     
@@ -47,7 +58,8 @@ export async function getClientByPhoneNumber(phoneNumber: string): Promise<Clien
       email: client.email || '',
       document_id: client.document_id || '',
       phone_number: client.phone_number || formattedNumber,
-      service: client.service || "" // Usa el servicio de la BD o por defecto
+      service: client.service || undefined,
+      product: client.product || undefined
     };
     
   } catch (error) {
