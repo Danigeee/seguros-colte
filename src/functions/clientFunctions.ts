@@ -5,6 +5,7 @@ export interface ClientData {
   email: string;
   document_id: string;
   phone_number: string;
+  service: string; // Por ahora será "Bienestar Plus" por defecto
 }
 
 /**
@@ -21,7 +22,7 @@ export async function getClientByPhoneNumber(phoneNumber: string): Promise<Clien
     
     const { data: client, error } = await supabase
       .from('dentix_clients')
-      .select('name, email, document_id, phone_number')
+      .select('name, email, document_id, phone_number, service')
       .eq('phone_number', formattedNumber)
       .single();
       
@@ -39,13 +40,14 @@ export async function getClientByPhoneNumber(phoneNumber: string): Promise<Clien
       return null;
     }
     
-    console.log(`✅ Cliente encontrado: ${client.name} (${client.email})`);
+    console.log(`✅ Cliente encontrado: ${client.name} (${client.email}) - Servicio: ${client.service || 'No especificado'}`);
     
     return {
       name: client.name || 'Cliente',
       email: client.email || '',
       document_id: client.document_id || '',
-      phone_number: client.phone_number || formattedNumber
+      phone_number: client.phone_number || formattedNumber,
+      service: client.service || "" // Usa el servicio de la BD o por defecto
     };
     
   } catch (error) {
