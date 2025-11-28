@@ -142,6 +142,26 @@ export class ChatHistoryService {
     }
   }
 
+  async getMessages(conversationId: number): Promise<ChatMessage[]> {
+    try {
+      const { data: conversation, error } = await supabase
+        .from('chat_history')
+        .select('messages')
+        .eq('id', conversationId)
+        .single();
+
+      if (error || !conversation) {
+        console.error('Error fetching messages:', error);
+        return [];
+      }
+
+      return (conversation.messages as unknown as ChatMessage[]) || [];
+    } catch (exception) {
+      console.error('Exception fetching messages:', exception);
+      return [];
+    }
+  }
+
   async updateMessageStatus(twilioSid: string, status: string) {
     // Esta función ya no es necesaria con la nueva estructura
     console.log('Message status update not needed with current structure');

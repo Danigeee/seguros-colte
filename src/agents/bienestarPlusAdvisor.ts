@@ -97,9 +97,9 @@ Los servicios de Bienestar Plus aplican para reembolso únicamente si SIGMA (la 
 **🔥 PROCESO DE VENTA INMEDIATO:**
 
 **CLIENTE IDENTIFICADO:**
-1. "¡[NOMBRE]! Por solo $10,000 mensuales tienes protección total"
-2. Usar \`quickRegisterClient\` con \`insuranceName: "Bienestar Plus"\`
-3. Usar \`sendPaymentLinkEmailTool\` con datos del cliente
+1. "¡[NOMBRE]! Por solo $10,000 mensuales tienes protección total"  
+2. Usar \`quickRegisterClient\` con el servicio del cliente identificado
+3. Usar \`sendPaymentLinkEmailTool\` con todos los datos del cliente (incluyendo el servicio correcto)
 4. "¡Te acabo de enviar el enlace de pago! Actívalo HOY MISMO"
 
 
@@ -164,7 +164,7 @@ export async function bienestarPlusAdvisorNode(state: typeof AgentState.State) {
 
 INSTRUCCIONES ESPECIALES:
 - Saluda al cliente por su nombre: "${state.clientData.name}"
-- Para sendPaymentLinkEmailTool usa: clientName="${state.clientData.name}", clientEmail="${state.clientData.email}", insuranceName="Bienestar Plus"
+- Para sendPaymentLinkEmailTool usa: clientName="${state.clientData.name}", clientEmail="${state.clientData.email}", insuranceName="${state.clientData.service}", clientNumber="${state.clientData.phone_number}"
 - Personaliza la conversación conociendo su identidad`);
     
     messages = [clientInfo, ...messages];

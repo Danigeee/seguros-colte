@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 import twilio from 'twilio';
 import { ChatHistoryService } from '../services/chatHistoryService';
+import { elevenLabsService } from '../services/elevenLabsService';
 import { processTwilioMedia } from '../utils/mediaHandler';
 import { graph } from '../supervisor';
 import { HumanMessage } from '@langchain/core/messages';
@@ -102,6 +103,22 @@ router.post('/seguros-colte/receive-message', async (req: Request, res: Response
     const lastMessage = output.messages[output.messages.length - 1];
     const botResponse = lastMessage.content as string;
 
+    // Verificar si es el primer mensaje para generar audio
+    let audioUrl: string | undefined;
+    const conversationMessages = await chatService.getMessages(conversation.id);
+    const isFirstMessage = elevenLabsService.isFirstMessage(conversationMessages);
+    
+    if (isFirstMessage && elevenLabsService.shouldConvertToAudio(botResponse, isFirstMessage)) {
+      try {
+        console.log('🎵 Generando audio para el primer mensaje...');
+        audioUrl = await elevenLabsService.textToSpeech(botResponse);
+        console.log('✅ Audio generado exitosamente:', audioUrl);
+      } catch (error) {
+        console.error('❌ Error generando audio:', error);
+        // Continuar sin audio si falla
+      }
+    }
+
     // Detectar si hay URLs de archivos (PDFs, imágenes) en la respuesta para enviarlos como adjuntos
     let mediaUrl: string | undefined;
     // Regex para capturar URLs, deteniéndose ante paréntesis de cierre (común en markdown) o espacios
@@ -133,13 +150,20 @@ router.post('/seguros-colte/receive-message', async (req: Request, res: Response
     console.log(`   Message Length: ${botResponse.length}`);
 
     const messageOptions: any = {
-        body: botResponse,
         from: sendFrom,
         to: sendTo
     };
 
-    if (mediaUrl) {
-        messageOptions.mediaUrl = [mediaUrl];
+    // Priorizar audio sobre texto para el primer mensaje
+    if (audioUrl) {
+        console.log('🎵 Enviando mensaje de audio...');
+        messageOptions.mediaUrl = [audioUrl];
+        messageOptions.body = '🎵 Audio de Lucía'; // Texto descriptivo para el audio
+    } else {
+        messageOptions.body = botResponse;
+        if (mediaUrl) {
+            messageOptions.mediaUrl = [mediaUrl];
+        }
     }
 
     const sentMsg = await twilioClient.messages.create(messageOptions);

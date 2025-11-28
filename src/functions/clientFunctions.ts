@@ -51,7 +51,7 @@ export async function getClientByPhoneNumber(phoneNumber: string): Promise<Clien
       return null;
     }
     
-    console.log(`Cliente encontrado: ${client.name} (${client.email})`);
+    console.log(`✅ Cliente encontrado: ${client.name} (${client.email}) - Servicio: ${client.service || 'No especificado'}`);
     
     return {
       name: client.name || 'Cliente',
