@@ -41,6 +41,8 @@ export async function identifyClientNode(state: typeof AgentState.State, config?
 - Email: ${clientData.email}
 - Documento ID: ${clientData.document_id}
 - Teléfono: ${clientData.phone_number}
+- Servicio: ${clientData.service || 'No especificado'}
+- Producto: ${clientData.product || 'No especificado'}
 
 INSTRUCCIONES:
 - Dirígete al cliente por su nombre (${clientData.name})

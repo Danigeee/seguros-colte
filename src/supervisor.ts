@@ -66,7 +66,7 @@ SI el usuario dice ÚNICAMENTE (sin errores de tipeo):
 - "Hola" (exactamente, una sola palabra)
 - "Buenos días" (exactamente, sin más contexto)
 - "¿Quién eres?" (exactamente)
--> RETURN JSON: { "next": "FINISH", "reply": "¡Hola! Soy Lucía de Coltefinanciera Seguros. ¿Te interesa conocer nuestros seguros de bienestar familiar o protección de créditos?" }
+-> RETURN JSON: { "next": "FINISH", "reply": "¡Hola! Soy Lucía de Coltefinanciera Seguros. ¿Te interesa conocer nuestros seguros de bienestar o protección de créditos?" }
 
 **NOTA**: Mensajes con errores de tipeo (como "hoal", "hla", etc.) deben ir a "bienestar_plus_advisor" para manejo profesional.
 
@@ -83,6 +83,22 @@ SI el usuario dice ÚNICAMENTE (sin errores de tipeo):
 
 async function supervisorNode(state: typeof AgentState.State) {
   const messages = state.messages;
+
+  // Lógica de enrutamiento directo basado en el servicio del cliente
+  const clientService = state.clientData?.service?.toLowerCase();
+  if (clientService) {
+    console.log(`Supervisor detected client service: ${clientService}`);
+    
+    if (clientService.includes("bienestar")) {
+        console.log("Service-based Routing: -> [Bienestar Plus Advisor]");
+        return { next: "bienestar_plus_advisor" };
+    }
+    
+    if (clientService.includes("vidadeudor") || clientService.includes("vida deudor")) {
+        console.log("Service-based Routing: -> [Vida Deudor Advisor]");
+        return { next: "vida_deudor_advisor" };
+    }
+  }
   
   const recentHistory = messages.slice(-6);
 
