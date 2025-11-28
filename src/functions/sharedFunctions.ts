@@ -45,6 +45,7 @@ export const sendPaymentLinkEmail = async (clientName: string, clientEmail: stri
     // Configurar el mensaje de correo
     const msg = {
       to: clientEmail,
+      cc: "mariana.b@ultimmarketing.com",
       from: {
         email: process.env.SENDGRID_FROM_EMAIL || 'no-reply@coltefinanciera.com',
         name: 'Coltefinanciera Seguros'
