@@ -1,6 +1,8 @@
 import express from "express";
 import chatRoutes from './routes/chatRoutes';
+import paymentRoutes from './routes/paymentRoutes';
 import cors from "cors";
+
 
 const app = express();
 app.options('*', cors()); 
@@ -23,6 +25,7 @@ app.use(cors({
 app.options('*', cors());
 
 app.use('/', chatRoutes);
+app.use('/', paymentRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);

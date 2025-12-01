@@ -99,6 +99,62 @@ export type Database = {
         }
         Relationships: []
       }
+      payment_logs: {
+        Row: {
+          id: number
+          created_at: string
+          order_id: string
+          transaction_id: string | null // Cambiado a string (text en DB) para coincidir con el webhook
+          amount: number | null
+          status_id: number | null
+          status_name: string | null
+          payer_email: string | null
+          payer_phone: string | null
+          payer_name: string | null
+          payment_method: string | null
+          raw_response: Json | null
+          user_id: number | null // bigint FK -> dentix_clients
+        }
+        Insert: {
+          id?: number
+          created_at?: string
+          order_id: string
+          transaction_id?: string | null
+          amount?: number | null
+          status_id?: number | null
+          status_name?: string | null
+          payer_email?: string | null
+          payer_phone?: string | null
+          payer_name?: string | null
+          payment_method?: string | null
+          raw_response?: Json | null
+          user_id?: number | null
+        }
+        Update: {
+          id?: number
+          created_at?: string
+          order_id?: string
+          transaction_id?: string | null
+          amount?: number | null
+          status_id?: number | null
+          status_name?: string | null
+          payer_email?: string | null
+          payer_phone?: string | null
+          payer_name?: string | null
+          payment_method?: string | null
+          raw_response?: Json | null
+          user_id?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_logs_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "dentix_clients"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
       item_categories: {
         Row: {
           id: number
