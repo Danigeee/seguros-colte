@@ -1,18 +1,14 @@
 import { SystemMessage } from "@langchain/core/messages";
 import { createReactAgent } from "@langchain/langgraph/prebuilt";
 import { llm } from "../config/llm";
-import { AgentState } from "./agentState";
 import { vidaDeudorTools } from "../tools/vidaDeudorTools";
 import { sharedTools } from "../tools/sharedTools";
-
 const SYSTEM_VIDA_DEUDOR_PROMPT = `
     Eres un especialista EXPERTO en asistencia de VIDA DEUDOR y trabajas para Coltefinanciera.
       **⚠️ REGLA FUNDAMENTAL: NO INVENTAR INFORMACIÓN ⚠️**
     NO inventes precios, cifras, tarifas o información que no esté específicamente disponible en la base de datos vectorial de asistenciavida_documents. Si no encuentras información específica en la base de datos, di claramente que no tienes esa información disponible.
 
     Tu personalidad es APASIONADA y COMPROMETIDA con la protección de las familias colombianas ante la pérdida del proveedor principal.
-
-    el primer mensaje que envies SIEMPRE debes decir lo siguiente:"¡Hola <nombre_cliente>! Por tu crédito Coltefinanciera/Flamingo tienes derecho a la asistencia Vida Deudor. Incluye teleconsulta médica, telenutrición, telepsicología y descuentos en farmacias. ¿Te gustaría saber más o activar tu beneficio?"
 
     **⚠️ REGLA DE LONGITUD DE RESPUESTA (WHATSAPP) ⚠️**
     Tus respuestas deben ser CONCISAS y DIRECTAS. WhatsApp tiene límites de caracteres y los usuarios prefieren mensajes cortos.
@@ -169,52 +165,42 @@ const SYSTEM_VIDA_DEUDOR_PROMPT = `
 
     Recuerda: eres especialista en seguros de Vida Deudor, y tu éxito está vinculado a tu EXTREMA PERSISTENCIA respetuosa, la confianza que generas, el valor que aportas en protección familiar y tu capacidad MUY INSISTENTE pero profesional de cerrar ventas de seguros que realmente protegen a las familias ante la pérdida del proveedor principal. NO aceptes un NO fácilmente.
 `;
-
 const vidaDeudorAgent = createReactAgent({
-  llm,
-  tools: [...vidaDeudorTools, ...sharedTools],
-  stateModifier: (state: any) => {
-    const messages = [new SystemMessage(SYSTEM_VIDA_DEUDOR_PROMPT)];
-    return messages.concat(state.messages);
-  },
+    llm,
+    tools: [...vidaDeudorTools, ...sharedTools],
+    stateModifier: (state) => {
+        const messages = [new SystemMessage(SYSTEM_VIDA_DEUDOR_PROMPT)];
+        return messages.concat(state.messages);
+    },
 });
-
-export async function vidaDeudorAdvisorNode(state: typeof AgentState.State) {
-  let messages = state.messages;
-
-  // Agregar información del cliente identificado si está disponible
-  if (state.clientData) {
-    let clientInfoText = `CLIENTE IDENTIFICADO:
+export async function vidaDeudorAdvisorNode(state) {
+    let messages = state.messages;
+    // Agregar información del cliente identificado si está disponible
+    if (state.clientData) {
+        let clientInfoText = `CLIENTE IDENTIFICADO:
 - Nombre: ${state.clientData.name}
 - Email: ${state.clientData.email}
 - Documento: ${state.clientData.document_id}
 - Teléfono: ${state.clientData.phone_number}`;
-
-    if (state.clientData.service) {
-        clientInfoText += `\n- Service: ${state.clientData.service}`;
-    }
-    if (state.clientData.product) {
-        clientInfoText += `\n- Product: ${state.clientData.product}`;
-    }
-
-    clientInfoText += `\n\nINSTRUCCIONES ESPECIALES:
+        if (state.clientData.service) {
+            clientInfoText += `\n- Service: ${state.clientData.service}`;
+        }
+        if (state.clientData.product) {
+            clientInfoText += `\n- Product: ${state.clientData.product}`;
+        }
+        clientInfoText += `\n\nINSTRUCCIONES ESPECIALES:
 - Saluda al cliente por su nombre: "${state.clientData.name}"
 - Personaliza la conversación conociendo su identidad`;
-
-    if (state.clientData.service === 'vidadeudor') {
-        clientInfoText += `\n- ⚠️ ESTE ES UN CLIENTE EXISTENTE DE VIDA DEUDOR. Aplica las reglas especiales para clientes existentes (precios post-3-meses, terminología "asistencia", etc.).`;
+        if (state.clientData.service === 'vidadeudor') {
+            clientInfoText += `\n- ⚠️ ESTE ES UN CLIENTE EXISTENTE DE VIDA DEUDOR. Aplica las reglas especiales para clientes existentes (precios post-3-meses, terminología "asistencia", etc.).`;
+        }
+        const clientInfo = new SystemMessage(clientInfoText);
+        messages = [clientInfo, ...messages];
     }
-
-    const clientInfo = new SystemMessage(clientInfoText);
-    messages = [clientInfo, ...messages];
-  }
-
-  const result = await vidaDeudorAgent.invoke({ messages });
-  const lastMessage = result.messages[result.messages.length - 1];
-
-  return {
-    messages: [lastMessage]
-  };
+    const result = await vidaDeudorAgent.invoke({ messages });
+    const lastMessage = result.messages[result.messages.length - 1];
+    return {
+        messages: [lastMessage]
+    };
 }
-
 export const vidaDeudorWorkflow = vidaDeudorAdvisorNode;

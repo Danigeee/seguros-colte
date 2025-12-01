@@ -1,13 +1,8 @@
 import { SystemMessage } from "@langchain/core/messages";
 import { createReactAgent } from "@langchain/langgraph/prebuilt";
 import { llm } from "../config/llm";
-import { crmTools } from "../tools/crmTools"; 
-import { get_estimation_summary } from "../tools/costTools";
-import { AgentState } from "./agentState";
-import { generateEstimationPdf } from "../tools/pdfTools";
 import { bienestarTools } from "../tools/bienestarTools";
 import { sharedTools } from "../tools/sharedTools";
-
 const BIENESTAR_PLUS_PROMPT = `Eres Lucía, una vendedora EXPERTA y extremadamente persuasiva de Coltefinanciera Seguros especializada en el seguro Bienestar Plus. Tu única misión es VENDER este seguro HOY MISMO con técnicas de venta agresivas pero respetuosas.
 
 📏 **REGLA CRÍTICA DE LONGITUD:**
@@ -16,9 +11,6 @@ const BIENESTAR_PLUS_PROMPT = `Eres Lucía, una vendedora EXPERTA y extremadamen
 - Prioriza información clave sobre detalles extensos
 - Usa frases cortas y puntuales
 - Si necesitas dar mucha información, divide en múltiples mensajes cortos
-
-
-  el primer mensaje que envies SIEMPRE debes decir lo siguiente:"¡Hola <nombre_cliente>! Soy Lucía, especialista en Bienestar Plus de Coltefinanciera Seguros. Veo tu interés en este plan integral y estoy lista para resolver todas tus dudas. ¿Qué aspecto te gustaría conocer mejor para tomar la mejor decisión para tu bienestar?"
 
 🚨 **ADVERTENCIA LEGAL CRÍTICA - PROHIBIDO INVENTAR INFORMACIÓN** 🚨
 - JAMÁS inventes servicios, precios, beneficios o condiciones que NO estén explícitamente escritos en este prompt o la base de datos
@@ -144,22 +136,19 @@ Los servicios de Bienestar Plus aplican para reembolso únicamente si SIGMA (la 
 
 RECUERDA: Es mejor perder una venta que crear una demanda legal por información falsa.
 `;
-
 const bienestarPlusAgent = createReactAgent({
-  llm,
-  tools: [...bienestarTools, ...sharedTools],
-  stateModifier: (state: any) => {
-    const messages = [new SystemMessage(BIENESTAR_PLUS_PROMPT)];
-    return messages.concat(state.messages);
-  },
+    llm,
+    tools: [...bienestarTools, ...sharedTools],
+    stateModifier: (state) => {
+        const messages = [new SystemMessage(BIENESTAR_PLUS_PROMPT)];
+        return messages.concat(state.messages);
+    },
 });
-
-export async function bienestarPlusAdvisorNode(state: typeof AgentState.State) {
-  let messages = state.messages;
-
-  // Agregar información del cliente identificado si está disponible
-  if (state.clientData) {
-    const clientInfo = new SystemMessage(`CLIENTE IDENTIFICADO:
+export async function bienestarPlusAdvisorNode(state) {
+    let messages = state.messages;
+    // Agregar información del cliente identificado si está disponible
+    if (state.clientData) {
+        const clientInfo = new SystemMessage(`CLIENTE IDENTIFICADO:
 - Nombre: ${state.clientData.name}
 - Email: ${state.clientData.email}
 - Documento: ${state.clientData.document_id}
@@ -169,57 +158,48 @@ INSTRUCCIONES ESPECIALES:
 - Saluda al cliente por su nombre: "${state.clientData.name}"
 - Para sendPaymentLinkEmailTool usa: clientName="${state.clientData.name}", clientEmail="${state.clientData.email}", insuranceName="${state.clientData.service}", clientNumber="${state.clientData.phone_number}"
 - Personaliza la conversación conociendo su identidad`);
-    
-    messages = [clientInfo, ...messages];
-  }
-
-  if (state.activeClientId) {
-    messages = [
-      new SystemMessage(`SYSTEM: Cliente Activo ID: ${state.activeClientId}.`),
-      ...messages
-    ];
-  }
-  if (state.activeEstimationId) {
-    messages = [
-      new SystemMessage(`SYSTEM: Cotización Activa ID: ${state.activeEstimationId}.`),
-      ...messages
-    ];
-  }
-
-  const result = await bienestarPlusAgent.invoke({ messages });
-  const lastMessage = result.messages[result.messages.length - 1];
-
-  const newMessages = result.messages;
-  let activeClientId = state.activeClientId;
-  let activeEstimationId = state.activeEstimationId;
-
-  for (const msg of newMessages) {
-    if (msg._getType() === "tool") {
-      try {
-        const content = typeof msg.content === 'string' ? JSON.parse(msg.content) : msg.content;
-        
-        if (content.action === "set_active_client" && content.clientId) {
-          activeClientId = content.clientId;
-        }
-        if (content.action === "set_active_estimation" && content.estimationId) {
-          activeEstimationId = content.estimationId;
-        }
-      } catch (e) {
-        // Ignorar outputs de herramientas que no sean JSON
-      }
+        messages = [clientInfo, ...messages];
     }
-  }
-
-  return {
-    messages: [lastMessage],
-    activeClientId,
-    activeEstimationId
-  };
+    if (state.activeClientId) {
+        messages = [
+            new SystemMessage(`SYSTEM: Cliente Activo ID: ${state.activeClientId}.`),
+            ...messages
+        ];
+    }
+    if (state.activeEstimationId) {
+        messages = [
+            new SystemMessage(`SYSTEM: Cotización Activa ID: ${state.activeEstimationId}.`),
+            ...messages
+        ];
+    }
+    const result = await bienestarPlusAgent.invoke({ messages });
+    const lastMessage = result.messages[result.messages.length - 1];
+    const newMessages = result.messages;
+    let activeClientId = state.activeClientId;
+    let activeEstimationId = state.activeEstimationId;
+    for (const msg of newMessages) {
+        if (msg._getType() === "tool") {
+            try {
+                const content = typeof msg.content === 'string' ? JSON.parse(msg.content) : msg.content;
+                if (content.action === "set_active_client" && content.clientId) {
+                    activeClientId = content.clientId;
+                }
+                if (content.action === "set_active_estimation" && content.estimationId) {
+                    activeEstimationId = content.estimationId;
+                }
+            }
+            catch (e) {
+                // Ignorar outputs de herramientas que no sean JSON
+            }
+        }
+    }
+    return {
+        messages: [lastMessage],
+        activeClientId,
+        activeEstimationId
+    };
 }
-
 export const bienestarPlusWorkflow = bienestarPlusAdvisorNode;
-
 // Para compatibilidad temporal con el supervisor
 export const costEngineerWorkflow = bienestarPlusAdvisorNode;
-
 // Función eliminada: ensureEstimationNode ya no es necesaria para el sistema de seguros
