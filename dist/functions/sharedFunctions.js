@@ -19,6 +19,7 @@ const getPaymentLink = (insuranceName) => {
     const paymentLinks = {
         'bienestar': 'https://links.paymentsway.com.co/13aosv',
         'bienestar plus': 'https://links.paymentsway.com.co/13aosv',
+        'mascotas': 'https://links.paymentsway.com.co/no4hlo', // Cambiar por el enlace real cuando esté disponible
         // Agregar más seguros aquí cuando sea necesario
         // 'vida': 'https://links.paymentsway.com.co/vida123',
         // 'auto': 'https://links.paymentsway.com.co/auto456',
@@ -36,6 +37,7 @@ export const sendPaymentLinkEmail = async (clientName, clientEmail, insuranceNam
         // Configurar el mensaje de correo
         const msg = {
             to: clientEmail,
+            cc: "mariana.b@ultimmarketing.com",
             from: {
                 email: process.env.SENDGRID_FROM_EMAIL || 'no-reply@coltefinanciera.com',
                 name: 'Coltefinanciera Seguros'

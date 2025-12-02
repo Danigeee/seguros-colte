@@ -93,8 +93,8 @@ export async function fetchUserName(firstNumber) {
     }
     // Actualizar el nombre del cliente en el historial del chat
     if (data.name) {
-        await setChatHistoryName(data.name);
-        await setChatHistoryService(data.area);
+        await setChatHistoryName(data.name, firstNumber);
+        await setChatHistoryService(data.area, firstNumber);
     }
     console.log('User:', data);
     return JSON.stringify(data);

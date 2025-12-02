@@ -1,7 +1,7 @@
 // Guardar hustorial de conversación en Supabase
 import { createClient } from '@supabase/supabase-js';
 import dotenv from 'dotenv';
-import { exportedFromNumber } from '../routes/chatRoutes.js';
+// import { exportedFromNumber } from '../routes/chatRoutes.js'; // TODO: Fix export
 
 dotenv.config();
 
@@ -11,21 +11,21 @@ const supabaseKey = process.env.SUPABASE_KEY as string;
 export const supabase = createClient(supabaseUrl, supabaseKey);
 
 // Función para para actualizar el client_name en la base de datos en la tabla chat_history.
-export async function setChatHistoryName(clientName: string): Promise<void> {
+export async function setChatHistoryName(clientName: string, clientNumber: string): Promise<void> {
     try {
         // Verificar que tenemos un número de teléfono válido
-        if (!exportedFromNumber) {
+        if (!clientNumber) {
             console.error('No phone number available to update chat history name');
             return;
         }
 
-        console.log(`Attempting to update chat history name for: ${exportedFromNumber}`);
+        console.log(`Attempting to update chat history name for: ${clientNumber}`);
 
         // Verificar si el cliente ya tiene una conversación
         const { data: existingConversation, error: fetchError } = await supabase
             .from('chat_history')
             .select('id')
-            .eq('client_number', exportedFromNumber)
+            .eq('client_number', clientNumber)
             .maybeSingle();
 
         if (fetchError) {
@@ -45,7 +45,7 @@ export async function setChatHistoryName(clientName: string): Promise<void> {
                 console.log('Client name updated successfully');
             }
         } else {
-            console.log(`No existing conversation found for ${exportedFromNumber}, skipping name update`);
+            console.log(`No existing conversation found for ${clientNumber}, skipping name update`);
         }
         
     } catch (error) {
