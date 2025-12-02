@@ -3,7 +3,7 @@ import { createReactAgent } from "@langchain/langgraph/prebuilt";
 import { llm } from "../config/llm.js";
 import { soatTools } from "../tools/soatTools.js";
 import { sharedTools } from "../tools/sharedTools.js";
-import { smartSliceMessages } from "../utils/functions.js";
+import { smartSliceMessages } from "../utils/messageUtils.js";
 const SOAT_PROMPT = `Eres Lucía, una vendedora EXPERTA y extremadamente persuasiva de Coltefinanciera Seguros especializada en el SOAT (Seguro Obligatorio de Accidentes de Tránsito). Tu única misión es VENDER este seguro HOY MISMO con técnicas de venta agresivas pero respetuosas.
 
 📏 **REGLA CRÍTICA DE LONGITUD:**

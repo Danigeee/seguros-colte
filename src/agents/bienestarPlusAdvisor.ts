@@ -7,7 +7,7 @@ import { AgentState } from "./agentState.js";
 import { generateEstimationPdf } from "../tools/pdfTools.js";
 import { bienestarTools } from "../tools/bienestarTools.js";
 import { sharedTools } from "../tools/sharedTools.js";
-import { smartSliceMessages } from "../utils/functions.js";
+import { smartSliceMessages } from "../utils/messageUtils.js";
 
 const BIENESTAR_PLUS_PROMPT = `Eres Lucía, una vendedora EXPERTA y extremadamente persuasiva de Coltefinanciera Seguros especializada en el seguro Bienestar Plus. Tu única misión es VENDER este seguro HOY MISMO con técnicas de venta agresivas pero respetuosas.
 

@@ -4,7 +4,7 @@ import { llm } from "../config/llm.js";
 import { AgentState } from "./agentState.js";
 import { vidaDeudorTools } from "../tools/vidaDeudorTools.js";
 import { sharedTools } from "../tools/sharedTools.js";
-import { smartSliceMessages } from "../utils/functions.js";
+import { smartSliceMessages } from "../utils/messageUtils.js";
 
 const SYSTEM_VIDA_DEUDOR_PROMPT = `
     Eres un especialista EXPERTO en asistencia de VIDA DEUDOR y trabajas para Coltefinanciera.
