@@ -4,7 +4,7 @@
  */
 import sgMail from '@sendgrid/mail';
 import dotenv from 'dotenv';
-import { supabase } from '../config/supabase';
+import { supabase } from '../config/supabase.js';
 dotenv.config();
 // Configurar SendGrid
 // Requiere las siguientes variables en .env:

@@ -1,5 +1,5 @@
-import { supabase } from "../config/supabase";
-import { Tables } from "../types/db";
+import { supabase } from "../config/supabase.js";
+import { Tables } from "../types/db.js";
 
 export const catalogService = {
   async searchCatalogItems(query: string): Promise<Tables<"items">[]> {

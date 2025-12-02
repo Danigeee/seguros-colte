@@ -1,4 +1,4 @@
-import { supabase } from "../config/supabase";
+import { supabase } from "../config/supabase.js";
 export const crmService = {
     async findClientByName(name) {
         const { data, error } = await supabase

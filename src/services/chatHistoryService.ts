@@ -1,5 +1,5 @@
-import { supabase } from '../config/supabase';
-import { Tables } from '../types/db';
+import { supabase } from '../config/supabase.js';
+import { Tables } from '../types/db.js';
 
 interface ChatMessage {
   user: 'client_message' | 'agent_message' | 'system_message';

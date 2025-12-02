@@ -1,7 +1,7 @@
 import { tool } from "@langchain/core/tools";
 import { z } from "zod";
-import { supabase } from "../config/supabase";
-import { Database } from "../types/db";
+import { supabase } from "../config/supabase.js";
+import { Database } from "../types/db.js";
 
 // Helper para tipos
 type ItemRow = Database['public']['Tables']['items']['Row'];

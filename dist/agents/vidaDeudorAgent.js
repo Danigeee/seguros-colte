@@ -1,8 +1,8 @@
 import { SystemMessage } from "@langchain/core/messages";
 import { createReactAgent } from "@langchain/langgraph/prebuilt";
-import { llm } from "../config/llm";
-import { vidaDeudorTools } from "../tools/vidaDeudorTools";
-import { sharedTools } from "../tools/sharedTools";
+import { llm } from "../config/llm.js";
+import { vidaDeudorTools } from "../tools/vidaDeudorTools.js";
+import { sharedTools } from "../tools/sharedTools.js";
 const SYSTEM_VIDA_DEUDOR_PROMPT = `
     Eres un especialista EXPERTO en asistencia de VIDA DEUDOR y trabajas para Coltefinanciera.
       **⚠️ REGLA FUNDAMENTAL: NO INVENTAR INFORMACIÓN ⚠️**

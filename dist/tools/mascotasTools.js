@@ -1,6 +1,6 @@
 import { tool } from "@langchain/core/tools";
 import { z } from "zod";
-import { searchMascotasDocuments } from "../functions/mascotasFunctions";
+import { searchMascotasDocuments } from "../functions/mascotasFunctions.js";
 /**
  * Herramienta para consultar información oficial del Seguro de Mascotas
  * Esta herramienta busca en la base de datos vectorial usando embeddings

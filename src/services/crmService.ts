@@ -1,5 +1,5 @@
-import { supabase } from "../config/supabase";
-import { Tables, Insert } from "../types/db";
+import { supabase } from "../config/supabase.js";
+import { Tables, Insert } from "../types/db.js";
 
 export const crmService = {
   async findClientByName(name: string): Promise<Tables<"clients">[]> {

@@ -1,4 +1,4 @@
-import { getClientByPhoneNumber, extractPhoneNumber } from "../functions/clientFunctions";
+import { getClientByPhoneNumber, extractPhoneNumber } from "../functions/clientFunctions.js";
 import { SystemMessage } from "@langchain/core/messages";
 /**
  * Nodo inicial que identifica al cliente por su número de teléfono

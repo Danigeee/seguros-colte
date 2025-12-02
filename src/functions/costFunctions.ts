@@ -1,4 +1,4 @@
-import { supabase } from "../config/supabase";
+import { supabase } from "../config/supabase.js";
 
 export async function searchItemsInDB(query: string): Promise<string> {
   console.log(`[Function] Searching: ${query}`);

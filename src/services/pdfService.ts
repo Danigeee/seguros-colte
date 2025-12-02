@@ -1,6 +1,6 @@
 import PdfPrinter from 'pdfmake';
 import path from 'path';
-import { supabase } from '../config/supabase';
+import { supabase } from '../config/supabase.js';
 
 // Configuración de fuentes para PDFMake
 // Asegúrate de tener la carpeta 'fonts' en la raíz del proyecto con estos archivos

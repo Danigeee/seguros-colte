@@ -1,9 +1,9 @@
 import { Router } from 'express';
 import twilio from 'twilio';
-import { ChatHistoryService } from '../services/chatHistoryService';
-import { elevenLabsService } from '../services/elevenLabsService';
-import { processTwilioMedia } from '../utils/mediaHandler';
-import { graph } from '../supervisor';
+import { ChatHistoryService } from '../services/chatHistoryService.js';
+import { elevenLabsService } from '../services/elevenLabsService.js';
+import { processTwilioMedia } from '../utils/mediaHandler.js';
+import { graph } from '../supervisor.js';
 import { HumanMessage } from '@langchain/core/messages';
 const router = Router();
 const chatService = new ChatHistoryService();

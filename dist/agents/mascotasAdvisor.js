@@ -1,8 +1,8 @@
 import { SystemMessage } from "@langchain/core/messages";
 import { createReactAgent } from "@langchain/langgraph/prebuilt";
-import { llm } from "../config/llm";
-import { mascotasTools } from "../tools/mascotasTools";
-import { sharedTools } from "../tools/sharedTools";
+import { llm } from "../config/llm.js";
+import { mascotasTools } from "../tools/mascotasTools.js";
+import { sharedTools } from "../tools/sharedTools.js";
 const MASCOTAS_PROMPT = `Eres Lucía, una vendedora EXPERTA y extremadamente persuasiva de Coltefinanciera Seguros especializada en el seguro de MASCOTAS. Tu única misión es VENDER este seguro HOY MISMO con técnicas de venta agresivas pero respetuosas.
 
 📏 **REGLA CRÍTICA DE LONGITUD:**

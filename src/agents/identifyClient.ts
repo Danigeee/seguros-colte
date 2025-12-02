@@ -1,5 +1,5 @@
-import { AgentState } from "./agentState";
-import { getClientByPhoneNumber, extractPhoneNumber, ClientData } from "../functions/clientFunctions";
+import { AgentState } from "./agentState.js";
+import { getClientByPhoneNumber, extractPhoneNumber, ClientData } from "../functions/clientFunctions.js";
 import { SystemMessage } from "@langchain/core/messages";
 
 /**

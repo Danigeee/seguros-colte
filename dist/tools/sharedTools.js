@@ -1,6 +1,6 @@
 import { tool } from "@langchain/core/tools";
 import { z } from "zod";
-import { sendPaymentLinkEmail } from "../functions/sharedFunctions";
+import { sendPaymentLinkEmail } from "../functions/sharedFunctions.js";
 /**
  * Herramienta para enviar enlaces de pago por correo electrónico
  * Usa automáticamente los datos del cliente identificado si están disponibles
