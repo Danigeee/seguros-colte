@@ -464,6 +464,47 @@ export type Database = {
         }
         Relationships: []
       }
+      suscripciones: {
+        Row: {
+          id: string // uuid
+          created_at: string
+          client_id: number // bigint
+          vepay_subscription_id: string | null
+          vepay_referencia: string
+          plan_id: string
+          estado: string | null
+          response_data: Json | null
+        }
+        Insert: {
+          id?: string
+          created_at?: string
+          client_id: number
+          vepay_subscription_id?: string | null
+          vepay_referencia: string
+          plan_id: string
+          estado?: string | null
+          response_data?: Json | null
+        }
+        Update: {
+          id?: string
+          created_at?: string
+          client_id?: number
+          vepay_subscription_id?: string | null
+          vepay_referencia?: string
+          plan_id?: string
+          estado?: string | null
+          response_data?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "suscripciones_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "dentix_clients"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
     }
     Views: {
       [_ in never]: never

@@ -5,31 +5,51 @@ const router = Router();
 
 interface PaymentWebhookBody {
     id: string;
-    externalorder: string;
     amount: number;
+    externalorder: string;
+    ip?: string;
     fullname: string;
+    jsonresponse?: string;
+    additionaldata?: any;
     idstatus: {
         id: number;
         nombre: string;
     };
     idperson?: {
-        email?: string;
-        phone?: string;
+        id?: string;
         firstname?: string;
         lastname?: string;
         identification?: string;
+        email?: string;
+        phone?: string;
     };
     paymentmethod?: {
         id?: number;
         nombre: string;
+        typeCard?: string;
     };
-    additionaldata?: any;
-    ip?: string;
+    idsubscripcion?: string | null;
+    idmerchant?: string;
     innerexception?: any;
 }
 
-router.post('/webhook/payments-way', async (req: Request<{}, {}, PaymentWebhookBody>, res: Response) =>{
+router.post('/payments-way/webhook', async (req: Request<{}, {}, PaymentWebhookBody>, res: Response) =>{
     try {
+        // Validación del Token de Autorización (Header)
+        const authHeader = req.headers.authorization;
+        const expectedToken = process.env.PAYMENTS_WAY_TOKEN;
+
+        // Si existe la variable de entorno, validamos que el token coincida
+        if (expectedToken) {
+            if (!authHeader || authHeader !== `Bearer ${expectedToken}`) {
+                console.warn('Intento de acceso no autorizado al webhook:', authHeader);
+                res.status(401).send('Unauthorized');
+                return;
+            }
+        } else {
+            console.warn('ADVERTENCIA: PAYMENTS_WAY_TOKEN no está configurado. Se está omitiendo la validación de seguridad del webhook.');
+        }
+
         const data = req.body;
 
         // Validación básica para evitar crash si idstatus no viene

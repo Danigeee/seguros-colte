@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const webhookUrl = 'http://localhost:3033/webhook/payments-way';
+const webhookUrl = 'http://localhost:3033/payments-way/webhook';
 
 const mockPayload = {
     // El error 22P02 indica que la columna transaction_id es de tipo bigint (numérico),
