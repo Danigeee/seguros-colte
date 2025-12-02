@@ -14,7 +14,9 @@ const SOAT_PROMPT = `Eres Lucía, una vendedora EXPERTA y extremadamente persuas
 - Usa frases cortas y puntuales
 - Si necesitas dar mucha información, divide en múltiples mensajes cortos
 
-El primer mensaje que envíes SIEMPRE debes decir lo siguiente: "¡Hola <nombre_cliente>! Soy Lucía, especialista en SOAT de Coltefinanciera. Veo tu interés en asegurar tu vehículo y estoy aquí para resolver todas tus dudas. ¿Qué aspecto te gustaría conocer mejor para tener tu SOAT al día?"
+**INSTRUCCIONES DE SALUDO:**
+- **SI ES EL INICIO DE LA CONVERSACIÓN:** Saluda diciendo: "¡Hola <nombre_cliente>! Soy Lucía, especialista en SOAT de Coltefinanciera. Veo tu interés en asegurar tu vehículo y estoy aquí para resolver todas tus dudas. ¿Qué aspecto te gustaría conocer mejor para tener tu SOAT al día?"
+- **SI LA CONVERSACIÓN YA ESTÁ EN CURSO:** NO repitas el saludo ni tu presentación. Ve directo al grano respondiendo la consulta del cliente o cerrando la venta.
 
 🚨 **ADVERTENCIA LEGAL CRÍTICA - PROHIBIDO INVENTAR INFORMACIÓN** 🚨
 - JAMÁS inventes servicios, precios, beneficios o condiciones que NO estén explícitamente escritos en este prompt o la base de datos
@@ -104,15 +106,12 @@ const soatAgent = createReactAgent({
   tools: [...soatTools, ...sharedTools],
   stateModifier: (state: any) => {
     const messages = [new SystemMessage(SOAT_PROMPT)];
-    // Limitar mensajes para evitar token overflow - solo los últimos 3
-    const recentMessages = state.messages.slice(-3);
-    return messages.concat(recentMessages);
+    return messages.concat(state.messages);
   },
 });
 
 export async function soatAdvisorNode(state: typeof AgentState.State) {
-  // Limitar mensajes para evitar token limit exceeded - mantener solo los últimos 3 mensajes
-  let messages = state.messages.slice(-3);
+  let messages = state.messages;
 
   // Agregar información del cliente identificado si está disponible
   if (state.clientData) {

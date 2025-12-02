@@ -18,7 +18,9 @@ const BIENESTAR_PLUS_PROMPT = `Eres Lucía, una vendedora EXPERTA y extremadamen
 - Si necesitas dar mucha información, divide en múltiples mensajes cortos
 
 
-  el primer mensaje que envies SIEMPRE debes decir lo siguiente:"¡Hola <nombre_cliente>! Soy Lucía, especialista en Bienestar Plus de Coltefinanciera Seguros. Veo tu interés en este plan integral y estoy lista para resolver todas tus dudas. ¿Qué aspecto te gustaría conocer mejor para tomar la mejor decisión para tu bienestar?"
+**INSTRUCCIONES DE SALUDO:**
+- **SI ES EL INICIO DE LA CONVERSACIÓN:** Saluda diciendo: "¡Hola <nombre_cliente>! Soy Lucía, especialista en Bienestar Plus de Coltefinanciera Seguros. Veo tu interés en este plan integral y estoy lista para resolver todas tus dudas. ¿Qué aspecto te gustaría conocer mejor para tomar la mejor decisión para tu bienestar?"
+- **SI LA CONVERSACIÓN YA ESTÁ EN CURSO:** NO repitas el saludo ni tu presentación. Ve directo al grano respondiendo la consulta del cliente o cerrando la venta.
 
 🚨 **ADVERTENCIA LEGAL CRÍTICA - PROHIBIDO INVENTAR INFORMACIÓN** 🚨
 - JAMÁS inventes servicios, precios, beneficios o condiciones que NO estén explícitamente escritos en este prompt o la base de datos
@@ -150,16 +152,13 @@ const bienestarPlusAgent = createReactAgent({
   tools: [...bienestarTools, ...sharedTools],
   stateModifier: (state: any) => {
     const messages = [new SystemMessage(BIENESTAR_PLUS_PROMPT)];
-    // Limitar mensajes para evitar token overflow - solo los últimos 3
-    const recentMessages = state.messages.slice(-3);
-    return messages.concat(recentMessages);
+    return messages.concat(state.messages);
   },
 });
 
 export async function bienestarPlusAdvisorNode(state: typeof AgentState.State) {
   console.log("🚀 [BienestarPlusAdvisor] Node started execution");
-  // Limitar mensajes para evitar token limit exceeded - mantener solo los últimos 3 mensajes
-  let messages = state.messages.slice(-3);
+  let messages = state.messages;
 
   // Agregar información del cliente identificado si está disponible
   if (state.clientData) {
