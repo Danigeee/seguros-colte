@@ -5,7 +5,7 @@ import { AgentState } from "./agents/agentState.js";
 import { bienestarPlusWorkflow } from "./agents/bienestarPlusAdvisor.js";
 import { vidaDeudorWorkflow } from "./agents/vidaDeudorAgent.js";
 import { mascotasWorkflow } from "./agents/mascotasAdvisor.js";
-import { soatWorkflow } from "./agents/soatAdvisor";
+import { soatWorkflow } from "./agents/soatAdvisor.js";
 import { identifyClientNode } from "./agents/identifyClient.js";
 
 const checkpointer = new MemorySaver();

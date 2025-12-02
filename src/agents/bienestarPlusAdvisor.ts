@@ -150,12 +150,15 @@ const bienestarPlusAgent = createReactAgent({
   tools: [...bienestarTools, ...sharedTools],
   stateModifier: (state: any) => {
     const messages = [new SystemMessage(BIENESTAR_PLUS_PROMPT)];
-    return messages.concat(state.messages);
+    // Limitar mensajes para evitar token overflow - solo los últimos 3
+    const recentMessages = state.messages.slice(-3);
+    return messages.concat(recentMessages);
   },
 });
 
 export async function bienestarPlusAdvisorNode(state: typeof AgentState.State) {
-  let messages = state.messages;
+  // Limitar mensajes para evitar token limit exceeded - mantener solo los últimos 3 mensajes
+  let messages = state.messages.slice(-3);
 
   // Agregar información del cliente identificado si está disponible
   if (state.clientData) {
