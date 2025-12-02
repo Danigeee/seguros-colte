@@ -147,4 +147,12 @@ router.post('/payments-way/webhook', async (req: Request<{}, {}, PaymentWebhookB
     }
 });
 
+// Ruta Health Check para el webhook
+router.get('/payments-way/webhook/health', (req: Request, res: Response) => {
+    res.status(200).json({
+        status: 'ok',
+        message: 'Payments Way Webhook is running properly.'
+    });
+});
+
 export default router;
