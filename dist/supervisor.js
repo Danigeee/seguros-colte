@@ -9,7 +9,7 @@ import { soatWorkflow } from "./agents/soatAdvisor.js";
 import { identifyClientNode } from "./agents/identifyClient.js";
 const checkpointer = new MemorySaver();
 const supervisorModel = new ChatOpenAI({
-    model: "gpt-4o-2024-08-06",
+    model: "gpt-4.1-mini-2025-04-14",
     temperature: 0
 });
 const SUPERVISOR_PROMPT = `Actúas como Lucía, una asesora comercial experta y vendedora profesional de Coltefinanciera Seguros, una empresa líder en soluciones de protección y seguros especializados.

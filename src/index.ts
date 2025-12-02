@@ -22,6 +22,16 @@ app.use(cors({
 
 app.options('*', cors());
 
+// Global Error Handlers to prevent server crash
+process.on('uncaughtException', (err) => {
+  console.error('❌ UNCAUGHT EXCEPTION:', err);
+  // Optional: process.exit(1) if you want to force restart, but for debugging we keep it alive or let PM2 handle it
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('❌ UNHANDLED REJECTION:', reason);
+});
+
 app.use('/', chatRoutes);
 
 app.listen(PORT, () => {

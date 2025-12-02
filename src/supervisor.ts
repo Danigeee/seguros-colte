@@ -11,7 +11,7 @@ import { identifyClientNode } from "./agents/identifyClient.js";
 const checkpointer = new MemorySaver();
 
 const supervisorModel = new ChatOpenAI({ 
-    model: "gpt-4o-2024-08-06", 
+    model: "gpt-4.1-mini-2025-04-14", 
     temperature: 0 
 });
 

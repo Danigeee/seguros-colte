@@ -16,7 +16,7 @@ const supabaseApiKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 // Usamos un modelo rápido y barato para el re-ranking
 const rerankLLM = new ChatOpenAI({
     temperature: 0,
-    model: "gpt-4o-mini",
+    model: "gpt-4.1-mini-2025-04-14",
     apiKey: process.env.OPENAI_API_KEY,
 });
 

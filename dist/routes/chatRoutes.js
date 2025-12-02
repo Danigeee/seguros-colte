@@ -91,7 +91,30 @@ router.post('/seguros-colte/receive-message', async (req, res) => {
         const inputs = {
             messages: [new HumanMessage(finalUserMessage)]
         };
-        const output = await graph.invoke(inputs, config);
+        let output;
+        try {
+            output = await graph.invoke(inputs, config);
+        }
+        catch (error) {
+            console.error('❌ Error executing graph:', error);
+            const fallbackMessage = "Lo siento, estoy teniendo problemas técnicos momentáneos. Por favor intenta de nuevo en unos segundos.";
+            await chatService.saveMessage({
+                conversationId: conversation.id,
+                sender: 'assistant',
+                message: fallbackMessage,
+                twilioSid: 'error-fallback'
+            });
+            const sendTo = From.startsWith('whatsapp:') ? From : `whatsapp:${From}`;
+            const sendFrom = To.startsWith('whatsapp:') ? To : `whatsapp:${To}`;
+            await twilioClient.messages.create({
+                from: sendFrom,
+                to: sendTo,
+                body: fallbackMessage
+            });
+            res.writeHead(200, { 'Content-Type': 'text/xml' });
+            res.end(twiml.toString());
+            return;
+        }
         const lastMessage = output.messages[output.messages.length - 1];
         const botResponse = lastMessage.content;
         // Verificar si es el primer mensaje para generar audio
