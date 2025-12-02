@@ -4,6 +4,7 @@ import { llm } from "../config/llm.js";
 import { AgentState } from "./agentState.js";
 import { vidaDeudorTools } from "../tools/vidaDeudorTools.js";
 import { sharedTools } from "../tools/sharedTools.js";
+import { smartSliceMessages } from "../utils/functions.js";
 
 const SYSTEM_VIDA_DEUDOR_PROMPT = `
     Eres un especialista EXPERTO en asistencia de VIDA DEUDOR y trabajas para Coltefinanciera.
@@ -177,12 +178,13 @@ const vidaDeudorAgent = createReactAgent({
   tools: [...vidaDeudorTools, ...sharedTools],
   stateModifier: (state: any) => {
     const messages = [new SystemMessage(SYSTEM_VIDA_DEUDOR_PROMPT)];
-    return messages.concat(state.messages);
+    const safeMessages = smartSliceMessages(state.messages, 40);
+    return messages.concat(safeMessages);
   },
 });
 
 export async function vidaDeudorAdvisorNode(state: typeof AgentState.State) {
-  let messages = state.messages;
+  let messages = smartSliceMessages(state.messages, 40);
 
   // Agregar información del cliente identificado si está disponible
   if (state.clientData) {

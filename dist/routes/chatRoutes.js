@@ -17,9 +17,9 @@ router.get('/seguros-colte/health', (req, res) => {
     });
 });
 // Verificar configuración de Twilio
-console.log('🔧 CONFIGURACIÓN TWILIO:');
-console.log(`   Account SID: ${process.env.TWILIO_ACCOUNT_SID ? process.env.TWILIO_ACCOUNT_SID.substring(0, 10) + '...' : 'NO CONFIGURADO'}`);
-console.log(`   Auth Token: ${process.env.TWILIO_AUTH_TOKEN ? 'CONFIGURADO' : 'NO CONFIGURADO'}`);
+// console.log('🔧 CONFIGURACIÓN TWILIO:');
+// console.log(`   Account SID: ${process.env.TWILIO_ACCOUNT_SID ? process.env.TWILIO_ACCOUNT_SID.substring(0, 10) + '...' : 'NO CONFIGURADO'}`);
+// console.log(`   Auth Token: ${process.env.TWILIO_AUTH_TOKEN ? 'CONFIGURADO' : 'NO CONFIGURADO'}`);
 const twilioClient = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
 router.post('/seguros-colte/receive-message', async (req, res) => {
     const twiml = new twilio.twiml.MessagingResponse();
@@ -30,7 +30,7 @@ router.post('/seguros-colte/receive-message', async (req, res) => {
         console.log(`Mensaje de ${clientNumber} (${ProfileName})`);
         const conversation = await chatService.getOrCreateConversation(clientNumber, ProfileName);
         if (conversation.chat_on) {
-            console.log(`[MODO HUMANO] Chat atendido por asesor. IA en pausa.`);
+            // console.log(`[MODO HUMANO] Chat atendido por asesor. IA en pausa.`);
             let contentToSave = Body || '';
             let firebaseUrl = null;
             if (MediaUrl0) {
@@ -127,11 +127,11 @@ router.post('/seguros-colte/receive-message', async (req, res) => {
         }
         const sendTo = From.startsWith('whatsapp:') ? From : `whatsapp:${From}`;
         const sendFrom = To.startsWith('whatsapp:') ? To : `whatsapp:${To}`;
-        console.log(`📱 PREPARANDO ENVÍO A TWILIO:`);
-        console.log(`   From: ${sendFrom}`);
-        console.log(`   To: ${sendTo}`);
-        console.log(`   Message: ${botResponse}`);
-        console.log(`   Message Length: ${botResponse.length}`);
+        // console.log(`📱 PREPARANDO ENVÍO A TWILIO:`);
+        // console.log(`   From: ${sendFrom}`);
+        // console.log(`   To: ${sendTo}`);
+        // console.log(`   Message: ${botResponse}`);
+        // console.log(`   Message Length: ${botResponse.length}`);
         const messageOptions = {
             from: sendFrom,
             to: sendTo
@@ -149,21 +149,21 @@ router.post('/seguros-colte/receive-message', async (req, res) => {
             }
         }
         const sentMsg = await twilioClient.messages.create(messageOptions);
-        console.log(`✅ TWILIO RESPUESTA:`);
-        console.log(`   SID: ${sentMsg.sid}`);
-        console.log(`   Status: ${sentMsg.status}`);
-        console.log(`   Direction: ${sentMsg.direction}`);
-        console.log(`   Date Created: ${sentMsg.dateCreated}`);
-        console.log(`   From: ${sentMsg.from}`);
-        console.log(`   To: ${sentMsg.to}`);
+        // console.log(`✅ TWILIO RESPUESTA:`);
+        // console.log(`   SID: ${sentMsg.sid}`);
+        // console.log(`   Status: ${sentMsg.status}`);
+        // console.log(`   Direction: ${sentMsg.direction}`);
+        // console.log(`   Date Created: ${sentMsg.dateCreated}`);
+        // console.log(`   From: ${sentMsg.from}`);
+        // console.log(`   To: ${sentMsg.to}`);
         // Verificar el estado del mensaje después de unos segundos
         setTimeout(async () => {
             try {
                 const messageStatus = await twilioClient.messages(sentMsg.sid).fetch();
-                console.log(`🔄 ESTADO DEL MENSAJE ${sentMsg.sid}:`);
-                console.log(`   Status: ${messageStatus.status}`);
-                console.log(`   Error Code: ${messageStatus.errorCode}`);
-                console.log(`   Error Message: ${messageStatus.errorMessage}`);
+                // console.log(`🔄 ESTADO DEL MENSAJE ${sentMsg.sid}:`);
+                // console.log(`   Status: ${messageStatus.status}`);
+                // console.log(`   Error Code: ${messageStatus.errorCode}`);
+                // console.log(`   Error Message: ${messageStatus.errorMessage}`);
             }
             catch (error) {
                 console.error('❌ Error verificando estado del mensaje:', error);

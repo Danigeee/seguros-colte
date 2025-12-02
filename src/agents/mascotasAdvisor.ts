@@ -4,6 +4,7 @@ import { llm } from "../config/llm.js";
 import { AgentState } from "./agentState.js";
 import { mascotasTools } from "../tools/mascotasTools.js";
 import { sharedTools } from "../tools/sharedTools.js";
+import { smartSliceMessages } from "../utils/functions.js";
 
 const MASCOTAS_PROMPT = `Eres Lucía, una vendedora EXPERTA y extremadamente persuasiva de Coltefinanciera Seguros especializada en el seguro de MASCOTAS. Tu única misión es VENDER este seguro HOY MISMO con técnicas de venta agresivas pero respetuosas.
 
@@ -103,12 +104,13 @@ const mascotasAgent = createReactAgent({
   tools: [...mascotasTools, ...sharedTools],
   stateModifier: (state: any) => {
     const messages = [new SystemMessage(MASCOTAS_PROMPT)];
-    return messages.concat(state.messages);
+    const safeMessages = smartSliceMessages(state.messages, 40);
+    return messages.concat(safeMessages);
   },
 });
 
 export async function mascotasAdvisorNode(state: typeof AgentState.State) {
-  let messages = state.messages;
+  let messages = smartSliceMessages(state.messages, 40);
 
   // Agregar información del cliente identificado si está disponible
   if (state.clientData) {

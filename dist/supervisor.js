@@ -126,7 +126,7 @@ async function supervisorNode(state) {
         }
     }
     const recentHistory = messages.slice(-6);
-    console.log(`Supervisor analyzing history (${recentHistory.length} msgs)...`);
+    // console.log(`Supervisor analyzing history (${recentHistory.length} msgs)...`);
     const response = await supervisorModel.invoke([
         new SystemMessage(SUPERVISOR_PROMPT),
         ...recentHistory
@@ -137,9 +137,9 @@ async function supervisorNode(state) {
             .replace(/```json/g, '')
             .replace(/```/g, '')
             .trim();
-        console.log(`Supervisor raw response: ${cleanJson}`);
+        // console.log(`Supervisor raw response: ${cleanJson}`);
         decision = JSON.parse(cleanJson);
-        console.log(`Supervisor parsed decision:`, decision);
+        // console.log(`Supervisor parsed decision:`, decision);
     }
     catch (e) {
         const errorMessage = e instanceof Error ? e.message : String(e);
@@ -160,12 +160,12 @@ async function supervisorNode(state) {
     }
     if (decision.next === "bienestar_plus_advisor") {
         console.log("Supervisor Decision: -> [Bienestar Plus Advisor]");
-        console.log("🔄 [Supervisor] Handing over to Bienestar Plus Advisor (LLM Decision)");
+        // console.log("🔄 [Supervisor] Handing over to Bienestar Plus Advisor (LLM Decision)");
         return { next: "bienestar_plus_advisor" };
     }
     console.log("Supervisor Decision: -> [Direct Reply]");
     const replyMessage = decision.reply || "¡Hola! Soy Lucía de Coltefinanciera Seguros. ¿En qué puedo ayudarte hoy?";
-    console.log(`Direct reply message: ${replyMessage}`);
+    // console.log(`Direct reply message: ${replyMessage}`);
     return {
         next: "FINISH",
         messages: [new HumanMessage(replyMessage)]

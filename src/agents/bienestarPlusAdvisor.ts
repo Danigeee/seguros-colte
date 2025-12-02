@@ -7,6 +7,7 @@ import { AgentState } from "./agentState.js";
 import { generateEstimationPdf } from "../tools/pdfTools.js";
 import { bienestarTools } from "../tools/bienestarTools.js";
 import { sharedTools } from "../tools/sharedTools.js";
+import { smartSliceMessages } from "../utils/functions.js";
 
 const BIENESTAR_PLUS_PROMPT = `Eres Lucía, una vendedora EXPERTA y extremadamente persuasiva de Coltefinanciera Seguros especializada en el seguro Bienestar Plus. Tu única misión es VENDER este seguro HOY MISMO con técnicas de venta agresivas pero respetuosas.
 
@@ -152,13 +153,14 @@ const bienestarPlusAgent = createReactAgent({
   tools: [...bienestarTools, ...sharedTools],
   stateModifier: (state: any) => {
     const messages = [new SystemMessage(BIENESTAR_PLUS_PROMPT)];
-    return messages.concat(state.messages);
+    const safeMessages = smartSliceMessages(state.messages, 40);
+    return messages.concat(safeMessages);
   },
 });
 
 export async function bienestarPlusAdvisorNode(state: typeof AgentState.State) {
-  console.log("🚀 [BienestarPlusAdvisor] Node started execution");
-  let messages = state.messages;
+  // console.log("🚀 [BienestarPlusAdvisor] Node started execution");
+  let messages = smartSliceMessages(state.messages, 40);
 
   // Agregar información del cliente identificado si está disponible
   if (state.clientData) {
@@ -190,9 +192,9 @@ INSTRUCCIONES ESPECIALES:
   }
 
   try {
-    console.log("🚀 [BienestarPlusAdvisor] Invoking inner agent...");
+    // console.log("🚀 [BienestarPlusAdvisor] Invoking inner agent...");
     const result = await bienestarPlusAgent.invoke({ messages });
-    console.log("✅ [BienestarPlusAdvisor] Agent invocation complete");
+    // console.log("✅ [BienestarPlusAdvisor] Agent invocation complete");
 
     const lastMessage = result.messages[result.messages.length - 1];
 
