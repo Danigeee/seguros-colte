@@ -1,10 +1,11 @@
 import { HumanMessage, SystemMessage } from "@langchain/core/messages";
 import { StateGraph, END, MemorySaver } from "@langchain/langgraph";
 import { ChatOpenAI } from "@langchain/openai";
-import { AgentState } from "./agents/agentState";
-import { bienestarPlusWorkflow } from "./agents/bienestarPlusAdvisor";
-import { vidaDeudorWorkflow } from "./agents/vidaDeudorAgent";
-import { identifyClientNode } from "./agents/identifyClient";
+import { AgentState } from "./agents/agentState.js";
+import { bienestarPlusWorkflow } from "./agents/bienestarPlusAdvisor.js";
+import { vidaDeudorWorkflow } from "./agents/vidaDeudorAgent.js";
+import { mascotasWorkflow } from "./agents/mascotasAdvisor.js";
+import { identifyClientNode } from "./agents/identifyClient.js";
 
 const checkpointer = new MemorySaver();
 
@@ -39,6 +40,7 @@ SIEMPRE debes presentarte como Lucía de Coltefinanciera Seguros. Tu misión es 
 ### AGENTES ESPECIALISTAS:
 1. **bienestar_plus_advisor**: El ESPECIALISTA para consultas del seguro Bienestar Plus, coberturas, beneficios, servicios de bienestar, y información específica de esta póliza.
 2. **vida_deudor_advisor**: El ESPECIALISTA para consultas sobre el seguro/asistencia Vida Deudor, protección de créditos, deudas, saldos, y beneficios asociados a productos financieros.
+3. **mascotas_advisor**: El ESPECIALISTA para consultas del seguro de MASCOTAS, protección veterinaria, coberturas para perros y gatos, servicios veterinarios incluidos.
 
 ### LÓGICA DE DECISIÓN (Seguir Estrictamente):
 
@@ -50,7 +52,17 @@ SI el usuario menciona CUALQUIERA de estos temas:
 - "farmacias", "descuento medicamentos" (si el contexto es vida deudor)
 -> RETURN JSON: { "next": "vida_deudor_advisor" }
 
-**CASO 2: ASESOR BIENESTAR PLUS (RUTEAR AMPLIAMENTE)**
+**CASO 2: ASESOR MASCOTAS (PRIORIDAD ALTA)**
+SI el usuario menciona CUALQUIERA de estos temas:
+- "mascotas", "mascota", "seguro mascotas", "seguro de mascotas"
+- "perro", "perros", "gato", "gatos", "cachorro", "gatito"
+- "veterinario", "veterinaria", "vet", "clínica veterinaria"
+- "peludo", "peluda", "mi perrito", "mi gatito", "mi mascota"
+- "vacunas mascota", "enfermedad mascota", "cirugía mascota"
+- "proteger mascota", "cuidar mascota", "salud mascota"
+-> RETURN JSON: { "next": "mascotas_advisor" }
+
+**CASO 3: ASESOR BIENESTAR PLUS (RUTEAR AMPLIAMENTE)**
 SI el usuario menciona CUALQUIERA de estos temas:
 - "bienestar plus", "bienestar", "seguro de bienestar", "seguro"
 - "cobertura", "beneficios", "servicios incluidos", "qué tengo derecho", "qué incluye"
@@ -61,12 +73,12 @@ SI el usuario menciona CUALQUIERA de estos temas:
 - **Cualquier pregunta específica sobre servicios o productos de seguros**
 -> RETURN JSON: { "next": "bienestar_plus_advisor" }
 
-**CASO 3: CONVERSACIÓN GENERAL (SOLO SALUDOS MUY BÁSICOS Y PERFECTOS)**
+**CASO 4: CONVERSACIÓN GENERAL (SOLO SALUDOS MUY BÁSICOS Y PERFECTOS)**
 SI el usuario dice ÚNICAMENTE (sin errores de tipeo):
 - "Hola" (exactamente, una sola palabra)
 - "Buenos días" (exactamente, sin más contexto)
 - "¿Quién eres?" (exactamente)
--> RETURN JSON: { "next": "FINISH", "reply": "¡Hola! Soy Lucía de Coltefinanciera Seguros. ¿Te interesa conocer nuestros seguros de bienestar o protección de créditos?" }
+-> RETURN JSON: { "next": "FINISH", "reply": "¡Hola! Soy Lucía de Coltefinanciera Seguros. ¿Te interesa conocer nuestros seguros de bienestar, mascotas o protección de créditos?" }
 
 **NOTA**: Mensajes con errores de tipeo (como "hoal", "hla", etc.) deben ir a "bienestar_plus_advisor" para manejo profesional.
 
@@ -92,6 +104,11 @@ async function supervisorNode(state: typeof AgentState.State) {
     if (clientService.includes("bienestar")) {
         console.log("Service-based Routing: -> [Bienestar Plus Advisor]");
         return { next: "bienestar_plus_advisor" };
+    }
+    
+    if (clientService.includes("mascotas")) {
+        console.log("Service-based Routing: -> [Mascotas Advisor]");
+        return { next: "mascotas_advisor" };
     }
     
     if (clientService.includes("vidadeudor") || clientService.includes("vida deudor")) {
@@ -130,6 +147,11 @@ async function supervisorNode(state: typeof AgentState.State) {
       return { next: "vida_deudor_advisor" };
   }
 
+  if (decision.next === "mascotas_advisor") {
+      console.log("Supervisor Decision: -> [Mascotas Advisor]");
+      return { next: "mascotas_advisor" };
+  }
+
   if (decision.next === "bienestar_plus_advisor") {
       console.log("Supervisor Decision: -> [Bienestar Plus Advisor]");
       return { next: "bienestar_plus_advisor" };
@@ -149,6 +171,7 @@ const workflow = new StateGraph(AgentState)
   .addNode("supervisor", supervisorNode)
   .addNode("bienestar_plus_advisor", bienestarPlusWorkflow)
   .addNode("vida_deudor_advisor", vidaDeudorWorkflow)
+  .addNode("mascotas_advisor", mascotasWorkflow)
 
   .addEdge("__start__", "identify_client")
   .addEdge("identify_client", "supervisor")
@@ -159,11 +182,13 @@ const workflow = new StateGraph(AgentState)
       {
           "bienestar_plus_advisor": "bienestar_plus_advisor",
           "vida_deudor_advisor": "vida_deudor_advisor",
+          "mascotas_advisor": "mascotas_advisor",
           "FINISH": END
       }
   )
 
   .addEdge("bienestar_plus_advisor", END)
-  .addEdge("vida_deudor_advisor", END);
+  .addEdge("vida_deudor_advisor", END)
+  .addEdge("mascotas_advisor", END);
 
 export const graph = workflow.compile({ checkpointer });

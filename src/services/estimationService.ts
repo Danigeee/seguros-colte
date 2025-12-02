@@ -1,5 +1,5 @@
-import { supabase } from "../config/supabase";
-import { Tables, Insert } from "../types/db";
+import { supabase } from "../config/supabase.js";
+import { Tables, Insert } from "../types/db.js";
 
 export const estimationService = {
   async findDraftEstimation(clientId: string): Promise<Tables<"estimations"> | null> {

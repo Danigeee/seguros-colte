@@ -1,4 +1,4 @@
-import { supabase } from '../config/supabase';
+import { supabase } from '../config/supabase.js';
 /**
  * Busca información del cliente en la tabla dentix_clients por número de teléfono
  */

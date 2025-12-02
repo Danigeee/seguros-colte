@@ -1,4 +1,4 @@
-import { supabase } from "../config/supabase";
+import { supabase } from "../config/supabase.js";
 
 export async function searchItemsInDB(query: string): Promise<string> {
   console.log(`[Function] Searching: ${query}`);
@@ -46,6 +46,7 @@ export async function calculateAndAddQuoteItem(
       unit_cost: unitCost,
       line_total: lineTotal
     });
+    
 
   if (saveError) return `Error saving to Quote: ${saveError.message}`;
 

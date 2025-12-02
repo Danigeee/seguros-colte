@@ -1,5 +1,5 @@
 // src/utils/mediaHandler.ts
-import { storage } from '../config/firebase';
+import { storage } from '../config/firebase.js';
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { OpenAI, toFile } from "openai";
 import fetch from 'node-fetch';

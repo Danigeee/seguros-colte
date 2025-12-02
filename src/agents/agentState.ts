@@ -1,6 +1,6 @@
 import { BaseMessage } from "@langchain/core/messages";
 import { Annotation } from "@langchain/langgraph";
-import { ClientData } from "../functions/clientFunctions";
+import { ClientData } from "../functions/clientFunctions.js";
 
 export const AgentState = Annotation.Root({
   messages: Annotation<BaseMessage[]>({

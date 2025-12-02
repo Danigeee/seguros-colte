@@ -1,17 +1,17 @@
 // Guardar hustorial de conversación en Supabase
 import { createClient } from '@supabase/supabase-js';
 import dotenv from 'dotenv';
-import { exportedFromNumber } from '../routes/chatRoutes.js';
+// import { exportedFromNumber } from '../routes/chatRoutes.js'; // TODO: Fix export
 dotenv.config();
 // Supabase connection
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_KEY;
 export const supabase = createClient(supabaseUrl, supabaseKey);
 // Función para Actualizar si el cliente quiere o no audios
-export async function setAvailableForAudio(isAvailableForAudio) {
+export async function setAvailableForAudio(isAvailableForAudio, clientNumber) {
     try {
         // Verificar que tenemos un número de teléfono válido
-        if (!exportedFromNumber) {
+        if (!clientNumber) {
             console.error('No phone number available to update audio preference');
             return "error";
         }
@@ -19,7 +19,7 @@ export async function setAvailableForAudio(isAvailableForAudio) {
         const { data: existingConversation, error: fetchError } = await supabase
             .from('chat_history')
             .select('id')
-            .eq('client_number', exportedFromNumber)
+            .eq('client_number', clientNumber)
             .maybeSingle();
         if (fetchError) {
             console.error(`Error fetching data: ${fetchError.message}`);
@@ -41,7 +41,7 @@ export async function setAvailableForAudio(isAvailableForAudio) {
             }
         }
         else {
-            console.log(`No existing conversation found for ${exportedFromNumber}, skipping audio preference update`);
+            console.log(`No existing conversation found for ${clientNumber}, skipping audio preference update`);
             return "error";
         }
     }

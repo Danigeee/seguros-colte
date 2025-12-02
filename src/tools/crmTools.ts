@@ -1,8 +1,8 @@
 import { tool } from "@langchain/core/tools";
 import { z } from "zod";
-import { crmService } from "../services/crmService";
-import { estimationService } from "../services/estimationService";
-import { catalogService } from "../services/catalogService";
+import { crmService } from "../services/crmService.js";
+import { estimationService } from "../services/estimationService.js";
+import { catalogService } from "../services/catalogService.js";
 
 /**
  * Tool to lookup a client by name or create a new one if not found.

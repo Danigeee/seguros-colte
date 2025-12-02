@@ -1,15 +1,15 @@
 // Exportaciones limpias y mínimas de herramientas
-import { crmTools } from "./crmTools";
-import { bienestarTools } from "./bienestarTools";
-import { sharedTools } from "./sharedTools";
+import { crmTools } from "./crmTools.js";
+import { bienestarTools } from "./bienestarTools.js";
+import { sharedTools } from "./sharedTools.js";
 
-export { crmTools } from "./crmTools";
-export { lookupOrCreateClientTool, manageQuoteContextTool, searchAndAddItemTool } from "./crmTools";
+export { crmTools } from "./crmTools.js";
+export { lookupOrCreateClientTool, manageQuoteContextTool, searchAndAddItemTool } from "./crmTools.js";
 
-export { bienestarTools } from "./bienestarTools";
-export { consultBienestarSpecialistTool, searchBienestarDocumentsTool } from "./bienestarTools";
+export { bienestarTools } from "./bienestarTools.js";
+export { consultBienestarSpecialistTool, searchBienestarDocumentsTool } from "./bienestarTools.js";
 
-export { sharedTools } from "./sharedTools";
-export { sendPaymentLinkEmailTool, } from "./sharedTools";
+export { sharedTools } from "./sharedTools.js";
+export { sendPaymentLinkEmailTool, } from "./sharedTools.js";
 
 // Nota: este archivo proporciona una entrada sencilla a las herramientas del proyecto.

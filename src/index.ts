@@ -1,6 +1,5 @@
 import express from "express";
-import chatRoutes from './routes/chatRoutes';
-import paymentRoutes from './routes/paymentRoutes';
+import chatRoutes from './routes/chatRoutes.js';
 import cors from "cors";
 
 

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { storage } from '../config/firebase';
+import { storage } from '../config/firebase.js';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { v4 as uuidv4 } from 'uuid';
 // Voice ID de Lucía (voz femenina en español)  

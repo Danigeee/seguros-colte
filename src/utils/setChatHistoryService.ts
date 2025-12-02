@@ -1,7 +1,7 @@
 // Guardar hustorial de conversación en Supabase
 import { createClient } from '@supabase/supabase-js';
 import dotenv from 'dotenv';
-import { exportedFromNumber } from '../routes/chatRoutes.js';
+// import { exportedFromNumber } from '../routes/chatRoutes.js'; // TODO: Fix export
 
 dotenv.config();
 
@@ -11,21 +11,21 @@ const supabaseKey = process.env.SUPABASE_KEY as string;
 export const supabase = createClient(supabaseUrl, supabaseKey);
 
 // Función para para actualizar el service en la base de datos en la tabla chat_history.
-export async function setChatHistoryService(service: string): Promise<void> {
+export async function setChatHistoryService(clientService: string, clientNumber: string): Promise<void> {
     try {
         // Verificar que tenemos un número de teléfono válido
-        if (!exportedFromNumber) {
+        if (!clientNumber) {
             console.error('No phone number available to update chat history service');
             return;
         }
 
-        console.log(`Attempting to update chat history service for: ${exportedFromNumber}`);
+        console.log(`Attempting to update chat history service for: ${clientNumber}`);
 
         // Verificar si el cliente ya tiene una conversación
         const { data: existingConversation, error: fetchError } = await supabase
             .from('chat_history')
             .select('id')
-            .eq('client_number', exportedFromNumber)
+            .eq('client_number', clientNumber)
             .maybeSingle();
 
         if (fetchError) {
@@ -36,7 +36,7 @@ export async function setChatHistoryService(service: string): Promise<void> {
             // Si el cliente ya tiene una conversación, actualizar el servicio
             const { error: updateError } = await supabase
                 .from('chat_history')
-                .update({ service: service })
+                .update({ service: clientService })
                 .eq('id', existingConversation.id);
 
             if (updateError) {
@@ -45,7 +45,7 @@ export async function setChatHistoryService(service: string): Promise<void> {
                 console.log('Service updated successfully');
             }
         } else {
-            console.log(`No existing conversation found for ${exportedFromNumber}, skipping service update`);
+            console.log(`No existing conversation found for ${clientNumber}, skipping service update`);
         }
         
     } catch (error) {
