@@ -24,6 +24,7 @@ const getPaymentLink = (insuranceName: string): string => {
   const paymentLinks: { [key: string]: string } = {
     'bienestar': 'https://links.paymentsway.com.co/13aosv',
     'bienestar plus': 'https://links.paymentsway.com.co/13aosv',
+    'mascotas': 'https://links.paymentsway.com.co/no4hlo', // Cambiar por el enlace real cuando esté disponible
     // Agregar más seguros aquí cuando sea necesario
     // 'vida': 'https://links.paymentsway.com.co/vida123',
     // 'auto': 'https://links.paymentsway.com.co/auto456',
