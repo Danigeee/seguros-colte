@@ -1,12 +1,21 @@
 import { Router } from 'express';
 import twilio from 'twilio';
-import { ChatHistoryService } from '../services/chatHistoryService';
-import { elevenLabsService } from '../services/elevenLabsService';
-import { processTwilioMedia } from '../utils/mediaHandler';
-import { graph } from '../supervisor';
+import { ChatHistoryService } from '../services/chatHistoryService.js';
+import { elevenLabsService } from '../services/elevenLabsService.js';
+import { processTwilioMedia } from '../utils/mediaHandler.js';
+import { graph } from '../supervisor.js';
 import { HumanMessage } from '@langchain/core/messages';
 const router = Router();
 const chatService = new ChatHistoryService();
+// Ruta de health check
+router.get('/seguros-colte/health', (req, res) => {
+    res.status(200).json({
+        status: 'OK',
+        message: 'Seguros Colte API is running',
+        timestamp: new Date().toISOString(),
+        uptime: process.uptime()
+    });
+});
 // Verificar configuración de Twilio
 console.log('🔧 CONFIGURACIÓN TWILIO:');
 console.log(`   Account SID: ${process.env.TWILIO_ACCOUNT_SID ? process.env.TWILIO_ACCOUNT_SID.substring(0, 10) + '...' : 'NO CONFIGURADO'}`);

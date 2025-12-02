@@ -1,9 +1,9 @@
 import { tool } from "@langchain/core/tools";
 import { z } from "zod";
-import { pdfService } from "../services/pdfService";
-import { storageService } from "../services/storageService";
-import { whatsappService } from "../services/whatsappService";
-import { supabase } from "../config/supabase";
+import { pdfService } from "../services/pdfService.js";
+import { storageService } from "../services/storageService.js";
+import { whatsappService } from "../services/whatsappService.js";
+import { supabase } from "../config/supabase.js";
 export const generateEstimationPdf = tool(async ({ estimation_id }) => {
     try {
         console.log(`Generating PDF for estimation: ${estimation_id}`);

@@ -1,4 +1,4 @@
-import { supabase } from "../config/supabase";
+import { supabase } from "../config/supabase.js";
 export const estimationService = {
     async findDraftEstimation(clientId) {
         const { data, error } = await supabase

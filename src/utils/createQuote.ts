@@ -93,7 +93,7 @@ export async function createQuotePDF(
     // Convertir a PDF en memoria
     const extend = '.pdf';
     const pdfBuffer: Buffer = await new Promise((resolve, reject) => {
-      libre.convert(docxBuffer, extend, undefined, (err, done) => {
+      libre.convert(docxBuffer, extend, undefined, (err: any, done: any) => {
         if (err) return reject(err);
         resolve(done as Buffer);
       });

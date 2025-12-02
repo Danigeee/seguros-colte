@@ -1,6 +1,6 @@
 import { tool } from "@langchain/core/tools";
 import { z } from "zod";
-import { supabase } from "../config/supabase";
+import { supabase } from "../config/supabase.js";
 /**
  * 1. CREATE ESTIMATION
  * Crea una nueva hoja de cotización para un cliente.

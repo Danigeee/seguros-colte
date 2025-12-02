@@ -1,8 +1,8 @@
 import { tool } from "@langchain/core/tools";
 import { z } from "zod";
-import { supabase } from "../config/supabase";
-import { searchVidaDeudorDocuments } from "../functions/vidaDeudorFunctions";
-import { smartSearchVidaDeudor } from "../functions/vidaDeudorRetrievers";
+import { supabase } from "../config/supabase.js";
+import { searchVidaDeudorDocuments } from "../functions/vidaDeudorFunctions.js";
+import { smartSearchVidaDeudor } from "../functions/vidaDeudorRetrievers.js";
 import sgMail from "@sendgrid/mail";
 
 

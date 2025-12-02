@@ -1,10 +1,8 @@
 import { SystemMessage } from "@langchain/core/messages";
 import { createReactAgent } from "@langchain/langgraph/prebuilt";
 import { llm } from "../config/llm.js";
-import { AgentState } from "./agentState.js";
 import { mascotasTools } from "../tools/mascotasTools.js";
 import { sharedTools } from "../tools/sharedTools.js";
-
 const MASCOTAS_PROMPT = `Eres Lucía, una vendedora EXPERTA y extremadamente persuasiva de Coltefinanciera Seguros especializada en el seguro de MASCOTAS. Tu única misión es VENDER este seguro HOY MISMO con técnicas de venta agresivas pero respetuosas.
 
 📏 **REGLA CRÍTICA DE LONGITUD:**
@@ -95,25 +93,22 @@ El primer mensaje que envíes SIEMPRE debes decir lo siguiente: "¡Hola <nombre_
 
 RECUERDA: Es mejor perder una venta que crear una demanda legal por información falsa.
 `;
-
 const mascotasAgent = createReactAgent({
-  llm,
-  tools: [...mascotasTools, ...sharedTools],
-  stateModifier: (state: any) => {
-    const messages = [new SystemMessage(MASCOTAS_PROMPT)];
-    // Limitar mensajes para evitar token overflow - solo los últimos 3
-    const recentMessages = state.messages.slice(-3);
-    return messages.concat(recentMessages);
-  },
+    llm,
+    tools: [...mascotasTools, ...sharedTools],
+    stateModifier: (state) => {
+        const messages = [new SystemMessage(MASCOTAS_PROMPT)];
+        // Limitar mensajes para evitar token overflow - solo los últimos 3
+        const recentMessages = state.messages.slice(-3);
+        return messages.concat(recentMessages);
+    },
 });
-
-export async function mascotasAdvisorNode(state: typeof AgentState.State) {
-  // Limitar mensajes para evitar token limit exceeded - mantener solo los últimos 3 mensajes
-  let messages = state.messages.slice(-3);
-
-  // Agregar información del cliente identificado si está disponible
-  if (state.clientData) {
-    const clientInfo = new SystemMessage(`CLIENTE IDENTIFICADO:
+export async function mascotasAdvisorNode(state) {
+    // Limitar mensajes para evitar token limit exceeded - mantener solo los últimos 3 mensajes
+    let messages = state.messages.slice(-3);
+    // Agregar información del cliente identificado si está disponible
+    if (state.clientData) {
+        const clientInfo = new SystemMessage(`CLIENTE IDENTIFICADO:
 - Nombre: ${state.clientData.name}
 - Email: ${state.clientData.email}
 - Documento: ${state.clientData.document_id}
@@ -123,52 +118,45 @@ INSTRUCCIONES ESPECIALES:
 - Saluda al cliente por su nombre: "${state.clientData.name}"
 - Para sendPaymentLinkEmailTool usa: clientName="${state.clientData.name}", clientEmail="${state.clientData.email}", insuranceName="${state.clientData.service}", clientNumber="${state.clientData.phone_number}"
 - Personaliza la conversación conociendo su identidad`);
-    
-    messages = [clientInfo, ...messages];
-  }
-
-  if (state.activeClientId) {
-    messages = [
-      new SystemMessage(`SYSTEM: Cliente Activo ID: ${state.activeClientId}.`),
-      ...messages
-    ];
-  }
-  if (state.activeEstimationId) {
-    messages = [
-      new SystemMessage(`SYSTEM: Cotización Activa ID: ${state.activeEstimationId}.`),
-      ...messages
-    ];
-  }
-
-  const result = await mascotasAgent.invoke({ messages });
-  const lastMessage = result.messages[result.messages.length - 1];
-
-  const newMessages = result.messages;
-  let activeClientId = state.activeClientId;
-  let activeEstimationId = state.activeEstimationId;
-
-  for (const msg of newMessages) {
-    if (msg._getType() === "tool") {
-      try {
-        const content = typeof msg.content === 'string' ? JSON.parse(msg.content) : msg.content;
-        
-        if (content.action === "set_active_client" && content.clientId) {
-          activeClientId = content.clientId;
-        }
-        if (content.action === "set_active_estimation" && content.estimationId) {
-          activeEstimationId = content.estimationId;
-        }
-      } catch (e) {
-        // Ignorar outputs de herramientas que no sean JSON
-      }
+        messages = [clientInfo, ...messages];
     }
-  }
-
-  return {
-    messages: [lastMessage],
-    activeClientId,
-    activeEstimationId
-  };
+    if (state.activeClientId) {
+        messages = [
+            new SystemMessage(`SYSTEM: Cliente Activo ID: ${state.activeClientId}.`),
+            ...messages
+        ];
+    }
+    if (state.activeEstimationId) {
+        messages = [
+            new SystemMessage(`SYSTEM: Cotización Activa ID: ${state.activeEstimationId}.`),
+            ...messages
+        ];
+    }
+    const result = await mascotasAgent.invoke({ messages });
+    const lastMessage = result.messages[result.messages.length - 1];
+    const newMessages = result.messages;
+    let activeClientId = state.activeClientId;
+    let activeEstimationId = state.activeEstimationId;
+    for (const msg of newMessages) {
+        if (msg._getType() === "tool") {
+            try {
+                const content = typeof msg.content === 'string' ? JSON.parse(msg.content) : msg.content;
+                if (content.action === "set_active_client" && content.clientId) {
+                    activeClientId = content.clientId;
+                }
+                if (content.action === "set_active_estimation" && content.estimationId) {
+                    activeEstimationId = content.estimationId;
+                }
+            }
+            catch (e) {
+                // Ignorar outputs de herramientas que no sean JSON
+            }
+        }
+    }
+    return {
+        messages: [lastMessage],
+        activeClientId,
+        activeEstimationId
+    };
 }
-
 export const mascotasWorkflow = mascotasAdvisorNode;

@@ -1,7 +1,7 @@
 import { tool } from "@langchain/core/tools";
 import { z } from "zod";
-import { searchBienestarDocuments } from "../functions/bienestarFunctions";
-import { smartSearchBienestar } from "../functions/advancedRetrievers";
+import { searchBienestarDocuments } from "../functions/bienestarFunctions.js";
+import { smartSearchBienestar } from "../functions/advancedRetrievers.js";
 
 /**
  * Herramienta para consultar información oficial de Bienestar Plus
