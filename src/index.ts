@@ -1,7 +1,7 @@
 import express from "express";
-import chatRoutes from './routes/chatRoutes.js';
 import cors from "cors";
-
+import chatRoutes from './routes/chatRoutes.js';
+import paymentRoutes from './routes/paymentRoutes.js';
 
 const app = express();
 app.options('*', cors()); 
