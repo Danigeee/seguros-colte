@@ -1,6 +1,6 @@
 import { tool } from "@langchain/core/tools";
 import { z } from "zod";
-import { searchSoatDocuments } from "../functions/soatFunctions";
+import { searchSoatDocuments } from "../functions/soatFunctions.js";
 /**
  * Herramienta para consultar información oficial del SOAT
  * Esta herramienta busca en la base de datos vectorial usando embeddings

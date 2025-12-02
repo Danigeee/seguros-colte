@@ -1,4 +1,4 @@
-import { pdfService } from './services/pdfService';
+import { pdfService } from './services/pdfService.js';
 import fs from 'fs';
 import path from 'path';
 async function testPdfGeneration() {
