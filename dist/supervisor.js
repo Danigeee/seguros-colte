@@ -9,7 +9,7 @@ import { soatWorkflow } from "./agents/soatAdvisor.js";
 import { identifyClientNode } from "./agents/identifyClient.js";
 const checkpointer = new MemorySaver();
 const supervisorModel = new ChatOpenAI({
-    model: "gpt-4o",
+    model: "gpt-4o-2024-08-06",
     temperature: 0
 });
 const SUPERVISOR_PROMPT = `Actúas como Lucía, una asesora comercial experta y vendedora profesional de Coltefinanciera Seguros, una empresa líder en soluciones de protección y seguros especializados.
@@ -109,6 +109,7 @@ async function supervisorNode(state) {
         console.log(`Supervisor detected client service: ${clientService}`);
         if (clientService.includes("bienestar")) {
             console.log("Service-based Routing: -> [Bienestar Plus Advisor]");
+            console.log("🔄 [Supervisor] Handing over to Bienestar Plus Advisor (Service Routing)");
             return { next: "bienestar_plus_advisor" };
         }
         if (clientService.includes("mascotas")) {
@@ -159,6 +160,7 @@ async function supervisorNode(state) {
     }
     if (decision.next === "bienestar_plus_advisor") {
         console.log("Supervisor Decision: -> [Bienestar Plus Advisor]");
+        console.log("🔄 [Supervisor] Handing over to Bienestar Plus Advisor (LLM Decision)");
         return { next: "bienestar_plus_advisor" };
     }
     console.log("Supervisor Decision: -> [Direct Reply]");

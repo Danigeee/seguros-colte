@@ -11,7 +11,7 @@ import { identifyClientNode } from "./agents/identifyClient.js";
 const checkpointer = new MemorySaver();
 
 const supervisorModel = new ChatOpenAI({ 
-    model: "gpt-4o", 
+    model: "gpt-4o-2024-08-06", 
     temperature: 0 
 });
 
@@ -115,6 +115,7 @@ async function supervisorNode(state: typeof AgentState.State) {
     
     if (clientService.includes("bienestar")) {
         console.log("Service-based Routing: -> [Bienestar Plus Advisor]");
+        console.log("🔄 [Supervisor] Handing over to Bienestar Plus Advisor (Service Routing)");
         return { next: "bienestar_plus_advisor" };
     }
     
@@ -176,6 +177,7 @@ async function supervisorNode(state: typeof AgentState.State) {
 
   if (decision.next === "bienestar_plus_advisor") {
       console.log("Supervisor Decision: -> [Bienestar Plus Advisor]");
+      console.log("🔄 [Supervisor] Handing over to Bienestar Plus Advisor (LLM Decision)");
       return { next: "bienestar_plus_advisor" };
   }
 

@@ -150,6 +150,7 @@ const bienestarPlusAgent = createReactAgent({
     },
 });
 export async function bienestarPlusAdvisorNode(state) {
+    console.log("🚀 [BienestarPlusAdvisor] Node started execution");
     // Limitar mensajes para evitar token limit exceeded - mantener solo los últimos 3 mensajes
     let messages = state.messages.slice(-3);
     // Agregar información del cliente identificado si está disponible
@@ -178,32 +179,40 @@ INSTRUCCIONES ESPECIALES:
             ...messages
         ];
     }
-    const result = await bienestarPlusAgent.invoke({ messages });
-    const lastMessage = result.messages[result.messages.length - 1];
-    const newMessages = result.messages;
-    let activeClientId = state.activeClientId;
-    let activeEstimationId = state.activeEstimationId;
-    for (const msg of newMessages) {
-        if (msg._getType() === "tool") {
-            try {
-                const content = typeof msg.content === 'string' ? JSON.parse(msg.content) : msg.content;
-                if (content.action === "set_active_client" && content.clientId) {
-                    activeClientId = content.clientId;
+    try {
+        console.log("🚀 [BienestarPlusAdvisor] Invoking inner agent...");
+        const result = await bienestarPlusAgent.invoke({ messages });
+        console.log("✅ [BienestarPlusAdvisor] Agent invocation complete");
+        const lastMessage = result.messages[result.messages.length - 1];
+        const newMessages = result.messages;
+        let activeClientId = state.activeClientId;
+        let activeEstimationId = state.activeEstimationId;
+        for (const msg of newMessages) {
+            if (msg._getType() === "tool") {
+                try {
+                    const content = typeof msg.content === 'string' ? JSON.parse(msg.content) : msg.content;
+                    if (content.action === "set_active_client" && content.clientId) {
+                        activeClientId = content.clientId;
+                    }
+                    if (content.action === "set_active_estimation" && content.estimationId) {
+                        activeEstimationId = content.estimationId;
+                    }
                 }
-                if (content.action === "set_active_estimation" && content.estimationId) {
-                    activeEstimationId = content.estimationId;
+                catch (e) {
+                    // Ignorar outputs de herramientas que no sean JSON
                 }
-            }
-            catch (e) {
-                // Ignorar outputs de herramientas que no sean JSON
             }
         }
+        return {
+            messages: [lastMessage],
+            activeClientId,
+            activeEstimationId
+        };
     }
-    return {
-        messages: [lastMessage],
-        activeClientId,
-        activeEstimationId
-    };
+    catch (error) {
+        console.error("❌ [BienestarPlusAdvisor] Error executing agent:", error);
+        throw error;
+    }
 }
 export const bienestarPlusWorkflow = bienestarPlusAdvisorNode;
 // Para compatibilidad temporal con el supervisor
