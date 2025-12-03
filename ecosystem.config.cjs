@@ -6,7 +6,7 @@ module.exports = {
         instances: 1, // Cambia a "max" si quieres usar todos los núcleos de CPU.
         autorestart: true,
         watch: false, // Desactiva en producción.
-        max_memory_restart: "500M",
+        max_memory_restart: "1500M",
         env: {
             NODE_ENV: "production",
             PORT: 3033,
