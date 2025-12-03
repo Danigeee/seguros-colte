@@ -27,6 +27,33 @@ process.on('unhandledRejection', (reason, promise) => {
     console.error('❌ UNHANDLED REJECTION:', reason);
 });
 app.use('/', chatRoutes);
+// Capturar errores no manejados para evitar reinicios
+process.on('uncaughtException', (error) => {
+    console.error('🚨 UNCAUGHT EXCEPTION - EVITANDO CRASH:');
+    console.error('   Error:', error.message);
+    console.error('   Stack:', error.stack?.substring(0, 500));
+    // No hacer exit, intentar continuar
+});
+process.on('unhandledRejection', (reason, promise) => {
+    console.error('🚨 UNHANDLED REJECTION - EVITANDO CRASH:');
+    console.error('   Promise:', promise);
+    console.error('   Reason:', reason);
+    // No hacer exit, intentar continuar
+});
+// Monitorear uso de memoria
+setInterval(() => {
+    const memUsage = process.memoryUsage();
+    const memMB = Math.round(memUsage.rss / 1024 / 1024);
+    if (memMB > 400) {
+        console.warn(`⚠️ Memoria alta: ${memMB}MB`);
+        if (global.gc) {
+            global.gc();
+            console.log('🧹 Garbage collection ejecutado automáticamente');
+        }
+    }
+}, 30000); // Cada 30 segundos
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
+    console.log(`🔧 Protección contra crashes activada`);
+    console.log(`💾 Monitoreo de memoria activado`);
 });

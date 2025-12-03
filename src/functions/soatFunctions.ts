@@ -1,20 +1,16 @@
 import { SupabaseVectorStore } from '@langchain/community/vectorstores/supabase';
 import { OpenAIEmbeddings } from '@langchain/openai';
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from '../config/supabase.js'; 
 import dotenv from 'dotenv';
 
 dotenv.config();
 
 const embeddings = new OpenAIEmbeddings({ openAIApiKey: process.env.OPENAI_API_KEY });
-const supabaseUrl = process.env.SUPABASE_URL!;
-const supabaseApiKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 
 export const searchSoatDocuments = async (query: string) => {
     try {
-        const client = createClient(supabaseUrl, supabaseApiKey);
-
         const vectorStore = new SupabaseVectorStore(embeddings, {
-            client,
+            client: supabase,
             tableName: "documents_soat_final",
             queryName: "match_documents_soat_final"
         });
@@ -22,7 +18,7 @@ export const searchSoatDocuments = async (query: string) => {
         console.log(`🔍 Buscando: "${query}"...`);
         
         // Recuperamos 8 chunks para asegurar que la IA lea las "letras pequeñas" y tenga más contexto
-        const results = await vectorStore.similaritySearch(query, 8);
+        const results = await vectorStore.similaritySearch(query, 4);
 
         if (results.length === 0) {
             console.log("⚠️ No se encontró información relevante en el PDF.");
