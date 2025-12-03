@@ -7,6 +7,14 @@ import { SystemMessage } from "@langchain/core/messages";
  * y enriquece el estado con la información del cliente
  */
 export async function identifyClientNode(state: typeof AgentState.State, config?: any) {
+  // ✅ OPTIMIZACIÓN: Solo identificar si no tenemos datos del cliente
+  if (state.clientData) {
+    console.log(`🔄 Cliente ya identificado: ${state.clientData.name} - Reutilizando datos`);
+    return {
+      clientData: state.clientData
+    };
+  }
+  
   console.log('🔍 INICIANDO IDENTIFICACIÓN DE CLIENTE...');
   
   try {
@@ -37,17 +45,17 @@ export async function identifyClientNode(state: typeof AgentState.State, config?
       // Añadir mensaje de sistema con información del cliente
       const systemMessage = new SystemMessage(
         `INFORMACIÓN DEL CLIENTE IDENTIFICADO:
-- Nombre: ${clientData.name}
-- Email: ${clientData.email}
-- Documento ID: ${clientData.document_id}
-- Teléfono: ${clientData.phone_number}
-- Servicio: ${clientData.service || 'No especificado'}
-- Producto: ${clientData.product || 'No especificado'}
+        - Nombre: ${clientData.name}
+        - Email: ${clientData.email}
+        - Documento ID: ${clientData.document_id}
+        - Teléfono: ${clientData.phone_number}
+        - Servicio: ${clientData.service || 'No especificado'}
+        - Producto: ${clientData.product || 'No especificado'}
 
-INSTRUCCIONES:
-- Dirígete al cliente por su nombre (${clientData.name})
-- Tienes su email (${clientData.email}) para usar en sendPaymentLinkEmailTool
-- Personaliza la conversación conociendo su identidad`
+        INSTRUCCIONES:
+        - Dirígete al cliente por su nombre (${clientData.name})
+        - Tienes su email (${clientData.email}) para usar en sendPaymentLinkEmailTool
+        - Personaliza la conversación conociendo su identidad`
       );
       
       return {
