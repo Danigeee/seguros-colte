@@ -5,10 +5,11 @@ import { AgentState } from "./agents/agentState.js";
 import { bienestarPlusWorkflow } from "./agents/bienestarPlusAdvisor.js";
 import { vidaDeudorWorkflow } from "./agents/vidaDeudorAgent.js";
 import { mascotasWorkflow } from "./agents/mascotasAdvisor.js";
+import { soatWorkflow } from "./agents/soatAdvisor.js";
 import { identifyClientNode } from "./agents/identifyClient.js";
 const checkpointer = new MemorySaver();
 const supervisorModel = new ChatOpenAI({
-    model: "gpt-4o",
+    model: "gpt-4.1-mini-2025-04-14",
     temperature: 0
 });
 const SUPERVISOR_PROMPT = `Actúas como Lucía, una asesora comercial experta y vendedora profesional de Coltefinanciera Seguros, una empresa líder en soluciones de protección y seguros especializados.
@@ -38,6 +39,7 @@ SIEMPRE debes presentarte como Lucía de Coltefinanciera Seguros. Tu misión es 
 1. **bienestar_plus_advisor**: El ESPECIALISTA para consultas del seguro Bienestar Plus, coberturas, beneficios, servicios de bienestar, y información específica de esta póliza.
 2. **vida_deudor_advisor**: El ESPECIALISTA para consultas sobre el seguro/asistencia Vida Deudor, protección de créditos, deudas, saldos, y beneficios asociados a productos financieros.
 3. **mascotas_advisor**: El ESPECIALISTA para consultas del seguro de MASCOTAS, protección veterinaria, coberturas para perros y gatos, servicios veterinarios incluidos.
+4. **soat_advisor**: El ESPECIALISTA para consultas del SOAT (Seguro Obligatorio de Accidentes de Tránsito), coberturas vehiculares obligatorias, precios según tipo de vehículo.
 
 ### LÓGICA DE DECISIÓN (Seguir Estrictamente):
 
@@ -59,7 +61,17 @@ SI el usuario menciona CUALQUIERA de estos temas:
 - "proteger mascota", "cuidar mascota", "salud mascota"
 -> RETURN JSON: { "next": "mascotas_advisor" }
 
-**CASO 3: ASESOR BIENESTAR PLUS (RUTEAR AMPLIAMENTE)**
+**CASO 3: ASESOR SOAT (PRIORIDAD ALTA)**
+SI el usuario menciona CUALQUIERA de estos temas:
+- "soat", "SOAT", "seguro obligatorio", "seguro de tránsito"
+- "moto", "carro", "vehículo", "automóvil", "motocicleta"
+- "accidente de tránsito", "seguro vehicular", "seguro auto"
+- "renovar soat", "comprar soat", "necesito soat"
+- "papeles del carro", "papeles de la moto", "documentos vehículo"
+- "multa soat", "soat vencido", "soat vigente"
+-> RETURN JSON: { "next": "soat_advisor" }
+
+**CASO 4: ASESOR BIENESTAR PLUS (RUTEAR AMPLIAMENTE)**
 SI el usuario menciona CUALQUIERA de estos temas:
 - "bienestar plus", "bienestar", "seguro de bienestar", "seguro"
 - "cobertura", "beneficios", "servicios incluidos", "qué tengo derecho", "qué incluye"
@@ -70,12 +82,12 @@ SI el usuario menciona CUALQUIERA de estos temas:
 - **Cualquier pregunta específica sobre servicios o productos de seguros**
 -> RETURN JSON: { "next": "bienestar_plus_advisor" }
 
-**CASO 4: CONVERSACIÓN GENERAL (SOLO SALUDOS MUY BÁSICOS Y PERFECTOS)**
+**CASO 5: CONVERSACIÓN GENERAL (SOLO SALUDOS MUY BÁSICOS Y PERFECTOS)**
 SI el usuario dice ÚNICAMENTE (sin errores de tipeo):
 - "Hola" (exactamente, una sola palabra)
 - "Buenos días" (exactamente, sin más contexto)
 - "¿Quién eres?" (exactamente)
--> RETURN JSON: { "next": "FINISH", "reply": "¡Hola! Soy Lucía de Coltefinanciera Seguros. ¿Te interesa conocer nuestros seguros de bienestar, mascotas o protección de créditos?" }
+-> RETURN JSON: { "next": "FINISH", "reply": "¡Hola! Soy Lucía de Coltefinanciera Seguros. ¿Te interesa conocer nuestros seguros de bienestar, mascotas, SOAT o protección de créditos?" }
 
 **NOTA**: Mensajes con errores de tipeo (como "hoal", "hla", etc.) deben ir a "bienestar_plus_advisor" para manejo profesional.
 
@@ -97,11 +109,16 @@ async function supervisorNode(state) {
         console.log(`Supervisor detected client service: ${clientService}`);
         if (clientService.includes("bienestar")) {
             console.log("Service-based Routing: -> [Bienestar Plus Advisor]");
+            console.log("🔄 [Supervisor] Handing over to Bienestar Plus Advisor (Service Routing)");
             return { next: "bienestar_plus_advisor" };
         }
         if (clientService.includes("mascotas")) {
             console.log("Service-based Routing: -> [Mascotas Advisor]");
             return { next: "mascotas_advisor" };
+        }
+        if (clientService.includes("soat")) {
+            console.log("Service-based Routing: -> [SOAT Advisor]");
+            return { next: "soat_advisor" };
         }
         if (clientService.includes("vidadeudor") || clientService.includes("vida deudor")) {
             console.log("Service-based Routing: -> [Vida Deudor Advisor]");
@@ -109,7 +126,7 @@ async function supervisorNode(state) {
         }
     }
     const recentHistory = messages.slice(-6);
-    console.log(`Supervisor analyzing history (${recentHistory.length} msgs)...`);
+    // console.log(`Supervisor analyzing history (${recentHistory.length} msgs)...`);
     const response = await supervisorModel.invoke([
         new SystemMessage(SUPERVISOR_PROMPT),
         ...recentHistory
@@ -120,9 +137,9 @@ async function supervisorNode(state) {
             .replace(/```json/g, '')
             .replace(/```/g, '')
             .trim();
-        console.log(`Supervisor raw response: ${cleanJson}`);
+        // console.log(`Supervisor raw response: ${cleanJson}`);
         decision = JSON.parse(cleanJson);
-        console.log(`Supervisor parsed decision:`, decision);
+        // console.log(`Supervisor parsed decision:`, decision);
     }
     catch (e) {
         const errorMessage = e instanceof Error ? e.message : String(e);
@@ -137,13 +154,18 @@ async function supervisorNode(state) {
         console.log("Supervisor Decision: -> [Mascotas Advisor]");
         return { next: "mascotas_advisor" };
     }
+    if (decision.next === "soat_advisor") {
+        console.log("Supervisor Decision: -> [SOAT Advisor]");
+        return { next: "soat_advisor" };
+    }
     if (decision.next === "bienestar_plus_advisor") {
         console.log("Supervisor Decision: -> [Bienestar Plus Advisor]");
+        // console.log("🔄 [Supervisor] Handing over to Bienestar Plus Advisor (LLM Decision)");
         return { next: "bienestar_plus_advisor" };
     }
     console.log("Supervisor Decision: -> [Direct Reply]");
     const replyMessage = decision.reply || "¡Hola! Soy Lucía de Coltefinanciera Seguros. ¿En qué puedo ayudarte hoy?";
-    console.log(`Direct reply message: ${replyMessage}`);
+    // console.log(`Direct reply message: ${replyMessage}`);
     return {
         next: "FINISH",
         messages: [new HumanMessage(replyMessage)]
@@ -155,15 +177,18 @@ const workflow = new StateGraph(AgentState)
     .addNode("bienestar_plus_advisor", bienestarPlusWorkflow)
     .addNode("vida_deudor_advisor", vidaDeudorWorkflow)
     .addNode("mascotas_advisor", mascotasWorkflow)
+    .addNode("soat_advisor", soatWorkflow)
     .addEdge("__start__", "identify_client")
     .addEdge("identify_client", "supervisor")
     .addConditionalEdges("supervisor", (x) => x.next, {
     "bienestar_plus_advisor": "bienestar_plus_advisor",
     "vida_deudor_advisor": "vida_deudor_advisor",
     "mascotas_advisor": "mascotas_advisor",
+    "soat_advisor": "soat_advisor",
     "FINISH": END
 })
     .addEdge("bienestar_plus_advisor", END)
     .addEdge("vida_deudor_advisor", END)
-    .addEdge("mascotas_advisor", END);
+    .addEdge("mascotas_advisor", END)
+    .addEdge("soat_advisor", END);
 export const graph = workflow.compile({ checkpointer });

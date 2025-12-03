@@ -3,6 +3,7 @@ import { createReactAgent } from "@langchain/langgraph/prebuilt";
 import { llm } from "../config/llm.js";
 import { vidaDeudorTools } from "../tools/vidaDeudorTools.js";
 import { sharedTools } from "../tools/sharedTools.js";
+import { smartSliceMessages } from "../utils/messageUtils.js";
 const SYSTEM_VIDA_DEUDOR_PROMPT = `
     Eres un especialista EXPERTO en asistencia de VIDA DEUDOR y trabajas para Coltefinanciera.
       **⚠️ REGLA FUNDAMENTAL: NO INVENTAR INFORMACIÓN ⚠️**
@@ -10,7 +11,13 @@ const SYSTEM_VIDA_DEUDOR_PROMPT = `
 
     Tu personalidad es APASIONADA y COMPROMETIDA con la protección de las familias colombianas ante la pérdida del proveedor principal.
 
-    el primer mensaje que envies SIEMPRE debes decir lo siguiente:"¡Hola <nombre_cliente>! Por tu crédito Coltefinanciera/Flamingo tienes derecho a la asistencia Vida Deudor. Incluye teleconsulta médica, telenutrición, telepsicología y descuentos en farmacias. ¿Te gustaría saber más o activar tu beneficio?"
+    **INSTRUCCIONES DE SALUDO:**
+    - **SI ES EL INICIO DE LA CONVERSACIÓN:** Saluda diciendo: "¡Hola <nombre_cliente>! Por tu crédito Coltefinanciera/Flamingo tienes derecho a la asistencia Vida Deudor. Incluye teleconsulta médica, telenutrición, telepsicología y descuentos en farmacias. ¿Te gustaría saber más o activar tu beneficio?"
+    - **SI LA CONVERSACIÓN YA ESTÁ EN CURSO:** NO repitas el saludo ni tu presentación. Ve directo al grano respondiendo la consulta del cliente o cerrando la venta.
+
+    **🧠 USO INTELIGENTE DE HERRAMIENTAS (AHORRO DE RECURSOS):**
+    - ⛔ **NO USES** la herramienta de búsqueda para: saludos, despedidas, agradecimientos, confirmaciones simples ("Ok", "Entiendo") o preguntas sobre tu identidad. Responde directamente.
+    - 🔍 **USA** la herramienta de búsqueda SOLO cuando necesites datos específicos sobre: cláusulas legales, requisitos de asegurabilidad, coberturas detalladas o exclusiones.
 
     **⚠️ REGLA DE LONGITUD DE RESPUESTA (WHATSAPP) ⚠️**
     Tus respuestas deben ser CONCISAS y DIRECTAS. WhatsApp tiene límites de caracteres y los usuarios prefieren mensajes cortos.
@@ -172,11 +179,12 @@ const vidaDeudorAgent = createReactAgent({
     tools: [...vidaDeudorTools, ...sharedTools],
     stateModifier: (state) => {
         const messages = [new SystemMessage(SYSTEM_VIDA_DEUDOR_PROMPT)];
-        return messages.concat(state.messages);
+        const safeMessages = smartSliceMessages(state.messages, 40);
+        return messages.concat(safeMessages);
     },
 });
 export async function vidaDeudorAdvisorNode(state) {
-    let messages = state.messages;
+    let messages = smartSliceMessages(state.messages, 40);
     // Agregar información del cliente identificado si está disponible
     if (state.clientData) {
         let clientInfoText = `CLIENTE IDENTIFICADO:

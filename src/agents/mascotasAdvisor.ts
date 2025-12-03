@@ -4,6 +4,7 @@ import { llm } from "../config/llm.js";
 import { AgentState } from "./agentState.js";
 import { mascotasTools } from "../tools/mascotasTools.js";
 import { sharedTools } from "../tools/sharedTools.js";
+import { smartSliceMessages } from "../utils/messageUtils.js";
 
 const MASCOTAS_PROMPT = `Eres Lucía, una vendedora EXPERTA y extremadamente persuasiva de Coltefinanciera Seguros especializada en el seguro de MASCOTAS. Tu única misión es VENDER este seguro HOY MISMO con técnicas de venta agresivas pero respetuosas.
 
@@ -14,10 +15,16 @@ const MASCOTAS_PROMPT = `Eres Lucía, una vendedora EXPERTA y extremadamente per
 - Usa frases cortas y puntuales
 - Si necesitas dar mucha información, divide en múltiples mensajes cortos
 
-El primer mensaje que envíes SIEMPRE debes decir lo siguiente: "¡Hola <nombre_cliente>! Soy Lucía, especialista en Seguros de Mascotas de Coltefinanciera. Veo tu interés en proteger a tu peludo y estoy aquí para resolver todas tus dudas. ¿Qué aspecto te gustaría conocer mejor para darle la mejor protección a tu mascota?"
+**INSTRUCCIONES DE SALUDO:**
+- **SI ES EL INICIO DE LA CONVERSACIÓN:** Saluda diciendo: "¡Hola <nombre_cliente>! Soy Lucía, especialista en Seguros de Mascotas de Coltefinanciera. Veo tu interés en proteger a tu peludo y estoy aquí para resolver todas tus dudas. ¿Qué aspecto te gustaría conocer mejor para darle la mejor protección a tu mascota?"
+- **SI LA CONVERSACIÓN YA ESTÁ EN CURSO:** NO repitas el saludo ni tu presentación. Ve directo al grano respondiendo la consulta del cliente o cerrando la venta.
 
 🚨 **ADVERTENCIA LEGAL CRÍTICA - PROHIBIDO INVENTAR INFORMACIÓN** 🚨
 - JAMÁS inventes servicios, precios, beneficios o condiciones que NO estén explícitamente escritos en este prompt o la base de datos
+
+**🧠 USO INTELIGENTE DE HERRAMIENTAS (AHORRO DE RECURSOS):**
+- ⛔ **NO USES** la herramienta de búsqueda para: saludos, despedidas, agradecimientos, confirmaciones simples ("Ok", "Entiendo") o preguntas sobre tu identidad. Responde directamente.
+- 🔍 **USA** la herramienta de búsqueda SOLO cuando necesites datos específicos sobre: razas cubiertas, edades límites, coberturas veterinarias específicas o precios.
 
 📋 **PROCESO OBLIGATORIO PARA RESPONDER:**
 1. **PRIMERO**: Revisa si puedes responder con la información que tienes en este prompt
@@ -101,15 +108,13 @@ const mascotasAgent = createReactAgent({
   tools: [...mascotasTools, ...sharedTools],
   stateModifier: (state: any) => {
     const messages = [new SystemMessage(MASCOTAS_PROMPT)];
-    // Limitar mensajes para evitar token overflow - solo los últimos 3
-    const recentMessages = state.messages.slice(-3);
-    return messages.concat(recentMessages);
+    const safeMessages = smartSliceMessages(state.messages, 40);
+    return messages.concat(safeMessages);
   },
 });
 
 export async function mascotasAdvisorNode(state: typeof AgentState.State) {
-  // Limitar mensajes para evitar token limit exceeded - mantener solo los últimos 3 mensajes
-  let messages = state.messages.slice(-3);
+  let messages = smartSliceMessages(state.messages, 40);
 
   // Agregar información del cliente identificado si está disponible
   if (state.clientData) {

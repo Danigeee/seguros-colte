@@ -1,6 +1,6 @@
 import { HumanMessage } from "@langchain/core/messages";
-import { vidaDeudorAdvisorNode } from "../agents/vidaDeudorAgent";
-import { AgentState } from "../agents/agentState";
+import { vidaDeudorAdvisorNode } from "../agents/vidaDeudorAgent.js";
+import { AgentState } from "../agents/agentState.js";
 import dotenv from 'dotenv';
 
 dotenv.config();

@@ -7,6 +7,7 @@ import { AgentState } from "./agentState.js";
 import { generateEstimationPdf } from "../tools/pdfTools.js";
 import { bienestarTools } from "../tools/bienestarTools.js";
 import { sharedTools } from "../tools/sharedTools.js";
+import { smartSliceMessages } from "../utils/messageUtils.js";
 
 const BIENESTAR_PLUS_PROMPT = `Eres Lucía, una vendedora EXPERTA y extremadamente persuasiva de Coltefinanciera Seguros especializada en el seguro Bienestar Plus. Tu única misión es VENDER este seguro HOY MISMO con técnicas de venta agresivas pero respetuosas.
 
@@ -18,12 +19,16 @@ const BIENESTAR_PLUS_PROMPT = `Eres Lucía, una vendedora EXPERTA y extremadamen
 - Si necesitas dar mucha información, divide en múltiples mensajes cortos
 
 
-  el primer mensaje que envies SIEMPRE debes decir lo siguiente:"¡Hola <nombre_cliente>! Soy Lucía, especialista en Bienestar Plus de Coltefinanciera Seguros. Veo tu interés en este plan integral y estoy lista para resolver todas tus dudas. ¿Qué aspecto te gustaría conocer mejor para tomar la mejor decisión para tu bienestar?"
+**INSTRUCCIONES DE SALUDO:**
+- **SI ES EL INICIO DE LA CONVERSACIÓN:** Saluda diciendo: "¡Hola <nombre_cliente>! Soy Lucía, especialista en Bienestar Plus de Coltefinanciera Seguros. Veo tu interés en este plan integral y estoy lista para resolver todas tus dudas. ¿Qué aspecto te gustaría conocer mejor para tomar la mejor decisión para tu bienestar?"
+- **SI LA CONVERSACIÓN YA ESTÁ EN CURSO:** NO repitas el saludo ni tu presentación. Ve directo al grano respondiendo la consulta del cliente o cerrando la venta.
 
 🚨 **ADVERTENCIA LEGAL CRÍTICA - PROHIBIDO INVENTAR INFORMACIÓN** 🚨
 - JAMÁS inventes servicios, precios, beneficios o condiciones que NO estén explícitamente escritos en este prompt o la base de datos
 
-
+**🧠 USO INTELIGENTE DE HERRAMIENTAS (AHORRO DE RECURSOS):**
+- ⛔ **NO USES** la herramienta de búsqueda para: saludos, despedidas, agradecimientos, confirmaciones simples ("Ok", "Entiendo") o preguntas sobre tu identidad. Responde directamente.
+- 🔍 **USA** la herramienta de búsqueda SOLO cuando necesites datos específicos sobre: coberturas exactas, exclusiones, términos y condiciones que no estén en este prompt.
 
 📋 **PROCESO OBLIGATORIO PARA RESPONDER:**
 1. **PRIMERO**: Revisa si puedes responder con la información que tienes en este prompt
@@ -167,15 +172,14 @@ const bienestarPlusAgent = createReactAgent({
   tools: [...bienestarTools, ...sharedTools],
   stateModifier: (state: any) => {
     const messages = [new SystemMessage(BIENESTAR_PLUS_PROMPT)];
-    // Limitar mensajes para evitar token overflow - solo los últimos 3
-    const recentMessages = state.messages.slice(-3);
-    return messages.concat(recentMessages);
+    const safeMessages = smartSliceMessages(state.messages, 40);
+    return messages.concat(safeMessages);
   },
 });
 
 export async function bienestarPlusAdvisorNode(state: typeof AgentState.State) {
-  // Limitar mensajes para evitar token limit exceeded - mantener solo los últimos 3 mensajes
-  let messages = state.messages.slice(-3);
+  // console.log("🚀 [BienestarPlusAdvisor] Node started execution");
+  let messages = smartSliceMessages(state.messages, 40);
 
   // Agregar información del cliente identificado si está disponible
   if (state.clientData) {
@@ -206,35 +210,43 @@ INSTRUCCIONES ESPECIALES:
     ];
   }
 
-  const result = await bienestarPlusAgent.invoke({ messages });
-  const lastMessage = result.messages[result.messages.length - 1];
+  try {
+    // console.log("🚀 [BienestarPlusAdvisor] Invoking inner agent...");
+    const result = await bienestarPlusAgent.invoke({ messages });
+    // console.log("✅ [BienestarPlusAdvisor] Agent invocation complete");
 
-  const newMessages = result.messages;
-  let activeClientId = state.activeClientId;
-  let activeEstimationId = state.activeEstimationId;
+    const lastMessage = result.messages[result.messages.length - 1];
 
-  for (const msg of newMessages) {
-    if (msg._getType() === "tool") {
-      try {
-        const content = typeof msg.content === 'string' ? JSON.parse(msg.content) : msg.content;
-        
-        if (content.action === "set_active_client" && content.clientId) {
-          activeClientId = content.clientId;
+    const newMessages = result.messages;
+    let activeClientId = state.activeClientId;
+    let activeEstimationId = state.activeEstimationId;
+
+    for (const msg of newMessages) {
+      if (msg._getType() === "tool") {
+        try {
+          const content = typeof msg.content === 'string' ? JSON.parse(msg.content) : msg.content;
+          
+          if (content.action === "set_active_client" && content.clientId) {
+            activeClientId = content.clientId;
+          }
+          if (content.action === "set_active_estimation" && content.estimationId) {
+            activeEstimationId = content.estimationId;
+          }
+        } catch (e) {
+          // Ignorar outputs de herramientas que no sean JSON
         }
-        if (content.action === "set_active_estimation" && content.estimationId) {
-          activeEstimationId = content.estimationId;
-        }
-      } catch (e) {
-        // Ignorar outputs de herramientas que no sean JSON
       }
     }
-  }
 
-  return {
-    messages: [lastMessage],
-    activeClientId,
-    activeEstimationId
-  };
+    return {
+      messages: [lastMessage],
+      activeClientId,
+      activeEstimationId
+    };
+  } catch (error) {
+    console.error("❌ [BienestarPlusAdvisor] Error executing agent:", error);
+    throw error;
+  }
 }
 
 export const bienestarPlusWorkflow = bienestarPlusAdvisorNode;

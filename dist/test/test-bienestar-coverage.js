@@ -1,5 +1,5 @@
 import { HumanMessage } from "@langchain/core/messages";
-import { bienestarPlusAdvisorNode } from "../agents/bienestarPlusAdvisor";
+import { bienestarPlusAdvisorNode } from "../agents/bienestarPlusAdvisor.js";
 import dotenv from 'dotenv';
 dotenv.config();
 async function runTest() {

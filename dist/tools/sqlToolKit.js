@@ -1,7 +1,7 @@
 import { SqlToolkit } from "langchain/agents/toolkits/sql";
 import { DataSource } from "typeorm";
 import { SqlDatabase } from "langchain/sql_db";
-import { llm } from "../config/llm";
+import { llm } from "../config/llm.js";
 import dotenv from "dotenv";
 dotenv.config();
 const datasource = new DataSource({

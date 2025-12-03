@@ -1,6 +1,6 @@
 import { HumanMessage } from "@langchain/core/messages";
-import { bienestarPlusAdvisorNode } from "../agents/bienestarPlusAdvisor";
-import { AgentState } from "../agents/agentState";
+import { bienestarPlusAdvisorNode } from "../agents/bienestarPlusAdvisor.js";
+import { AgentState } from "../agents/agentState.js";
 import dotenv from 'dotenv';
 
 dotenv.config();
