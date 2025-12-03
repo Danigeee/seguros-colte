@@ -7,12 +7,15 @@ import { SystemMessage } from "@langchain/core/messages";
  * y enriquece el estado con la información del cliente
  */
 export async function identifyClientNode(state: typeof AgentState.State, config?: any) {
-  // ✅ OPTIMIZACIÓN: Solo identificar si no tenemos datos del cliente
-  if (state.clientData) {
-    console.log(`🔄 Cliente ya identificado: ${state.clientData.name} - Reutilizando datos`);
-    return {
-      clientData: state.clientData
-    };
+  // ✅ OPTIMIZACIÓN: Verificar si ya hay identificación en los mensajes
+  const existingClientInfo = state.messages?.find(msg => 
+    msg._getType() === 'system' && 
+    String(msg.content).includes('INFORMACIÓN DEL CLIENTE IDENTIFICADO')
+  );
+  
+  if (existingClientInfo) {
+    console.log('🔄 Cliente ya identificado anteriormente - Reutilizando datos');
+    return {}; // No hacer nada, mantener estado actual
   }
   
   console.log('🔍 INICIANDO IDENTIFICACIÓN DE CLIENTE...');
