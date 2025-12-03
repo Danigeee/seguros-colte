@@ -82,41 +82,41 @@ router.post('/seguros-colte/receive-message', async (req, res) => {
             url: firebaseUrl || undefined
         });
         console.log(`IA procesando...`);
-        const config = {
-            configurable: {
-                thread_id: conversation.id.toString(),
-                user_phone: clientNumber
-            }
-        };
-        const inputs = {
-            messages: [new HumanMessage(finalUserMessage)]
-        };
-        let output;
+        let botResponse;
         try {
-            output = await graph.invoke(inputs, config);
+            const config = {
+                configurable: {
+                    thread_id: conversation.id.toString(),
+                    user_phone: clientNumber
+                }
+            };
+            const inputs = {
+                messages: [new HumanMessage(finalUserMessage)]
+            };
+            console.log(`📋 Invocando grafo con thread_id: ${conversation.id}`);
+            // Agregar timeout para evitar que se quede colgado
+            const timeoutPromise = new Promise((_, reject) => {
+                setTimeout(() => reject(new Error('⏱️ Timeout: El grafo tardó más de 45 segundos')), 45000);
+            });
+            const graphPromise = graph.invoke(inputs, config);
+            const output = await Promise.race([graphPromise, timeoutPromise]);
+            if (!output || !output.messages || output.messages.length === 0) {
+                throw new Error('❌ El grafo no devolvió mensajes válidos');
+            }
+            const lastMessage = output.messages[output.messages.length - 1];
+            botResponse = lastMessage.content;
+            if (!botResponse || typeof botResponse !== 'string') {
+                throw new Error('❌ La respuesta del bot no es válida');
+            }
+            console.log(`✅ Respuesta generada exitosamente (${botResponse.length} chars)`);
         }
         catch (error) {
-            console.error('❌ Error executing graph:', error);
-            const fallbackMessage = "Lo siento, estoy teniendo problemas técnicos momentáneos. Por favor intenta de nuevo en unos segundos.";
-            await chatService.saveMessage({
-                conversationId: conversation.id,
-                sender: 'assistant',
-                message: fallbackMessage,
-                twilioSid: 'error-fallback'
-            });
-            const sendTo = From.startsWith('whatsapp:') ? From : `whatsapp:${From}`;
-            const sendFrom = To.startsWith('whatsapp:') ? To : `whatsapp:${To}`;
-            await twilioClient.messages.create({
-                from: sendFrom,
-                to: sendTo,
-                body: fallbackMessage
-            });
-            res.writeHead(200, { 'Content-Type': 'text/xml' });
-            res.end(twiml.toString());
-            return;
+            console.error('❌ ERROR CRÍTICO EN GRAPH.INVOKE:');
+            console.error('   Type:', error?.constructor?.name || 'Unknown');
+            console.error('   Message:', error instanceof Error ? error.message : String(error));
+            console.error('   Stack:', error instanceof Error ? error.stack?.substring(0, 500) : 'No stack');
+            botResponse = 'Disculpa, hubo un problema técnico momentáneo. ¿Podrías repetir tu consulta? 🔄';
         }
-        const lastMessage = output.messages[output.messages.length - 1];
-        const botResponse = lastMessage.content;
         // Verificar si es el primer mensaje para generar audio
         let audioUrl;
         const conversationMessages = await chatService.getMessages(conversation.id);
@@ -202,7 +202,34 @@ router.post('/seguros-colte/receive-message', async (req, res) => {
         res.end(twiml.toString());
     }
     catch (error) {
-        console.error('Error en webhook:', error);
+        console.error('❌ ERROR CRÍTICO EN WEBHOOK - REINICIO EVITADO:');
+        console.error('   Type:', error?.constructor?.name || 'Unknown');
+        console.error('   Message:', error instanceof Error ? error.message : String(error));
+        console.error('   Stack (first 500 chars):', error instanceof Error ? error.stack?.substring(0, 500) : 'No stack');
+        // Intentar enviar mensaje de error al usuario
+        try {
+            const { From, To } = req.body;
+            if (From && To) {
+                await twilioClient.messages.create({
+                    from: To,
+                    to: From,
+                    body: '⚠️ Sistema temporalmente ocupado. Intenta de nuevo en 30 segundos.'
+                });
+            }
+        }
+        catch (twilioError) {
+            console.error('❌ Error adicional enviando mensaje de error:', twilioError);
+        }
+        // Limpiar memoria
+        if (global.gc) {
+            try {
+                global.gc();
+                console.log('🧹 Garbage collection ejecutado');
+            }
+            catch (gcError) {
+                console.error('Error en garbage collection:', gcError);
+            }
+        }
         res.writeHead(200, { 'Content-Type': 'text/xml' });
         res.end(twiml.toString());
     }

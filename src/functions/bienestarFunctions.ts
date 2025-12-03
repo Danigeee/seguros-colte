@@ -24,6 +24,7 @@ export const searchBienestarDocuments = async (query: string) => {
         console.log(`🔍 Buscando: "${query}"...`);
         
         const results = await vectorStore.similaritySearch(query, 4);
+        console.log(`Consultando 4 fragmentos...`);
 
         if (results.length === 0) {
             console.log("⚠️ No se encontró información relevante en el PDF.");

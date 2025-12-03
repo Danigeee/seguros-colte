@@ -5,6 +5,13 @@ import { SystemMessage } from "@langchain/core/messages";
  * y enriquece el estado con la información del cliente
  */
 export async function identifyClientNode(state, config) {
+    // ✅ OPTIMIZACIÓN: Verificar si ya hay identificación en los mensajes
+    const existingClientInfo = state.messages?.find(msg => msg._getType() === 'system' &&
+        String(msg.content).includes('INFORMACIÓN DEL CLIENTE IDENTIFICADO'));
+    if (existingClientInfo) {
+        console.log('🔄 Cliente ya identificado anteriormente - Reutilizando datos');
+        return {}; // No hacer nada, mantener estado actual
+    }
     console.log('🔍 INICIANDO IDENTIFICACIÓN DE CLIENTE...');
     try {
         // Obtener el número de teléfono del contexto de configuración
@@ -27,17 +34,17 @@ export async function identifyClientNode(state, config) {
             console.log(`   Documento: ${clientData.document_id}`);
             // Añadir mensaje de sistema con información del cliente
             const systemMessage = new SystemMessage(`INFORMACIÓN DEL CLIENTE IDENTIFICADO:
-- Nombre: ${clientData.name}
-- Email: ${clientData.email}
-- Documento ID: ${clientData.document_id}
-- Teléfono: ${clientData.phone_number}
-- Servicio: ${clientData.service || 'No especificado'}
-- Producto: ${clientData.product || 'No especificado'}
+        - Nombre: ${clientData.name}
+        - Email: ${clientData.email}
+        - Documento ID: ${clientData.document_id}
+        - Teléfono: ${clientData.phone_number}
+        - Servicio: ${clientData.service || 'No especificado'}
+        - Producto: ${clientData.product || 'No especificado'}
 
-INSTRUCCIONES:
-- Dirígete al cliente por su nombre (${clientData.name})
-- Tienes su email (${clientData.email}) para usar en sendPaymentLinkEmailTool
-- Personaliza la conversación conociendo su identidad`);
+        INSTRUCCIONES:
+        - Dirígete al cliente por su nombre (${clientData.name})
+        - Tienes su email (${clientData.email}) para usar en sendPaymentLinkEmailTool
+        - Personaliza la conversación conociendo su identidad`);
             return {
                 clientData,
                 messages: [systemMessage, ...(state.messages || [])]
