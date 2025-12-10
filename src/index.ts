@@ -1,5 +1,6 @@
 import express from "express";
 import chatRoutes from './routes/chatRoutes.js';
+import paymentRoutes from './routes/paymentRoutes.js';
 import cors from "cors";
 
 const app = express();
@@ -32,6 +33,7 @@ process.on('unhandledRejection', (reason, promise) => {
   console.error('❌ UNHANDLED REJECTION:', reason);
 });
 
+app.use('/api/payments', paymentRoutes);
 app.use('/', chatRoutes);
 
 // Capturar errores no manejados para evitar reinicios
