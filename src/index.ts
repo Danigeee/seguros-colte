@@ -33,7 +33,7 @@ process.on('unhandledRejection', (reason, promise) => {
   console.error('❌ UNHANDLED REJECTION:', reason);
 });
 
-app.use('/api/payments', paymentRoutes);
+app.use('/api/payments', paymentRoutes); // Rutas de pagos -> Crear Persona y Link de Pago
 app.use('/', chatRoutes);
 
 // Capturar errores no manejados para evitar reinicios
