@@ -46,4 +46,6 @@ export interface PaymentFlowRequest {
   phone: string;
   amount: number;
   description: string;
+  clientId: number;
+  totalInstallments?: number;
 }

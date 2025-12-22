@@ -13,11 +13,13 @@ router.post('/create-link', async (req: Request<{}, {}, PaymentFlowRequest>, res
       email, 
       phone, 
       amount, 
-      description 
+      description,
+      clientId,
+      totalInstallments
     } = req.body;
 
     // Validaciones básicas
-    if (!firstname || !lastname || !identification || !email || !phone || !amount || !description) {
+    if (!firstname || !lastname || !identification || !email || !phone || !amount || !description || !clientId) {
       res.status(400).json({ error: 'Missing required fields' });
       return;
     }
@@ -29,7 +31,9 @@ router.post('/create-link', async (req: Request<{}, {}, PaymentFlowRequest>, res
       email,
       phone,
       amount,
-      description
+      description,
+      clientId,
+      totalInstallments
     };
 
     const paymentLink = await generatePaymentLinkFlow(paymentData);

@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { supabase } from '../config/supabase.js';
 import { 
   CreatePersonRequest, 
   CreatePersonResponse, 
@@ -91,6 +92,24 @@ export const generatePaymentLinkFlow = async (data: PaymentFlowRequest): Promise
     };
 
     const linkResponse = await createPaymentLink(linkData);
+
+    // 3. Registrar en la tabla suscripciones
+    const { error: subscriptionError } = await supabase
+      .from('suscripciones')
+      .insert({
+        client_id: data.clientId,
+        payment_person_id: String(personResponse.id),
+        identification_doc: data.identification,
+        amount: data.amount,
+        description: data.description,
+        total_installments: data.totalInstallments || 12,
+        status: 'pending_first_payment'
+      });
+
+    if (subscriptionError) {
+      console.error('Error creating subscription record:', subscriptionError);
+      // No lanzamos error para no bloquear el retorno del link, pero lo logueamos
+    }
 
     return linkResponse.linkgenerado; // O linkcorto si prefieres
   } catch (error) {
