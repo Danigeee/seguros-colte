@@ -408,6 +408,67 @@ export type Database = {
         }
         Relationships: []
       }
+      suscripciones: {
+        Row: {
+          id: string
+          created_at: string
+          updated_at: string
+          client_id: number
+          payment_person_id: string
+          identification_doc: string
+          amount: number
+          description: string | null
+          total_installments: number
+          installments_paid: number
+          status: string
+          next_payment_date: string | null
+          last_payment_date: string | null
+          initial_transaction_id: string | null
+          response_data: Json | null
+        }
+        Insert: {
+          id?: string
+          created_at?: string
+          updated_at?: string
+          client_id: number
+          payment_person_id: string
+          identification_doc: string
+          amount: number
+          description?: string | null
+          total_installments?: number
+          installments_paid?: number
+          status?: string
+          next_payment_date?: string | null
+          last_payment_date?: string | null
+          initial_transaction_id?: string | null
+          response_data?: Json | null
+        }
+        Update: {
+          id?: string
+          created_at?: string
+          updated_at?: string
+          client_id?: number
+          payment_person_id?: string
+          identification_doc?: string
+          amount?: number
+          description?: string | null
+          total_installments?: number
+          installments_paid?: number
+          status?: string
+          next_payment_date?: string | null
+          last_payment_date?: string | null
+          initial_transaction_id?: string | null
+          response_data?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "suscripciones_client_id_fkey"
+            columns: ["client_id"]
+            referencedRelation: "dentix_clients"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
     }
     Views: {
       [_ in never]: never
