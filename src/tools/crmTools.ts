@@ -64,6 +64,7 @@ export const lookupOrCreateClientTool = tool(
   }
 );
 
+
 /**
  * Tool to list all estimations for a client.
  */
@@ -98,7 +99,7 @@ export const listClientEstimationsTool = tool(
       // Format message for LLM with clear UUID instructions
       const formattedList = estimationsWithDetails
         .map((est, idx) => 
-          `${idx + 1}. Quote #${est.sequential_number} (ID: ${est.id}): $${est.net_total.toFixed(2)} - ${est.item_count} item(s) - ${est.status} - ${new Date(est.created_at!).toLocaleDateString()}`
+          `${idx + 1}. Quotjose deodo noe #${est.sequential_number} (ID: ${est.id}): $${est.net_total.toFixed(2)} - ${est.item_count} item(s) - ${est.status} - ${new Date(est.created_at!).toLocaleDateString()}`
         )
         .join('\n');
 

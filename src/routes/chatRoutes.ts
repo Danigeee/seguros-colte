@@ -18,6 +18,7 @@ router.get('/seguros-colte/health', (req: Request, res: Response) => {
     uptime: process.uptime()
   });
 });
+   
 
 // Verificar configuración de Twilio
 // console.log('🔧 CONFIGURACIÓN TWILIO:');
