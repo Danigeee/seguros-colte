@@ -26,9 +26,11 @@ const getPaymentLink = (insuranceName: string): string => {
     'bienestar plus': 'https://links.paymentsway.com.co/13aosv',
     'mascotas': 'https://links.paymentsway.com.co/no4hlo',
     'soat': 'https://links.paymentsway.com.co/soat', // PLACEHOLDER - Cambiar por el enlace real cuando esté disponible
+    'autos': 'https://links.paymentsway.com.co/seguroautos', // PLACEHOLDER - Cambiar por el enlace real cuando esté disponible
+    'dentix': 'https://links.paymentsway.com.co/dentix', // PLACEHOLDER - Cambiar por el enlace real cuando esté disponible
+    
     // Agregar más seguros aquí cuando sea necesario
     // 'vida': 'https://links.paymentsway.com.co/vida123',
-    // 'auto': 'https://links.paymentsway.com.co/auto456',
   };
 
   return paymentLinks[normalizedName] || 'https://links.paymentsway.com.co/default';
@@ -39,10 +41,20 @@ const getPaymentLink = (insuranceName: string): string => {
  */
 export const sendPaymentLinkEmail = async (clientName: string, clientEmail: string, insuranceName: string, clientNumber: string) => {
   try {
-    console.log(`Enviando enlace de pago a ${clientName} (${clientEmail}) para ${insuranceName}`);
+    console.log(`📧 INICIANDO ENVÍO DE EMAIL:`);
+    console.log(`   Cliente: ${clientName}`);
+    console.log(`   Email: ${clientEmail}`);
+    console.log(`   Seguro: ${insuranceName}`);
+    console.log(`   Teléfono: ${clientNumber}`);
+    
+    // Validar parámetros
+    if (!clientEmail || !clientEmail.includes('@')) {
+      throw new Error(`Email inválido: ${clientEmail}`);
+    }
     
     // Obtener el enlace de pago específico
     const paymentLink = getPaymentLink(insuranceName);
+    console.log(`🔗 Enlace de pago generado: ${paymentLink}`);
     
     // Configurar el mensaje de correo
     const msg = {
@@ -109,8 +121,19 @@ export const sendPaymentLinkEmail = async (clientName: string, clientEmail: stri
       `
     };
 
+    // Verificar configuración de SendGrid
+    if (!process.env.SENDGRID_API_KEY) {
+      throw new Error('SENDGRID_API_KEY no configurada en variables de entorno');
+    }
+    
+    console.log(`📨 Enviando correo con SendGrid...`);
+    console.log(`   To: ${msg.to}`);
+    console.log(`   From: ${msg.from.email}`);
+    console.log(`   Subject: ${msg.subject}`);
+    
     // Enviar el correo
-    await sgMail.send(msg);
+    const result = await sgMail.send(msg);
+    console.log(`✅ Correo enviado exitosamente. Status: ${result[0]?.statusCode || 'N/A'}`);
     
     // Actualizar chat_history
     try {
@@ -132,13 +155,19 @@ export const sendPaymentLinkEmail = async (clientName: string, clientEmail: stri
     return `✅ Enlace de pago enviado exitosamente a ${clientEmail}. El cliente ${clientName} recibirá instrucciones para completar la compra de ${insuranceName}.`;
     
   } catch (error: any) {
-    console.error("Error enviando enlace de pago:", error);
+    console.error("❌ ERROR CRÍTICO AL ENVIAR ENLACE DE PAGO:");
+    console.error("   Type:", error?.constructor?.name || 'Unknown');
+    console.error("   Message:", error?.message || String(error));
     
     // Manejo específico de errores de SendGrid
     if (error.response) {
-      console.error("SendGrid Error Body:", error.response.body);
+      console.error("   SendGrid Status:", error.response.status);
+      console.error("   SendGrid Body:", JSON.stringify(error.response.body, null, 2));
     }
     
-    return `❌ Error técnico al enviar el enlace de pago. Por favor, verifica la dirección de correo e intenta nuevamente.`;
+    // Log adicional para debugging
+    console.error("   Stack (first 300 chars):", error?.stack?.substring(0, 300));
+    
+    return `❌ Error técnico al enviar el enlace de pago: ${error?.message || 'Error desconocido'}. Por favor, verifica la dirección de correo e intenta nuevamente.`;
   }
 };

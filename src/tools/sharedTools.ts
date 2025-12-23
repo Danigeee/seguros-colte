@@ -50,6 +50,7 @@ export const quickRegisterClientTool = tool(
  * Herramienta para enviar enlace de pago a cliente ya identificado
  * Esta herramienta funciona solo cuando hay un cliente identificado en el contexto
  */
+
 export const sendPaymentToIdentifiedClientTool = tool(
   async ({ insuranceName }: { insuranceName: string }) => {
     // Esta herramienta será interceptada por el agente para usar los datos del cliente identificado

@@ -7,17 +7,17 @@ dotenv.config();
 
 const embeddings = new OpenAIEmbeddings({ openAIApiKey: process.env.OPENAI_API_KEY });
 
-export const searchVidaDeudorDocuments = async (query: string) => {
+export const searchDentixDocuments = async (query: string) => {
     try {
         const vectorStore = new SupabaseVectorStore(embeddings, {
             client: supabase,
-            tableName: 'documents_vidadeudor',       // <--- TABLA NUEVA
-            queryName: 'match_documents_vidadeudor'  // <--- FUNCIÓN NUEVA
+            tableName: "documents_dentix_final",
+            queryName: "match_documents_dentix_final",
         });
 
         console.log(`🔍 Buscando: "${query}"...`);
         
-        // Recuperamos 8 chunks para asegurar que la IA lea las "letras pequeñas" y tenga más contexto
+        // Recuperamos 4 chunks para balance entre contexto y tokens
         const results = await vectorStore.similaritySearch(query, 4);
 
         if (results.length === 0) {

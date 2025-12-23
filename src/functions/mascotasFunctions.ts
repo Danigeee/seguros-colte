@@ -18,7 +18,7 @@ export const searchMascotasDocuments = async (query: string) => {
         console.log(`🔍 Buscando: "${query}"...`);
         
         // Recuperamos 8 chunks para asegurar que la IA lea las "letras pequeñas" y tenga más contexto
-        const results = await vectorStore.similaritySearch(query, 4);
+        const results = await vectorStore.similaritySearch(query, 2);
 
         if (results.length === 0) {
             console.log("⚠️ No se encontró información relevante en el PDF.");
@@ -43,3 +43,4 @@ export const searchMascotasDocuments = async (query: string) => {
         return ""; // En caso de error técnico, silencio para evitar alucinación
     }
 }
+
