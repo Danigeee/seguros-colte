@@ -1,6 +1,7 @@
 import { tool } from "@langchain/core/tools";
 import { z } from "zod";
 import { searchMascotasDocuments } from "../functions/mascotasFunctions.js";
+import { getClientByPhoneNumber } from "../functions/clientFunctions.js";
 /**
  * Herramienta para consultar información oficial del Seguro de Mascotas
  * Esta herramienta busca en la base de datos vectorial usando embeddings
@@ -46,7 +47,38 @@ export const consultMascotasSpecialistTool = tool(async ({ consulta }) => {
         consulta: z.string().describe("La consulta específica sobre el Seguro de Mascotas")
     }),
 });
+/**
+ * Herramienta para obtener datos actualizados del cliente desde Supabase
+ */
+export const getClientByPhoneTool = tool(async ({ phoneNumber }) => {
+    try {
+        console.log(`🔍 Obteniendo datos del cliente para: ${phoneNumber}`);
+        const clientData = await getClientByPhoneNumber(phoneNumber);
+        if (!clientData) {
+            return "Cliente no encontrado en la base de datos. Solicita al cliente que proporcione su email para procesar la compra.";
+        }
+        console.log(`✅ Datos obtenidos: ${clientData.name} - ${clientData.email}`);
+        return JSON.stringify({
+            name: clientData.name,
+            email: clientData.email,
+            document_id: clientData.document_id,
+            phone_number: clientData.phone_number,
+            service: clientData.service || 'mascotas'
+        });
+    }
+    catch (error) {
+        console.error('❌ Error obteniendo datos del cliente:', error);
+        return "Error al consultar datos del cliente. Solicita al cliente que proporcione su email.";
+    }
+}, {
+    name: "getClientByPhone",
+    description: "Obtiene datos actualizados del cliente desde Supabase usando el número de teléfono. Usar OBLIGATORIAMENTE antes de enviar enlaces de pago para asegurar datos correctos.",
+    schema: z.object({
+        phoneNumber: z.string().describe("Número de teléfono del cliente (con formato +57XXXXXXXXXX)"),
+    }),
+});
 // Exportar todas las herramientas de mascotas
 export const mascotasTools = [
-    consultMascotasSpecialistTool
+    consultMascotasSpecialistTool,
+    getClientByPhoneTool
 ];

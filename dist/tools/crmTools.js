@@ -81,7 +81,7 @@ export const listClientEstimationsTool = tool(async ({ clientId }) => {
         }));
         // Format message for LLM with clear UUID instructions
         const formattedList = estimationsWithDetails
-            .map((est, idx) => `${idx + 1}. Quote #${est.sequential_number} (ID: ${est.id}): $${est.net_total.toFixed(2)} - ${est.item_count} item(s) - ${est.status} - ${new Date(est.created_at).toLocaleDateString()}`)
+            .map((est, idx) => `${idx + 1}. Quotjose deodo noe #${est.sequential_number} (ID: ${est.id}): $${est.net_total.toFixed(2)} - ${est.item_count} item(s) - ${est.status} - ${new Date(est.created_at).toLocaleDateString()}`)
             .join('\n');
         return {
             message: `Found ${estimations.length} estimation(s) for this client:\n${formattedList}\n\nIMPORTANT: When the user selects a quote, use the ID (UUID) value, NOT the sequential number.`,

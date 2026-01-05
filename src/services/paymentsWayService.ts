@@ -9,10 +9,10 @@ import {
 } from '../types/paymentsWay.js';
 
 const PAYMENTS_WAY_CONFIG = {
-  API_URL: process.env.PAYMENTS_WAY_API_URL || 'https://serviceregisterpruebas.vepay.com.co/ClientAPI',
-  TOKEN: process.env.PAYMENTS_WAY_TOKEN_SANDBOX || '',
-  TERMINAL_ID: 596,
-  FORM_ID: 625,
+  API_URL: process.env.PAYMENTS_WAY_API_URL || 'https://serviceregister.paymentsway.co/ClientAPI',
+  TOKEN: process.env.PAYMENTS_WAY_TOKEN || '',
+  TERMINAL_ID: 5248,
+  FORM_ID: 6403,
   CURRENCY: 'COP',
   DEFAULT_SERVICE: 1, // CARD, PSE, CASH
   ID_TYPE_CC: "4" // Cédula de Ciudadanía

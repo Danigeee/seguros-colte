@@ -6,6 +6,8 @@ import { bienestarPlusWorkflow } from "./agents/bienestarPlusAdvisor.js";
 import { vidaDeudorWorkflow } from "./agents/vidaDeudorAgent.js";
 import { mascotasWorkflow } from "./agents/mascotasAdvisor.js";
 import { soatWorkflow } from "./agents/soatAdvisor.js";
+import { seguroAutosAdvisor } from "./agents/seguroAutosAdvisor.js";
+import { dentixAdvisor } from "./agents/dentixAdvisor.js";
 import { identifyClientNode } from "./agents/identifyClient.js";
 const checkpointer = new MemorySaver();
 const supervisorModel = new ChatOpenAI({
@@ -40,6 +42,8 @@ SIEMPRE debes presentarte como Lucía de Coltefinanciera Seguros. Tu misión es 
 2. **vida_deudor_advisor**: El ESPECIALISTA para consultas sobre el seguro/asistencia Vida Deudor, protección de créditos, deudas, saldos, y beneficios asociados a productos financieros.
 3. **mascotas_advisor**: El ESPECIALISTA para consultas del seguro de MASCOTAS, protección veterinaria, coberturas para perros y gatos, servicios veterinarios incluidos.
 4. **soat_advisor**: El ESPECIALISTA para consultas del SOAT (Seguro Obligatorio de Accidentes de Tránsito), coberturas vehiculares obligatorias, precios según tipo de vehículo.
+5. **seguro_autos_advisor**: El ESPECIALISTA para consultas del seguro de AUTOS, protección vehicular integral, coberturas todo riesgo, responsabilidad civil, y servicios automotrices incluidos.
+6. **dentix_advisor**: El ESPECIALISTA para consultas del seguro DENTAL DENTIX, tratamientos odontológicos cubiertos, red de odontólogos, copagos y servicios de salud oral.
 
 ### LÓGICA DE DECISIÓN (Seguir Estrictamente):
 
@@ -64,14 +68,34 @@ SI el usuario menciona CUALQUIERA de estos temas:
 **CASO 3: ASESOR SOAT (PRIORIDAD ALTA)**
 SI el usuario menciona CUALQUIERA de estos temas:
 - "soat", "SOAT", "seguro obligatorio", "seguro de tránsito"
-- "moto", "carro", "vehículo", "automóvil", "motocicleta"
-- "accidente de tránsito", "seguro vehicular", "seguro auto"
 - "renovar soat", "comprar soat", "necesito soat"
 - "papeles del carro", "papeles de la moto", "documentos vehículo"
 - "multa soat", "soat vencido", "soat vigente"
 -> RETURN JSON: { "next": "soat_advisor" }
 
-**CASO 4: ASESOR BIENESTAR PLUS (RUTEAR AMPLIAMENTE)**
+**CASO 4: ASESOR SEGURO AUTOS (PRIORIDAD ALTA)**
+SI el usuario menciona CUALQUIERA de estos temas:
+- "seguro de autos", "seguro auto", "seguro vehicular", "seguro de vehículo"
+- "todo riesgo", "responsabilidad civil", "cobertura amplia", "full cover"
+- "choque", "accidente", "daños", "robo de auto", "hurto vehicular"
+- "valor comercial", "deducible", "prima", "tarifa auto"
+- "grúa", "auxilio mecánico", "asistencia vial", "conductor elegido"
+- "proteger mi carro", "asegurar mi auto", "cobertura completa"
+- "marca", "modelo", "año del vehículo" (en contexto de seguro)
+-> RETURN JSON: { "next": "seguro_autos_advisor" }
+
+**CASO 5: ASESOR DENTIX (PRIORIDAD ALTA)**
+SI el usuario menciona CUALQUIERA de estos temas:
+- "dentix", "seguro dental", "seguro de dientes", "cobertura dental"
+- "odontólogo", "dentista", "clínica dental", "consulta dental"
+- "dientes", "muelas", "caries", "endodoncia", "extracción"
+- "ortodoncia", "brackets", "limpieza dental", "profilaxis"
+- "dolor de muela", "emergencia dental", "urgencia dental"
+- "cirugía oral", "implantes", "prótesis dental", "coronas"
+- "proteger mi sonrisa", "salud oral", "higiene dental"
+-> RETURN JSON: { "next": "dentix_advisor" }
+
+**CASO 6: ASESOR BIENESTAR PLUS (RUTEAR AMPLIAMENTE)**
 SI el usuario menciona CUALQUIERA de estos temas:
 - "bienestar plus", "bienestar", "seguro de bienestar", "seguro"
 - "cobertura", "beneficios", "servicios incluidos", "qué tengo derecho", "qué incluye"
@@ -82,7 +106,7 @@ SI el usuario menciona CUALQUIERA de estos temas:
 - **Cualquier pregunta específica sobre servicios o productos de seguros**
 -> RETURN JSON: { "next": "bienestar_plus_advisor" }
 
-**CASO 5: CONVERSACIÓN GENERAL (SOLO SALUDOS MUY BÁSICOS Y PERFECTOS)**
+**CASO 7: CONVERSACIÓN GENERAL (SOLO SALUDOS MUY BÁSICOS Y PERFECTOS)**
 SI el usuario dice ÚNICAMENTE (sin errores de tipeo):
 - "Hola" (exactamente, una sola palabra)
 - "Buenos días" (exactamente, sin más contexto)
@@ -124,6 +148,14 @@ async function supervisorNode(state) {
             console.log("Service-based Routing: -> [Vida Deudor Advisor]");
             return { next: "vida_deudor_advisor" };
         }
+        if (clientService.includes("autos")) {
+            console.log("Service-based Routing: -> [Seguro Autos Advisor]");
+            return { next: "seguro_autos_advisor" };
+        }
+        if (clientService.includes("dentix")) {
+            console.log("Service-based Routing: -> [Dentix Advisor]");
+            return { next: "dentix_advisor" };
+        }
     }
     const recentHistory = messages.slice(-6);
     // console.log(`Supervisor analyzing history (${recentHistory.length} msgs)...`);
@@ -158,6 +190,14 @@ async function supervisorNode(state) {
         console.log("Supervisor Decision: -> [SOAT Advisor]");
         return { next: "soat_advisor" };
     }
+    if (decision.next === "seguro_autos_advisor") {
+        console.log("Supervisor Decision: -> [Seguro Autos Advisor]");
+        return { next: "seguro_autos_advisor" };
+    }
+    if (decision.next === "dentix_advisor") {
+        console.log("Supervisor Decision: -> [Dentix Advisor]");
+        return { next: "dentix_advisor" };
+    }
     if (decision.next === "bienestar_plus_advisor") {
         console.log("Supervisor Decision: -> [Bienestar Plus Advisor]");
         // console.log("🔄 [Supervisor] Handing over to Bienestar Plus Advisor (LLM Decision)");
@@ -178,6 +218,8 @@ const workflow = new StateGraph(AgentState)
     .addNode("vida_deudor_advisor", vidaDeudorWorkflow)
     .addNode("mascotas_advisor", mascotasWorkflow)
     .addNode("soat_advisor", soatWorkflow)
+    .addNode("seguro_autos_advisor", seguroAutosAdvisor)
+    .addNode("dentix_advisor", dentixAdvisor)
     .addEdge("__start__", "identify_client")
     .addEdge("identify_client", "supervisor")
     .addConditionalEdges("supervisor", (x) => x.next, {
@@ -185,10 +227,14 @@ const workflow = new StateGraph(AgentState)
     "vida_deudor_advisor": "vida_deudor_advisor",
     "mascotas_advisor": "mascotas_advisor",
     "soat_advisor": "soat_advisor",
+    "seguro_autos_advisor": "seguro_autos_advisor",
+    "dentix_advisor": "dentix_advisor",
     "FINISH": END
 })
     .addEdge("bienestar_plus_advisor", END)
     .addEdge("vida_deudor_advisor", END)
     .addEdge("mascotas_advisor", END)
-    .addEdge("soat_advisor", END);
+    .addEdge("soat_advisor", END)
+    .addEdge("seguro_autos_advisor", END)
+    .addEdge("dentix_advisor", END);
 export const graph = workflow.compile({ checkpointer });
