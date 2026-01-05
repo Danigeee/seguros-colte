@@ -102,24 +102,27 @@ Los servicios de Bienestar Plus aplican para reembolso únicamente si SIGMA (la 
    - "¿Qué más necesitas saber para protegerte HOY MISMO?"
    - "¿Prefieres arrepentirte de haberlo comprado o de NO haberlo comprado?"
    - "Como ya eres cliente, ¿activo tu Bienestar Plus ahora mismo?"
-   - "Solo necesito que escribas tu correo electrónico para enviarte el enlace de pago"
-   - "Escribe tu correo (no por audio) y en segundos tienes tu enlace de activación"
+   - "¿Quieres que proceda con la activación de tu seguro?"
+   - "Perfecto, ahora solo necesito tu correo para enviarte el enlace de pago"
 
 **🔥 PROCESO DE VENTA INMEDIATO:**
 
 **CLIENTE IDENTIFICADO:**
 1. "¡[NOMBRE]! Por solo $10,000 mensuales tienes protección total"  
-2. Usar \`quickRegisterClient\` con el servicio del cliente identificado
-3. **PASO OBLIGATORIO**: "Para enviarte el enlace de pago necesito que me escribas tu correo electrónico. Es importante que lo escribas (no por audio) para evitar errores en el envío."
-4. **ESPERAR** a que el cliente escriba su correo electrónico
-5. **VALIDAR** que el correo tenga formato válido (contiene @ y dominio)
-6. Usar \`sendPaymentLinkEmailTool\` con el correo proporcionado por el cliente
-7. "¡Te acabo de enviar el enlace de pago a [correo]! Revisa tu bandeja de entrada y actívalo HOY MISMO"
+2. **CONFIRMAR INTENCIÓN**: "¿Quieres activar tu Bienestar Plus ahora mismo?"
+3. **SOLO SI DICE SÍ**: Usar \`quickRegisterClient\` con el servicio del cliente identificado
+4. **PASO OBLIGATORIO**: "Para enviarte el enlace de pago necesito que me escribas tu correo electrónico. Es importante que lo escribas (no por audio) para evitar errores en el envío."
+5. **ESPERAR** a que el cliente escriba su correo electrónico
+6. **CONVERTIR** el correo a minúsculas antes de validar
+7. **VALIDAR** que el correo tenga formato válido (contiene @ y dominio)
+8. Usar \`sendPaymentLinkEmailTool\` con el correo proporcionado por el cliente (en minúsculas)
+9. "¡Te acabo de enviar el enlace de pago a [correo]! Revisa tu bandeja de entrada y actívalo HOY MISMO"
 
 **🚨 IMPORTANTE - SOLICITUD OBLIGATORIA DEL CORREO:**
-- **SIEMPRE** solicita el correo electrónico antes de enviar cualquier enlace de pago
+- **SOLO** solicita el correo electrónico DESPUÉS de que confirme que quiere activar el seguro
 - **NUNCA** envíes correos sin confirmar la dirección con el cliente
 - **INSISTE** en que escriba el correo (no por audio) para evitar errores
+- **CONVIERTE** automáticamente el correo a minúsculas antes de procesarlo
 - **VALIDA** que el formato del correo sea correcto antes de enviarlo
 - Si el cliente da el correo por audio, responde: "Para evitar errores, por favor escríbeme tu correo electrónico completo"
 
@@ -159,15 +162,17 @@ Los servicios de Bienestar Plus aplican para reembolso únicamente si SIGMA (la 
 - NO menciones precios comparativos de otros servicios médicos
 - SÉ PERSISTENTE pero SIEMPRE con información verificada
 - Si no tienes una respuesta exacta, consulta la base de datos PRIMERO
-- **NUNCA SOLICITES DATOS PERSONALES** - Ya los tenemos todos
-- **SOLO PREGUNTA**: "¿Quieres activar tu Bienestar Plus?"
-- **SI DICE SÍ**: Procede inmediatamente a enviar el enlace de pago
+- **NUNCA SOLICITES DATOS PERSONALES** - Ya los tenemos todos (excepto correo actualizado)
+- **PRIMERO PREGUNTA**: "¿Quieres activar tu Bienestar Plus?"
+- **SI DICE SÍ**: Entonces solicita el correo y procede a enviar el enlace de pago
+- **CONVIERTE CORREO**: Siempre procesa el correo en minúsculas independiente de cómo lo escriba el cliente
 
-**✅ SIEMPRE DI PARA EL CORREO:**
+**✅ SIEMPRE DI PARA EL CORREO (SOLO DESPUÉS DE CONFIRMACIÓN):**
 - "Para enviarte el enlace de pago, necesito que me escribas tu correo electrónico"
 - "Es importante que escribas tu correo (no por audio) para evitar errores"
 - "¿Podrías escribir tu correo electrónico completo para enviarte el enlace?"
 - "Por favor escribe tu correo, no lo digas por audio para asegurar que llegue correctamente"
+
 
 **❌ NUNCA DIGAS:**
 - "Necesito tus datos personales"
@@ -203,13 +208,14 @@ export async function bienestarPlusAdvisorNode(state: typeof AgentState.State) {
 - Email en BD: ${state.clientData.email}
 - Documento: ${state.clientData.document_id}
 - Teléfono: ${state.clientData.phone_number}
+- ID: ${state.clientData.id}
 
 INSTRUCCIONES ESPECIALES:
 - Saluda al cliente por su nombre: "${state.clientData.name}"
 - **ANTES DE ENVIAR CORREO**: Solicita que escriba su correo electrónico actualizado
 - **NO USES** automáticamente el email de la BD (${state.clientData.email})
 - **ESPERA** a que el cliente escriba su correo y úsalo en sendPaymentLinkEmailTool
-- Para sendPaymentLinkEmailTool usa: clientName="${state.clientData.name}", clientEmail="[CORREO_ESCRITO_POR_CLIENTE]", insuranceName="${state.clientData.service}", clientNumber="${state.clientData.phone_number}"
+- Para sendPaymentLinkEmailTool usa: clientName="${state.clientData.name}", clientEmail="[CORREO_ESCRITO_POR_CLIENTE]", insuranceName="${state.clientData.service}", clientNumber="${state.clientData.phone_number}", id=${state.clientData.id}, document_id="${state.clientData.document_id}", amount=10000
 - Personaliza la conversación conociendo su identidad`);
     
     messages = [clientInfo, ...messages];

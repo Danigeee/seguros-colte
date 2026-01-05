@@ -34,7 +34,7 @@ export const createPerson = async (data: CreatePersonRequest): Promise<CreatePer
     const response = await apiClient.post<CreatePersonResponse>('/CrearPersona', data);
     return response.data;
   } catch (error) {
-    console.error('Error creating person in Payments Way:', error);
+    console.error('Error creating person in Payments Way:', );
     throw error;
   }
 };
@@ -47,7 +47,7 @@ export const createPaymentLink = async (data: CreatePaymentLinkRequest): Promise
     const response = await apiClient.post<CreatePaymentLinkResponse>('/CrearLinkDePago', data);
     return response.data;
   } catch (error) {
-    console.error('Error creating payment link in Payments Way:', error);
+    console.error('Error creating payment link in Payments Way:', );
     throw error;
   }
 };
@@ -107,13 +107,13 @@ export const generatePaymentLinkFlow = async (data: PaymentFlowRequest): Promise
       });
 
     if (subscriptionError) {
-      console.error('Error creating subscription record:', subscriptionError);
+      console.error('Error creating subscription record:', );
       // No lanzamos error para no bloquear el retorno del link, pero lo logueamos
     }
 
     return linkResponse.linkgenerado; // O linkcorto si prefieres
   } catch (error) {
-    console.error('Error in payment link generation flow:', error);
+    console.error('Error in payment link generation flow:', );
     throw error;
   }
 };

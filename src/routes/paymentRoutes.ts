@@ -5,6 +5,7 @@ import { PaymentFlowRequest } from '../types/paymentsWay.js';
 const router = Router();
 
 router.post('/create-link', async (req: Request<{}, {}, PaymentFlowRequest>, res: Response) => {
+  console.log('Received /create-link request with body:', req.body);
   try {
     const { 
       firstname, 
@@ -44,7 +45,7 @@ router.post('/create-link', async (req: Request<{}, {}, PaymentFlowRequest>, res
     });
 
   } catch (error) {
-    console.error('Error in /create-link route:', error);
+    // console.error('Error in /create-link route:', error);
     res.status(500).json({ error: 'Internal server error processing payment link' });
   }
 });
