@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { generatePaymentLinkFlow } from '../services/paymentsWayService.js';
 const router = Router();
 router.post('/create-link', async (req, res) => {
+    console.log('Received /create-link request with body:', req.body);
     try {
         const { firstname, lastname, identification, email, phone, amount, description, clientId, totalInstallments } = req.body;
         // Validaciones básicas
@@ -27,7 +28,7 @@ router.post('/create-link', async (req, res) => {
         });
     }
     catch (error) {
-        console.error('Error in /create-link route:', error);
+        // console.error('Error in /create-link route:', error);
         res.status(500).json({ error: 'Internal server error processing payment link' });
     }
 });

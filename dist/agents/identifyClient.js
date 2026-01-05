@@ -30,8 +30,9 @@ export async function identifyClientNode(state, config) {
         const clientData = await getClientByPhoneNumber(formattedPhone);
         if (clientData) {
             console.log(`✅ Cliente identificado: ${clientData.name}`);
-            console.log(`   Email: ${clientData.email}`);
+            console.log(`  Email: ${clientData.email}`);
             console.log(`   Documento: ${clientData.document_id}`);
+            console.log(`   ID: ${clientData.id}`);
             // Añadir mensaje de sistema con información del cliente
             const systemMessage = new SystemMessage(`INFORMACIÓN DEL CLIENTE IDENTIFICADO:
         - Nombre: ${clientData.name}
@@ -40,6 +41,7 @@ export async function identifyClientNode(state, config) {
         - Teléfono: ${clientData.phone_number}
         - Servicio: ${clientData.service || 'No especificado'}
         - Producto: ${clientData.product || 'No especificado'}
+        - ID: ${clientData.id}
 
         INSTRUCCIONES:
         - Dirígete al cliente por su nombre (${clientData.name})

@@ -10,7 +10,7 @@ export async function getClientByPhoneNumber(phoneNumber) {
         console.log(`Número formateado: ${formattedNumber}`);
         const { data, error } = await supabase
             .from('dentix_clients')
-            .select('name, email, document_id, phone_number, service, product')
+            .select('id, name, email, document_id, phone_number, service, product')
             .eq('phone_number', formattedNumber)
             .single();
         if (error) {
@@ -34,7 +34,8 @@ export async function getClientByPhoneNumber(phoneNumber) {
             document_id: client.document_id || '',
             phone_number: client.phone_number || formattedNumber,
             service: client.service || undefined,
-            product: client.product || undefined
+            product: client.product || undefined,
+            id: client.id || undefined
         };
     }
     catch (error) {
