@@ -68,4 +68,5 @@ app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
   console.log(`🔧 Protección contra crashes activada`);
   console.log(`💾 Monitoreo de memoria activado`);
+  
 });

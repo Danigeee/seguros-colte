@@ -7,6 +7,7 @@ export interface ClientData {
   phone_number: string;
   service?: string;
   product?: string;
+  id?: number;
 }
 
 /**
@@ -23,7 +24,7 @@ export async function getClientByPhoneNumber(phoneNumber: string): Promise<Clien
     
     const { data, error } = await supabase
       .from('dentix_clients')
-      .select('name, email, document_id, phone_number, service, product')
+      .select('id, name, email, document_id, phone_number, service, product')
       .eq('phone_number', formattedNumber)
       .single();
       
@@ -44,6 +45,7 @@ export async function getClientByPhoneNumber(phoneNumber: string): Promise<Clien
       phone_number: string | null;
       service: string | null;
       product: string | null;
+      id: number | null;
     };
     
     if (!client) {
@@ -59,7 +61,8 @@ export async function getClientByPhoneNumber(phoneNumber: string): Promise<Clien
       document_id: client.document_id || '',
       phone_number: client.phone_number || formattedNumber,
       service: client.service || undefined,
-      product: client.product || undefined
+      product: client.product || undefined,
+      id: client.id || undefined
     };
     
   } catch (error) {
