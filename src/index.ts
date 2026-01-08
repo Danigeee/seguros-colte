@@ -12,15 +12,16 @@ const PORT = 3033;
 const allowedOrigins = ['http://localhost:5173', 'https://ultim-admin-dashboard.web.app', 'https://ultim-admin-dashboard.firebaseapp.com', 'https://dashboard.ultim.pro', 'https://ultim.pro', 'https://trasnferchat-1336.twil.io/transferChat', 'https://trasnferchat-1336.twil.io', 'https://ultim.pro/dashboard/carestream/chat-carestream', 'https://elevenlabs.io'];
 
 app.use(cors({
-  origin: function (origin, callback) {
-    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      console.warn(`🛑 CORS bloqueó petición desde origin: ${origin}`);
-      callback(new Error('Not allowed by CORS'));
-    }
-  }
+  origin: '*', // Cambia temporalmente a '*' para descartar CORS como problema
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
+
+app.use((req, res, next) => {
+  console.log(`📡 [${new Date().toISOString()}] ${req.method} ${req.url}`);
+  console.log(`   Headers: ${JSON.stringify(req.headers)}`);
+  next();
+});
 
 app.options('*', cors());
 
