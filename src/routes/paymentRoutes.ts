@@ -4,7 +4,7 @@ import { PaymentFlowRequest } from '../types/paymentsWay.js';
 
 const router = Router();
 
-router.post('/create-link', async (req: Request<{}, {}, PaymentFlowRequest>, res: Response) => {
+router.post('/seguros-colte/create-link', async (req: Request<{}, {}, PaymentFlowRequest>, res: Response) => {
   console.log('Received /create-link request with body:', req.body);
   try {
     const { 

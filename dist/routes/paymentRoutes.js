@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { generatePaymentLinkFlow } from '../services/paymentsWayService.js';
 const router = Router();
-router.post('/create-link', async (req, res) => {
+router.post('/seguros-colte/create-link', async (req, res) => {
     console.log('Received /create-link request with body:', req.body);
     try {
         const { firstname, lastname, identification, email, phone, amount, description, clientId, totalInstallments } = req.body;
