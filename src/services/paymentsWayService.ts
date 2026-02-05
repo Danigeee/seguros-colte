@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { supabase } from '../config/supabase.js';
+import { notifySupervisorPaymentLink } from '../functions/sharedFunctions.js';
 import { 
   CreatePersonRequest, 
   CreatePersonResponse, 
@@ -107,9 +108,12 @@ export const generatePaymentLinkFlow = async (data: PaymentFlowRequest): Promise
       });
 
     if (subscriptionError) {
-      console.error('Error creating subscription record:', );
+      console.error('Error creating subscription record:');
       // No lanzamos error para no bloquear el retorno del link, pero lo logueamos
     }
+
+    // Notificar al supervisor sobre el nuevo enlace de pago
+    await notifySupervisorPaymentLink(data, linkResponse.linkgenerado);
 
     return linkResponse.linkgenerado; // O linkcorto si prefieres
   } catch (error) {

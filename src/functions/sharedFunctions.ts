@@ -37,6 +37,93 @@ const getPaymentLink = (insuranceName: string): string => {
 };
 
 /**
+ * Función para notificar al supervisor cuando se crea un nuevo enlace de pago
+ * Acepta un objeto PaymentFlowRequest para mayor flexibilidad
+ */
+export const notifySupervisorPaymentLink = async (
+  paymentData: {
+    firstname?: string;
+    lastname?: string;
+    identification?: string;
+    email?: string;
+    phone?: string;
+    amount?: number;
+    description?: string;
+    clientId?: number;
+    totalInstallments?: number;
+  },
+  paymentLink: string
+) => {
+  try {
+    const fullName = `${paymentData.firstname || 'N/A'} ${paymentData.lastname || ''}`.trim();
+    const productName = paymentData.description || 'Producto no especificado';
+    console.log(`📧 NOTIFICANDO AL SUPERVISOR sobre nuevo enlace de pago para: ${fullName} - ${productName}`);
+    
+    const msg = {
+      to: "mariana.b@ultimmarketing.com",
+      from: {
+        email: process.env.SENDGRID_FROM_EMAIL || 'no-reply@coltefinanciera.com',
+        name: 'Sistema Coltefinanciera'
+      },
+      subject: `🔔 Nueva Compra: ${productName} - ${fullName}`,
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f8f9fa;">
+          <div style="text-align: center; margin-bottom: 30px;">
+            <h1 style="color: #2c3e50; margin-bottom: 10px;">📋 Nueva Compra Iniciada</h1>
+            <h2 style="color: #3498db; font-weight: normal;">Enlace de pago generado</h2>
+            <div style="background-color: #e74c3c; color: white; padding: 15px; border-radius: 8px; margin: 15px 0; font-size: 18px; font-weight: bold;">
+              🛡️ PRODUCTO: ${productName}
+            </div>
+          </div>
+          
+          <div style="background-color: white; padding: 25px; border-radius: 8px; margin-bottom: 25px; border-left: 4px solid #3498db;">
+            <h3 style="color: #2c3e50; margin-top: 0;">👤 Información del Cliente:</h3>
+            <ul style="list-style: none; padding: 0;">
+              <li style="padding: 8px 0; border-bottom: 1px solid #ecf0f1;"><strong>👤 Nombre:</strong> ${fullName}</li>
+              <li style="padding: 8px 0; border-bottom: 1px solid #ecf0f1;"><strong>🆔 Identificación:</strong> ${paymentData.identification || 'No disponible'}</li>
+              <li style="padding: 8px 0; border-bottom: 1px solid #ecf0f1;"><strong>📧 Email:</strong> ${paymentData.email || 'No disponible'}</li>
+              <li style="padding: 8px 0; border-bottom: 1px solid #ecf0f1;"><strong>📱 Teléfono:</strong> ${paymentData.phone || 'No disponible'}</li>
+              
+            </ul>
+          </div>
+          
+          <div style="background-color: white; padding: 25px; border-radius: 8px; margin-bottom: 25px; border-left: 4px solid #e74c3c;">
+            <h3 style="color: #2c3e50; margin-top: 0;">💰 Detalles del Pago:</h3>
+            <ul style="list-style: none; padding: 0;">
+              <li style="padding: 12px 0; border-bottom: 2px solid #e74c3c; background-color: #ffeaa7; margin-bottom: 10px; border-radius: 5px; text-align: center;"><strong style="font-size: 16px;">🛡️ SEGURO: ${productName}</strong></li>
+              <li style="padding: 8px 0; border-bottom: 1px solid #ecf0f1;"><strong>💵 Monto Mensual:</strong> $${paymentData.amount ? paymentData.amount.toLocaleString() : 'N/A'} COP</li>
+              <li style="padding: 8px 0; border-bottom: 1px solid #ecf0f1;"><strong>🔄 Cuotas:</strong> ${paymentData.totalInstallments || 12} meses</li>
+              <li style="padding: 8px 0;"><strong>💰 Total:</strong> $${paymentData.amount ? (paymentData.amount * (paymentData.totalInstallments || 12)).toLocaleString() : 'N/A'} COP</li>
+            </ul>
+          </div>
+          
+          <div style="background-color: white; padding: 25px; border-radius: 8px; border-left: 4px solid #27ae60;">
+            <h3 style="color: #2c3e50; margin-top: 0;">🔗 Enlace Generado:</h3>
+            <p style="word-break: break-all; background-color: #f8f9fa; padding: 15px; border-radius: 5px; font-family: monospace;">
+              <a href="${paymentLink}" style="color: #3498db;">${paymentLink}</a>
+            </p>
+          </div>
+          
+          <div style="text-align: center; margin-top: 30px; padding: 20px; background-color: #ecf0f1; border-radius: 8px;">
+            <p style="color: #7f8c8d; margin: 0;">📧 Notificación automática del Sistema Coltefinanciera</p>
+            <p style="color: #7f8c8d; margin: 5px 0 0 0; font-size: 12px;">Generado el ${new Date().toLocaleString('es-CO', { timeZone: 'America/Bogota' })}</p>
+          </div>
+        </div>
+      `
+    };
+    
+    await sgMail.send(msg);
+    console.log(`✅ Notificación enviada al supervisor exitosamente`);
+    return true;
+    
+  } catch (error) {
+    console.error('❌ Error enviando notificación al supervisor:', error);
+    // No lanzar error para no bloquear el flujo principal
+    return false;
+  }
+};
+
+/**
  * Función para enviar enlace de pago por correo electrónico usando SendGrid
  */
 export const sendPaymentLinkEmail = async (clientName: string, clientEmail: string, insuranceName: string, clientNumber: string) => {
