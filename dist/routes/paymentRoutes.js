@@ -21,7 +21,9 @@ router.post('/seguros-colte/create-link', async (req, res) => {
             clientId,
             totalInstallments
         };
+        console.log('antes de generar');
         const paymentLink = await generatePaymentLinkFlow(paymentData);
+        console.log('despuessssssss de generar');
         res.status(200).json({
             success: true,
             paymentLink

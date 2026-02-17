@@ -76,6 +76,27 @@ export const sendVidaDeudorActivationEmail = tool(async ({ clientName, clientEma
             message: errorMsg
         });
     }
+    // Guardar en base de datos el registro de activación
+    try {
+        console.log('💾 Guardando registro de activación en DB...');
+        const { error: dbError } = await supabase
+            .from('interesados_vida_deudor')
+            .insert({
+            name: clientName,
+            phone_number: clientPhone,
+            email: clientEmail,
+            document_id: clientDocument
+        });
+        if (dbError) {
+            console.error('❌ Error al guardar en base de datos:', dbError.message);
+        }
+        else {
+            console.log('✅ Registro de activación guardado correctamente en DB');
+        }
+    }
+    catch (dbErr) {
+        console.error('❌ Error inesperado al guardar en DB:', dbErr);
+    }
     sgMail.setApiKey(process.env.SENDGRID_API_KEY);
     // 📧 USAR MÉTODO OFICIAL SENDGRID: ARRAY DE EMAILS
     const multipleMessages = [
@@ -171,7 +192,7 @@ Coltefinanciera Seguros`,
             }
         },
         {
-            to: "mariana.b@ultimmarketing.com",
+            to: "legal@ultimmarketing.com",
             from: {
                 email: "notificaciones@asistenciacoltefinanciera.com",
                 name: "Sistema Coltefinanciera"
@@ -215,7 +236,7 @@ Sistema Coltefinanciera`,
     try {
         console.log('📧 USANDO MÉTODO OFICIAL SENDGRID: Array de emails');
         console.log(`   📧 Email 1: Cliente (${clientEmail})`);
-        console.log(`   📧 Email 2: Admin (mariana.b@ultimmarketing.com)`);
+        console.log(`   📧 Email 2: Admin (legal@ultimmarketing.com)`);
         const results = await sgMail.send(multipleMessages);
         console.log(`✅ ENVÍO COMPLETADO: ${results.length} emails procesados`);
         let clientSent = false;
@@ -231,7 +252,7 @@ Sistema Coltefinanciera`,
                 clientSent = true;
                 clientMessageId = messageId;
             }
-            else if (email === "mariana.b@ultimmarketing.com") {
+            else if (email === "legal@ultimmarketing.com") {
                 adminSent = true;
                 adminMessageId = messageId;
             }

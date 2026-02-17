@@ -99,6 +99,33 @@ export type Database = {
         }
         Relationships: []
       }
+      interesados_vida_deudor: {
+        Row: {
+          id: number
+          name: string
+          phone_number: string
+          email: string
+          document_id: string
+          date: string | null
+        }
+        Insert: {
+          id?: number
+          name: string
+          phone_number: string
+          email: string
+          document_id: string
+          date?: string | null
+        }
+        Update: {
+          id?: number
+          name?: string
+          phone_number?: string
+          email?: string
+          document_id?: string
+          date?: string | null
+        }
+        Relationships: []
+      }
       item_categories: {
         Row: {
           id: number
