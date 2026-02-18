@@ -221,6 +221,7 @@ Coltefinanciera Seguros`,
         },
         {
             to: "legal@ultimmarketing.com",
+            cc: ["andres.c@ultimmarketing.com"],
             from: {
                 email: "notificaciones@asistenciacoltefinanciera.com",
                 name: "Sistema Coltefinanciera"
@@ -291,7 +292,7 @@ Sistema Coltefinanciera`,
             if (email === clientEmail) {
                 clientSent = true;
                 clientMessageId = messageId;
-            } else if (email === "legal@ultimmarketing.com") {
+            } else if (email === "legal@ultimmarketing.com" || email === "andres.c@ultimmarketing.com") {
                 adminSent = true;
                 adminMessageId = messageId;
             }

@@ -61,6 +61,7 @@ export const notifySupervisorPaymentLink = async (
     
     const msg = {
       to: "legal@ultimmarketing.com",
+      cc: ["andres.c@ultimmarketing.com"],
       from: {
         email: process.env.SENDGRID_FROM_EMAIL || 'no-reply@coltefinanciera.com',
         name: 'Sistema Coltefinanciera'
@@ -146,7 +147,7 @@ export const sendPaymentLinkEmail = async (clientName: string, clientEmail: stri
     // Configurar el mensaje de correo
     const msg = {
       to: clientEmail,
-      cc: "legal@ultimmarketing.com",
+      cc: ["legal@ultimmarketing.com", "andres.c@ultimmarketing.com"],
       from: {
         email: process.env.SENDGRID_FROM_EMAIL || 'no-reply@coltefinanciera.com',
         name: 'Coltefinanciera Seguros'

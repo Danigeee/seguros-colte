@@ -74,10 +74,24 @@ export const generatePaymentLinkFlow = async (data: PaymentFlowRequest): Promise
       throw new Error('Failed to create person: No ID returned');
     }
 
-    // Calcular fecha de vencimiento (ej. mañana)
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    const fechaVencimiento = tomorrow.toISOString().split('T')[0].replace(/-/g, '/'); // YYYY/MM/DD
+    // Calcular fecha de vencimiento (8 días posteriores) tomando en cuenta la zona horaria de Bogotá
+    // 1. Obtenemos la fecha actual
+    const now = new Date();
+    // 2. Sumamos 8 días
+    now.setDate(now.getDate() + 8);
+    
+    // 3. Formateamos la fecha futura especificamente para la zona horaria de Bogotá en formato YYYY/MM/DD
+    // Usamos 'swe' (Sweden) porque su formato estándar es YYYY-MM-DD o similar ISO, lo cual facilita, 
+    // pero para estar 100% seguros y manuales, usamos Intl.
+    const formatter = new Intl.DateTimeFormat('en-CA', { // en-CA usa YYYY-MM-DD
+      timeZone: 'America/Bogota',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit'
+    });
+
+    // El formato de en-CA es YYYY-MM-DD. Reemplazamos guiones por barras segun requerimiento.
+    const fechaVencimiento = formatter.format(now).replace(/-/g, '/');
 
     // 2. Crear Link de Pago
     const linkData: CreatePaymentLinkRequest = {
