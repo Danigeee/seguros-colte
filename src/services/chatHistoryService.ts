@@ -1,3 +1,4 @@
+import { PostgrestError } from '@supabase/supabase-js';
 import { supabase } from '../config/supabase.js';
 import { Tables } from '../types/db.js';
 
@@ -11,6 +12,20 @@ interface ChatMessage {
 interface ChatHistory extends Omit<Tables<'chat_history'>, 'messages'> {
   messages: ChatMessage[];
 }
+
+function buildEntry(
+    user: 'client_message' | 'agent_message' | 'system_message',
+    message: string,
+    url: string
+  ): ChatMessage {
+    return {
+      user,
+      message,
+      url,
+      date: new Date().toISOString()
+    };
+  }
+
 
 export class ChatHistoryService {
 
@@ -167,3 +182,59 @@ export class ChatHistoryService {
     console.log('Message status update not needed with current structure');
   }
 }
+
+export async function saveTemplateChatHistory(
+    clientNumber: string,
+    newMessage: string,
+    isClient: boolean,         // no lo usas, pero lo conservo por firma
+    newMediaUrl: string,
+    user: 'client_message' | 'agent_message' | 'system_message'
+  ): Promise<void> {
+    const entry = buildEntry(user, newMessage, newMediaUrl || '');
+  
+    /* 1) — intentar INSERTAR la fila nueva */
+    const { error: insertError } = await supabase
+      .from('chat_history')
+      .insert([
+        {
+          client_number: clientNumber,
+          messages: [entry] as any,   // primer mensaje
+          chat_on: true
+        }
+      ]);
+  
+    /* 2) — ¿hubo error?  */
+    if (insertError) {
+      const code = (insertError as PostgrestError).code;
+  
+      /* 2.a) — si es 23505, alguien insertó antes; toca UPDATE */
+      if (code === '23505') {
+        // obtenemos la fila existente
+        const { data: chat, error: fetchError } = await supabase
+          .from('chat_history')
+          .select('id, messages')
+          .eq('client_number', clientNumber)
+          .single();
+  
+        if (fetchError) throw fetchError;          // algo raro pasó
+  
+        const existingMessages = (chat!.messages as unknown) as ChatMessage[];
+        const updatedMessages = [...existingMessages, entry];
+  
+        const { error: updateError } = await supabase
+          .from('chat_history')
+          .update({ messages: updatedMessages as any })
+          .eq('id', chat!.id);
+  
+        if (updateError) throw updateError;
+  
+        console.log('Mensaje añadido vía UPDATE');
+      }
+      /* 2.b) — cualquier otro error: propágalo */
+      else {
+        throw insertError;
+      }
+    } else {
+      console.log('Fila creada vía INSERT');
+    }
+  }

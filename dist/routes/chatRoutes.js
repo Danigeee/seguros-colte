@@ -11,6 +11,7 @@ import fs from 'fs';
 import { v4 as uuidv4 } from 'uuid';
 import { initializeApp } from "firebase/app";
 import { getDownloadURL, getStorage, ref, uploadBytesResumable } from 'firebase/storage';
+import { saveTemplateChatHistory } from '../utils/saveHistoryDb.js';
 const router = Router();
 const chatService = new ChatHistoryService();
 const MessagingResponse = twilio.twiml.MessagingResponse; // mandar un texto simple
@@ -410,6 +411,54 @@ router.post('/seguros-colte/chat-dashboard', async (req, res) => {
         res.status(500).send({
             error: error instanceof Error ? error.message : "An unknown error occurred"
         });
+    }
+});
+// Ruta para enviar una plantilla de WhatsApp
+// Body esperado: { to, templateId, user, contentVariables: { "1": "valor1", "2": "valor2", ... } }
+router.post('/seguros-colte/send-template', async (req, res) => {
+    const { to, templateId, user, contentVariables, name } = req.body;
+    if (!to || !templateId) {
+        res.status(400).json({ success: false, message: 'Los campos "to" y "templateId" son obligatorios' });
+        return;
+    }
+    const resolvedContentVariables = contentVariables
+        ? contentVariables
+        : name
+            ? { "1": name }
+            : undefined;
+    try {
+        console.log(`Enviando plantilla ${templateId} a ${to}`);
+        const message = await client.messages.create({
+            from: `whatsapp:+5742044840`,
+            // from: 'whatsapp:+14155238886',
+            to: `whatsapp:${to}`,
+            messagingServiceSid: "MG81f7782c09f199d0ddde5d5bf1a25a3d",
+            contentSid: templateId,
+            ...(resolvedContentVariables && { contentVariables: JSON.stringify(resolvedContentVariables) }),
+        });
+        console.log('body', message.body);
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        // Obtener el cuerpo del mensaje directamente desde la API de Twilio
+        const fetchedMessage = await client.messages(message.sid).fetch();
+        const messageBody = fetchedMessage.body;
+        console.log('messageBody', messageBody);
+        // Guardar el mensaje en la base de datos
+        await saveTemplateChatHistory(to, messageBody, false, '', user);
+        res.status(200).json({ success: true, message: messageBody, sid: message.sid });
+    }
+    catch (error) {
+        res.status(500).json({ success: false, message: 'Error al enviar la plantilla', error: error instanceof Error ? error.message : 'An unknown error occurred' });
+    }
+});
+// Ruta para obtener detalles de un mensaje específico por SID
+router.get('/seguros-colte/message/:sid', async (req, res) => {
+    const { sid } = req.params;
+    try {
+        const message = await client.messages(sid).fetch();
+        res.status(200).json({ success: true, message });
+    }
+    catch (error) {
+        res.status(500).json({ success: false, message: 'Error al obtener el mensaje', error: error instanceof Error ? error.message : 'An unknown error occurred' });
     }
 });
 export default router;
