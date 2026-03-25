@@ -1,6 +1,7 @@
 import express from "express";
 import chatRoutes from './routes/chatRoutes.js';
 import paymentRoutes from './routes/paymentRoutes.js';
+import mefiaRoutes from './routes/mefiaRoutes.js';
 import cors from "cors";
 
 const app = express();
@@ -37,6 +38,7 @@ process.on('unhandledRejection', (reason, promise) => {
 
 app.use('/', paymentRoutes); // Rutas de pagos -> Crear Persona y Link de Pago
 app.use('/', chatRoutes);
+app.use('/', mefiaRoutes);
 
 // Capturar errores no manejados para evitar reinicios
 process.on('uncaughtException', (error) => {

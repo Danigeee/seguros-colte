@@ -2,6 +2,7 @@ import { tool } from "@langchain/core/tools";
 import { z } from "zod";
 import { searchBienestarDocuments } from "../functions/bienestarFunctions.js";
 import { smartSearchBienestar } from "../functions/advancedRetrievers.js";
+import { procesarPagoMeFiaTool } from "./procesarPagoMeFiaTool.js";
 
 /**
  * Herramienta para consultar información oficial de Bienestar Plus
@@ -62,9 +63,9 @@ export const searchBienestarDocumentsTool = tool(
       return resultado;
     } catch (error: any) {
       console.error("Error en búsqueda de documentos:", error);
-      
 
-      
+
+
       return "Error técnico temporal. Te puedo ayudar con información sobre Bienestar Plus. ¿Qué necesitas saber?";
     }
   },
@@ -133,5 +134,6 @@ ${resultado}`;
 export const bienestarTools = [
   consultBienestarSpecialistTool,
   searchBienestarDocumentsTool,
+  procesarPagoMeFiaTool
   // consultBienestarSmartTool //! <-- No está en uso aún
 ];

@@ -45,7 +45,7 @@ router.get('/seguros-colte/health', (req: Request, res: Response) => {
     uptime: process.uptime()
   });
 });
-   
+
 
 // Verificar configuración de Twilio
 // console.log('🔧 CONFIGURACIÓN TWILIO:');
@@ -68,7 +68,7 @@ router.post('/seguros-colte/receive-message', async (req: Request, res: Response
 
     if (conversation.chat_on) {
       // console.log(`[MODO HUMANO] Chat atendido por asesor. IA en pausa.`);
-      
+
       let contentToSave = Body || '';
       let firebaseUrl = null;
 
@@ -103,11 +103,11 @@ router.post('/seguros-colte/receive-message', async (req: Request, res: Response
         messageType = mediaData.type;
 
         if (mediaData.type === 'audio') {
-            finalUserMessage = mediaData.transcription || '[Audio ininteligible]';
+          finalUserMessage = mediaData.transcription || '[Audio ininteligible]';
         } else if (mediaData.type === 'image') {
-            finalUserMessage = finalUserMessage || `[Imagen enviada: ${mediaData.url}]`;
+          finalUserMessage = finalUserMessage || `[Imagen enviada: ${mediaData.url}]`;
         } else {
-            finalUserMessage = `[Archivo enviado: ${mediaData.url}]`;
+          finalUserMessage = `[Archivo enviado: ${mediaData.url}]`;
         }
       } catch (e) {
         console.error('Error procesando media:', e);
@@ -116,65 +116,65 @@ router.post('/seguros-colte/receive-message', async (req: Request, res: Response
     }
 
     await chatService.saveMessage({
-        conversationId: conversation.id,
-        sender: 'user',
-        message: finalUserMessage,
-        twilioSid: MessageSid,
-        type: messageType,
-        url: firebaseUrl || undefined
+      conversationId: conversation.id,
+      sender: 'user',
+      message: finalUserMessage,
+      twilioSid: MessageSid,
+      type: messageType,
+      url: firebaseUrl || undefined
     });
 
     console.log(`IA procesando...`);
-    
+
     let botResponse: string;
     try {
-        const config = {
-            configurable: {
-                thread_id: conversation.id.toString(),
-                user_phone: clientNumber
-            }
-        };
-
-        const inputs = {
-            messages: [new HumanMessage(finalUserMessage)]
-        };
-
-        console.log(`📋 Invocando grafo con thread_id: ${conversation.id}`);
-        
-        // Agregar timeout para evitar que se quede colgado
-        const timeoutPromise = new Promise<never>((_, reject) => {
-            setTimeout(() => reject(new Error('⏱️ Timeout: El grafo tardó más de 45 segundos')), 45000);
-        });
-        
-        const graphPromise = graph.invoke(inputs, config);
-        const output = await Promise.race([graphPromise, timeoutPromise]) as any;
-        
-        if (!output || !output.messages || output.messages.length === 0) {
-            throw new Error('❌ El grafo no devolvió mensajes válidos');
+      const config = {
+        configurable: {
+          thread_id: conversation.id.toString(),
+          user_phone: clientNumber
         }
-        
-        const lastMessage = output.messages[output.messages.length - 1];
-        botResponse = lastMessage.content as string;
-        
-        if (!botResponse || typeof botResponse !== 'string') {
-            throw new Error('❌ La respuesta del bot no es válida');
-        }
-        
-        console.log(`✅ Respuesta generada exitosamente (${botResponse.length} chars)`);
+      };
+
+      const inputs = {
+        messages: [new HumanMessage(finalUserMessage)]
+      };
+
+      console.log(`📋 Invocando grafo con thread_id: ${conversation.id}`);
+
+      // Agregar timeout para evitar que se quede colgado
+      const timeoutPromise = new Promise<never>((_, reject) => {
+        setTimeout(() => reject(new Error('⏱️ Timeout: El grafo tardó más de 45 segundos')), 45000);
+      });
+
+      const graphPromise = graph.invoke(inputs, config);
+      const output = await Promise.race([graphPromise, timeoutPromise]) as any;
+
+      if (!output || !output.messages || output.messages.length === 0) {
+        throw new Error('❌ El grafo no devolvió mensajes válidos');
+      }
+
+      const lastMessage = output.messages[output.messages.length - 1];
+      botResponse = lastMessage.content as string;
+
+      if (!botResponse || typeof botResponse !== 'string') {
+        throw new Error('❌ La respuesta del bot no es válida');
+      }
+
+      console.log(`✅ Respuesta generada exitosamente (${botResponse.length} chars)`);
     } catch (error) {
-        console.error('❌ ERROR CRÍTICO EN GRAPH.INVOKE:');
-        console.error('   Type:', error?.constructor?.name || 'Unknown');
-        console.error('   Message:', error instanceof Error ? error.message : String(error));
-        console.error('   Stack:', error instanceof Error ? error.stack?.substring(0, 500) : 'No stack');
-        
-        botResponse = 'Disculpa, hubo un problema técnico momentáneo. ¿Podrías repetir tu consulta? 🔄';
+      console.error('❌ ERROR CRÍTICO EN GRAPH.INVOKE:');
+      console.error('   Type:', error?.constructor?.name || 'Unknown');
+      console.error('   Message:', error instanceof Error ? error.message : String(error));
+      console.error('   Stack:', error instanceof Error ? error.stack?.substring(0, 500) : 'No stack');
+
+      botResponse = 'Disculpa, hubo un problema técnico momentáneo. ¿Podrías repetir tu consulta? 🔄';
     }
 
     // Verificar si es el primer mensaje para generar audio
     let audioUrl: string | undefined;
     const conversationMessages = await chatService.getMessages(conversation.id);
     const isFirstMessage = elevenLabsService.isFirstMessage(conversationMessages);
-    
+
     if (isFirstMessage && elevenLabsService.shouldConvertToAudio(botResponse, isFirstMessage)) {
       try {
         console.log('🎵 Generando audio para el primer mensaje...');
@@ -191,20 +191,20 @@ router.post('/seguros-colte/receive-message', async (req: Request, res: Response
     // Regex para capturar URLs, deteniéndose ante paréntesis de cierre (común en markdown) o espacios
     const urlRegex = /(https?:\/\/[^\s)]+)/g;
     const matches = botResponse.match(urlRegex);
-    
+
     if (matches) {
-        const potentialMedia = matches.find(url => 
-            url.includes('firebasestorage') || 
-            url.includes('storage.googleapis.com') ||
-            url.endsWith('.pdf') ||
-            url.endsWith('.jpg') ||
-            url.endsWith('.png')
-        );
-        
-        if (potentialMedia) {
-            mediaUrl = potentialMedia;
-            console.log(`📎 Adjunto detectado en respuesta: ${mediaUrl}`);
-        }
+      const potentialMedia = matches.find(url =>
+        url.includes('firebasestorage') ||
+        url.includes('storage.googleapis.com') ||
+        url.endsWith('.pdf') ||
+        url.endsWith('.jpg') ||
+        url.endsWith('.png')
+      );
+
+      if (potentialMedia) {
+        mediaUrl = potentialMedia;
+        console.log(`📎 Adjunto detectado en respuesta: ${mediaUrl}`);
+      }
     }
 
     const sendTo = From.startsWith('whatsapp:') ? From : `whatsapp:${From}`;
@@ -217,20 +217,20 @@ router.post('/seguros-colte/receive-message', async (req: Request, res: Response
     // console.log(`   Message Length: ${botResponse.length}`);
 
     const messageOptions: any = {
-        from: sendFrom,
-        to: sendTo
+      from: sendFrom,
+      to: sendTo
     };
 
     // Priorizar audio sobre texto para el primer mensaje
     if (audioUrl) {
-        console.log('🎵 Enviando mensaje de audio...');
-        messageOptions.mediaUrl = [audioUrl];
-        messageOptions.body = '🎵 Audio de Lucía'; // Texto descriptivo para el audio
+      console.log('🎵 Enviando mensaje de audio...');
+      messageOptions.mediaUrl = [audioUrl];
+      messageOptions.body = '🎵 Audio de Lucía'; // Texto descriptivo para el audio
     } else {
-        messageOptions.body = botResponse;
-        if (mediaUrl) {
-            messageOptions.mediaUrl = [mediaUrl];
-        }
+      messageOptions.body = botResponse;
+      if (mediaUrl) {
+        messageOptions.mediaUrl = [mediaUrl];
+      }
     }
 
     const sentMsg = await twilioClient.messages.create(messageOptions);
@@ -242,25 +242,25 @@ router.post('/seguros-colte/receive-message', async (req: Request, res: Response
     // console.log(`   Date Created: ${sentMsg.dateCreated}`);
     // console.log(`   From: ${sentMsg.from}`);
     // console.log(`   To: ${sentMsg.to}`);
-    
+
     // Verificar el estado del mensaje después de unos segundos
     setTimeout(async () => {
-        try {
-            const messageStatus = await twilioClient.messages(sentMsg.sid).fetch();
-            // console.log(`🔄 ESTADO DEL MENSAJE ${sentMsg.sid}:`);
-            // console.log(`   Status: ${messageStatus.status}`);
-            // console.log(`   Error Code: ${messageStatus.errorCode}`);
-            // console.log(`   Error Message: ${messageStatus.errorMessage}`);
-        } catch (error) {
-            console.error('❌ Error verificando estado del mensaje:', error);
-        }
+      try {
+        const messageStatus = await twilioClient.messages(sentMsg.sid).fetch();
+        // console.log(`🔄 ESTADO DEL MENSAJE ${sentMsg.sid}:`);
+        // console.log(`   Status: ${messageStatus.status}`);
+        // console.log(`   Error Code: ${messageStatus.errorCode}`);
+        // console.log(`   Error Message: ${messageStatus.errorMessage}`);
+      } catch (error) {
+        console.error('❌ Error verificando estado del mensaje:', error);
+      }
     }, 5000);
 
     await chatService.saveMessage({
-        conversationId: conversation.id,
-        sender: 'assistant',
-        message: botResponse,
-        twilioSid: sentMsg.sid
+      conversationId: conversation.id,
+      sender: 'assistant',
+      message: botResponse,
+      twilioSid: sentMsg.sid
     });
 
     res.writeHead(200, { 'Content-Type': 'text/xml' });
@@ -271,7 +271,7 @@ router.post('/seguros-colte/receive-message', async (req: Request, res: Response
     console.error('   Type:', error?.constructor?.name || 'Unknown');
     console.error('   Message:', error instanceof Error ? error.message : String(error));
     console.error('   Stack (first 500 chars):', error instanceof Error ? error.stack?.substring(0, 500) : 'No stack');
-    
+
     // Intentar enviar mensaje de error al usuario
     try {
       const { From, To } = req.body;
@@ -285,7 +285,7 @@ router.post('/seguros-colte/receive-message', async (req: Request, res: Response
     } catch (twilioError) {
       console.error('❌ Error adicional enviando mensaje de error:', twilioError);
     }
-    
+
     // Limpiar memoria
     if (global.gc) {
       try {
@@ -295,7 +295,7 @@ router.post('/seguros-colte/receive-message', async (req: Request, res: Response
         console.error('Error en garbage collection:', gcError);
       }
     }
-    
+
     res.writeHead(200, { 'Content-Type': 'text/xml' });
     res.end(twiml.toString());
   }
@@ -305,23 +305,23 @@ router.post('/seguros-colte/receive-message', async (req: Request, res: Response
 router.post('/seguros-colte/message-status', async (req: Request, res: Response) => {
   try {
     const { MessageSid, MessageStatus, ErrorCode, ErrorMessage, From, To, Body } = req.body;
-    
+
     console.log(`📨 ESTADO DEL MENSAJE RECIBIDO:`);
     console.log(`   SID: ${MessageSid}`);
     console.log(`   Status: ${MessageStatus}`);
     console.log(`   From: ${From}`);
     console.log(`   To: ${To}`);
     console.log(`   Body Preview: ${Body ? Body.substring(0, 50) + '...' : 'N/A'}`);
-    
+
     if (ErrorCode) {
       console.log(`❌ ERROR EN MENSAJE:`);
       console.log(`   Error Code: ${ErrorCode}`);
       console.log(`   Error Message: ${ErrorMessage}`);
     }
-    
+
     // Actualizar el estado en la base de datos si es necesario
     await chatService.updateMessageStatus(MessageSid, MessageStatus);
-    
+
     res.status(200).send('OK');
   } catch (error) {
     console.error('Error procesando estado del mensaje:', error);
@@ -333,31 +333,31 @@ router.post('/seguros-colte/message-status', async (req: Request, res: Response)
 router.get('/seguros-colte/test-twilio', async (req: Request, res: Response) => {
   try {
     console.log('🧪 INICIANDO PRUEBA DE TWILIO...');
-    
+
     // Verificar configuración
     console.log(`Account SID: ${process.env.TWILIO_ACCOUNT_SID ? 'Configurado' : 'NO CONFIGURADO'}`);
     console.log(`Auth Token: ${process.env.TWILIO_AUTH_TOKEN ? 'Configurado' : 'NO CONFIGURADO'}`);
-    
+
     // Probar obtener el account
     const accountSid = process.env.TWILIO_ACCOUNT_SID;
     if (!accountSid) throw new Error('TWILIO_ACCOUNT_SID no configurado');
     const account = await twilioClient.api.accounts(accountSid).fetch();
     console.log(`✅ Conexión exitosa a Twilio. Status: ${account.status}`);
-    
+
     // Listar números de WhatsApp disponibles
     const phoneNumbers = await twilioClient.incomingPhoneNumbers.list({ limit: 5 });
     console.log(`📞 Números disponibles: ${phoneNumbers.length}`);
     phoneNumbers.forEach(number => {
       console.log(`   ${number.phoneNumber} - ${number.friendlyName}`);
     });
-    
+
     res.json({
       success: true,
       account_status: account.status,
       numbers_available: phoneNumbers.length,
       test_time: new Date().toISOString()
     });
-    
+
   } catch (error) {
     console.error('❌ ERROR EN PRUEBA DE TWILIO:', error);
     res.status(500).json({
@@ -375,7 +375,7 @@ router.post('/seguros-colte/chat-dashboard', async (req, res) => {
     const isAudioMessage = await newMessage.includes('https://firebasestorage.googleapis.com/v0/b/ultim-admin-dashboard.appspot.com/o/audios');
     const isFileMessage = await newMessage.includes('https://firebasestorage.googleapis.com/v0/b/ultim-admin-dashboard.appspot.com/o/documents')
 
-    if(isAudioMessage) {
+    if (isAudioMessage) {
       console.log('Audio message detected');
       // Descargar el archivo desde Firebase
       const audioUrl = newMessage;
@@ -431,7 +431,7 @@ router.post('/seguros-colte/chat-dashboard', async (req, res) => {
             body: "Audio message",
             to: `whatsapp:${clientNumber}`,
             from: `whatsapp:+5742044840`,
-            // from: 'whatsapp:+14155238886', 
+            //from: 'whatsapp:+14155238886',
             mediaUrl: [audioUrl],
           });
           // Limpiar archivos temporales
@@ -442,14 +442,14 @@ router.post('/seguros-colte/chat-dashboard', async (req, res) => {
           res.end(twiml.toString());
         }
       );
-      
-    } else if(isFileMessage) {
+
+    } else if (isFileMessage) {
       console.log('File message detected');
       const message = await client.messages.create({
         body: 'Mensaje con archivo',
         to: `whatsapp:${clientNumber}`,
         from: `whatsapp:+5742044840`,
-        // from: 'whatsapp:+14155238886', 
+        //from: 'whatsapp:+14155238886',
         mediaUrl: [newMessage],
       });
       console.log('File message sent successfully:', message.sid);
@@ -459,23 +459,23 @@ router.post('/seguros-colte/chat-dashboard', async (req, res) => {
 
       // Enviar mensaje a través de Twilio
       const message = await client.messages.create({
-        // from: 'whatsapp:+14155238886', // Número de Twilio de pruebas
+        //from: 'whatsapp:+14155238886', // Número de Twilio de pruebas
         from: `whatsapp:+5742044840`, // Número de Coltefinanciera
         to: `whatsapp:${clientNumber}`,
         body: newMessage
       });
 
       // Enviar respuesta al frontend
-      res.status(200).send({ 
-        success: true, 
-        message: 'Mensaje enviado exitosamente', 
-        sid: message.sid 
+      res.status(200).send({
+        success: true,
+        message: 'Mensaje enviado exitosamente',
+        sid: message.sid
       });
     }
   } catch (error) {
     console.error('Error in chat route:', error);
-    res.status(500).send({ 
-      error: error instanceof Error ? error.message : "An unknown error occurred" 
+    res.status(500).send({
+      error: error instanceof Error ? error.message : "An unknown error occurred"
     });
   }
 });
@@ -501,7 +501,7 @@ router.post('/seguros-colte/send-template', async (req, res) => {
 
     const message = await client.messages.create({
       from: `whatsapp:+5742044840`,
-      // from: 'whatsapp:+14155238886',
+      //from: 'whatsapp:+14155238886',
       to: `whatsapp:${to}`,
       messagingServiceSid: "MG81f7782c09f199d0ddde5d5bf1a25a3d",
       contentSid: templateId,
@@ -529,14 +529,14 @@ router.post('/seguros-colte/send-template', async (req, res) => {
 
 // Ruta para obtener detalles de un mensaje específico por SID
 router.get('/seguros-colte/message/:sid', async (req, res) => {
-const { sid } = req.params;
+  const { sid } = req.params;
 
-try {
-  const message = await client.messages(sid).fetch();
-  res.status(200).json({ success: true, message });
-} catch (error) {
-  res.status(500).json({ success: false, message: 'Error al obtener el mensaje', error: error instanceof Error ? error.message : 'An unknown error occurred' });
-}
+  try {
+    const message = await client.messages(sid).fetch();
+    res.status(200).json({ success: true, message });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Error al obtener el mensaje', error: error instanceof Error ? error.message : 'An unknown error occurred' });
+  }
 });
 
 export default router;
