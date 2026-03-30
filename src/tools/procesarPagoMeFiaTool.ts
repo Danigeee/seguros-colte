@@ -7,6 +7,7 @@ import { storageService } from "../services/storageService.js";
 import { whatsappService } from "../services/whatsappService.js";
 import { googleSheetsService } from "../services/googleSheetsService.js";
 import { AgentState } from "../agents/agentState.js";
+import { saveDocumentChannel } from "../functions/sharedFunctions.js";
 
 export const procesarPagoMeFiaTool = new DynamicStructuredTool({
     name: "procesarPagoMeFiaTool",
@@ -83,6 +84,9 @@ export const procesarPagoMeFiaTool = new DynamicStructuredTool({
                 `¡Hola ${data.nombresApellidos.split(' ')[0]}! Aquí tienes tu documento de solicitud para pago con tarjeta "Me fía". Por favor, revísalo, fírmalo y devuélvemelo por este medio para continuar.`,
                 publicUrl
             );
+
+            // Guardar el canal de contacto para notificar cuando el cliente devuelva el documento firmado
+            await saveDocumentChannel(phoneNumber, 'DIRECT_WHATSAPP');
 
             // 8. Guardar los datos también en Google Sheets
             try {

@@ -5,6 +5,7 @@ import twilioClient from '../config/twilioConfig.js';
 import { storageService } from './storageService.js';
 import type { MeFiaPayload } from '../types/MeFiaPayload.js';
 import { googleSheetsService } from './googleSheetsService.js';
+import { saveDocumentChannel } from '../functions/sharedFunctions.js';
 
 export { processMeFiaFlow };
 export type { MeFiaPayload };
@@ -99,6 +100,9 @@ const processMeFiaFlow = async (data: MeFiaPayload): Promise<void> => {
         });
         
         console.log(`[MeFiaService] Template enviado correctamente. SID: ${message.sid}`);
+
+        // Guardar el canal de contacto para notificar cuando el cliente devuelva el documento firmado
+        await saveDocumentChannel(`+${phoneDigits}`, 'HX5755ee032cc78fab1940d6c71c3111a8');
 
         // 3. GUARDAR EN GOOGLE SHEETS
         try {

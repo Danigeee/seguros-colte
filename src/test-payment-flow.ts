@@ -11,7 +11,7 @@ async function testPaymentFlow() {
     firstname: "Alejandro",
     lastname: "Betancur",
     identification: "1143939192",
-    email: "alejandro.b@ultimmarketing.com",
+    email: "daniel@ultimmarketing.com",
     phone: "3045655669",
     amount: 15589,
     description: "Prueba de Seguro Bienestar Plus - $15.589 COP",

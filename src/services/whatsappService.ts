@@ -1,7 +1,7 @@
 import twilioClient from '../config/twilioConfig.js';
 
-const defaultFrom = "whatsapp:+5742044840";
-//const defaultFrom = "whatsapp:+14155238886";
+//const defaultFrom = "whatsapp:+5742044840";
+const defaultFrom = "whatsapp:+14155238886";
 
 const client = twilioClient;
 
