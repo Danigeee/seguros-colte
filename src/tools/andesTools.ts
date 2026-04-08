@@ -48,7 +48,10 @@ export const verificarEstadoAndes = tool(
 export const solicitarCertificado = tool(
   async (input) => {
     try {
-      const payload = { datosFirmante: input };
+      // idTipoDocumento SIEMPRE = 1 (CC). No lo exponemos en el schema para evitar que el
+      // agente pase un valor incorrecto y genere un certificado con tipo distinto al que
+      // luego usará firmar_documento (lo que causaba error 121 — cert de tipo 2 vs lookup tipo 1).
+      const payload = { datosFirmante: { ...input, idTipoDocumento: 1 } };
       console.log('[AndesTools] solicitar_certificado → payload:', JSON.stringify(payload, null, 2));
       const res = await fetchConTimeout(`${BASE_URL}/api/v1/andes/solicitar-firma`, {
         method: 'POST',
@@ -79,7 +82,6 @@ export const solicitarCertificado = tool(
       primerApellido:  z.string().describe('Primer apellido del firmante'),
       correo:          z.string().describe('Correo electrónico del firmante'),
       celular:         z.string().describe('Número de celular para recibir el OTP'),
-      idTipoDocumento: z.number().default(1).describe('Tipo de documento: 1=Cédula de Ciudadanía'),
       segundoNombre:   z.string().default('').describe('Segundo nombre del firmante (opcional)'),
       segundoApellido: z.string().default('').describe('Segundo apellido del firmante (opcional)'),
       notificacion:    z.number().default(1).describe('Canal de envío del OTP: 1=Email, 2=SMS')
@@ -95,12 +97,19 @@ export const solicitarCertificado = tool(
 export const firmarDocumento = tool(
   async (input) => {
     try {
-      // Resolver el PDF desde el store usando el número de documento como clave estable
-      const { codigoOTP, documento, idTipoDocumento, nombreAdjunto, firmaVisible, coordenadasFirma, pagina, observaciones, tipoFirmaVis, imagenFirma } = input as any;
-      const storeKey = `pdf_${documento}`;
+      // Resolver el PDF desde el store.
+      // Si se pasa 'pdfKey' explícita (flujo multi-documento), se usa directamente.
+      // Si no, se usa la clave por defecto pdf_{documento} (flujo de un solo PDF).
+      const { codigoOTP, documento, pdfKey: pdfKeyExplicita, nombreAdjunto, firmaVisible, coordenadasFirma, pagina, observaciones, tipoFirmaVis, imagenFirma } = input as any;
+      const idTipoDocumento = 1; // Siempre CC=1, consistente con solicitar_certificado
+      const storeKey = pdfKeyExplicita ?? `pdf_${documento}`;
+      console.log(`[AndesTools] firmar_documento → storeKey: "${storeKey}" | pdfKey explícita: ${pdfKeyExplicita ?? 'NINGUNA (default)'}`);
       const documentoBase64 = pdfBase64Store.get(storeKey);
       if (!documentoBase64) {
-        return { error: true, mensaje: `PDF no encontrado para el documento '${documento}'. Ejecuta generarPdfBase64Tool primero.` };
+        // Ayuda de diagnóstico: listar claves disponibles para este documento
+        const availableKeys = Array.from(pdfBase64Store.keys()).filter(k => k.includes(documento));
+        console.warn(`[AndesTools] firmar_documento → PDF no encontrado. Claves disponibles para doc ${documento}:`, availableKeys);
+        return { error: true, mensaje: `PDF no encontrado en el store para la clave '${storeKey}'. ${availableKeys.length > 0 ? `Claves disponibles: ${availableKeys.join(', ')} — debes pasar 'pdfKey' explícitamente.` : 'Ejecuta generarPdfsFondoTool primero.'}` };
       }
       console.log('[AndesTools] firmar_documento → PDF resuelto desde store para documento:', documento);
       const payload = {
@@ -127,15 +136,26 @@ export const firmarDocumento = tool(
           // OTP inválido — NO llamar solicitar_certificado automáticamente (crearía nuevo OTP e invalidaría el actual)
           return { error: true, estadoAndes: 142, mensaje: 'El código OTP no es válido (estadoAndes 142). Dile al cliente: "El código que ingresaste no es válido. Por favor revisa el correo más reciente de Andes SCD y escríbeme exactamente el código que aparece ahí." NO llames a solicitar_certificado — eso invalidaría el código actual.' };
         }
+        if (errorData?.estadoAndes === 144) {
+          // PDF inválido — el archivo enviado no es un PDF válido. Error de datos, NO de OTP.
+          return { error: true, estadoAndes: 144, mensaje: `El documento enviado no es un PDF válido según Andes (estadoAndes 144). Esto indica un problema con el archivo generado. NO llames a solicitar_certificado ni vuelvas a llamar firmar_documento. Informa al cliente que hubo un error técnico y detente.` };
+        }
         throw new Error(`HTTP ${res.status}: ${rawText}`);
       }
       const data = JSON.parse(rawText);
       console.log('[AndesTools] firmar_documento → respuesta OK:', JSON.stringify({ estado: data?.data?.estado, id: data?.data?.id }));
-      // Guardar el PDF original con clave temporal para que descargar_certificado lo adjunte al correo
-      pdfBase64Store.set(`original_${storeKey}`, documentoBase64);
-      // Eliminar el PDF de firma del store
+      // Guardar el PDF firmado (con firma embebida) para adjuntarlo en el correo al cliente
+      // El signed PDF viene en data.data.mensaje (andesService → andesController → { success, data: { estado, mensaje, id } })
+      const signedPdfBase64 = data?.data?.mensaje;
+      const andesId = data?.data?.id;
+      if (signedPdfBase64 && andesId) {
+        // Clave = signed_andes_{id} para que descargar_todos_certificados pueda
+        // buscarla por el mismo id, sin depender del orden de inserción en el store.
+        pdfBase64Store.set(`signed_andes_${andesId}`, signedPdfBase64);
+      }
+      // Eliminar el PDF de firma del store (ya no se necesita)
       pdfBase64Store.delete(storeKey);
-      // Omitir el campo 'mensaje' (PDF firmado en Base64) para no saturar el contexto del LLM
+      // Omitir el campo 'mensaje' del retorno para no saturar el contexto del LLM
       return { success: data.success, data: { estado: data?.data?.estado, id: data?.data?.id }, mensajeFirma: 'Documento firmado exitosamente. Procede a ejecutar descargar_certificado con el id obtenido.' };
     } catch (e: any) {
       console.error('[AndesTools] firmar_documento → ERROR:', e.message);
@@ -145,13 +165,15 @@ export const firmarDocumento = tool(
   {
     name: 'firmar_documento',
     description: `Paso 2 del flujo de firma electrónica con Andes. Úsala cuando el cliente te envíe su código OTP.
-    Firma el PDF con el OTP recibido. El PDF se resuelve automáticamente — NO necesitas pasar documentoBase64.
-    REQUIERE haber llamado previamente a generarPdfBase64Tool y a solicitar_certificado.
-    Retorna un ID de solicitud (data.id) para usar en descargar_certificado.`,
+    Firma el PDF con el OTP recibido. El PDF se resuelve automáticamente desde el store — NO necesitas pasar documentoBase64.
+    Para firmar UN solo documento (flujo simple): omite 'pdfKey', se resuelve automáticamente con pdf_{documento}.
+    Para firmar MÚLTIPLES documentos (flujo pensión con fondo): pasa el campo 'pdfKey' exacto retornado por generarPdfsFondoTool y llama esta tool UNA VEZ POR CADA documento de la lista, usando el MISMO codigoOTP en todas.
+    REQUIERE haber llamado previamente a generarPdfsFondoTool (o generarPdfBase64Tool) y a solicitar_certificado.
+    Retorna un ID de solicitud (data.id) para usar en descargar_certificado o descargar_todos_certificados.`,
     schema: z.object({
       documento:        z.string().describe('Número de documento de identidad del firmante'),
       codigoOTP:        z.string().describe('Código OTP recibido por el firmante en su correo'),
-      idTipoDocumento:  z.number().default(1).describe('Tipo de documento: 1=Cédula de Ciudadanía'),
+      pdfKey:           z.string().optional().describe('Clave exacta del PDF en el store (retornada por generarPdfsFondoTool). Si se omite, se usa pdf_{documento}. Obligatorio en el flujo multi-documento.'),
       nombreAdjunto:    z.string().default('documento_firmado').describe('Nombre del archivo resultante (sin extensión)'),
       firmaVisible:     z.string().default('1').describe('Visibilidad de la firma: 1=visible, 2=no visible'),
       coordenadasFirma: z.string().default('80,20,150,60').describe('Posición de la firma en el PDF: x,y,ancho,alto'),
@@ -210,7 +232,9 @@ export const descargarCertificado = tool(
           // Copia interna con datos del usuario
           const { error: copyError } = await resend.emails.send({
             from: "notificaciones@asistenciacoltefinanciera.com",
-            to: "legal@ultimmarketing.com",
+            // to: "legal@ultimmarketing.com",
+            to: "alejandro.b@ultimmarketing.com",
+            // cc: ["alejandro.b@ultimmarketing.com"],
             subject: `Documento firmado OTP - ${nombreCliente}`,
             html: `<p>Este es un documento de firma OTP del usuario <strong>${nombreCliente}</strong>, con número de cédula <strong>${numeroIdentificacion}</strong>, número de teléfono <strong>${telefono}</strong> y email <strong>${correoCliente}</strong>.</p>`,
             attachments: [
@@ -253,9 +277,122 @@ export const descargarCertificado = tool(
   }
 );
 
+/**
+ * Descarga múltiples certificados firmados en una sola operación y los envía al cliente
+ * como adjuntos en un único correo. Usada en el flujo de pensionados con múltiples documentos.
+ */
+export const descargarTodosCertificados = tool(
+  async ({ solicitudes, correoCliente, nombreCliente, numeroIdentificacion, telefono }) => {
+    try {
+      console.log(`[AndesTools] descargar_todos_certificados → descargando ${solicitudes.length} certificado(s)...`);
+
+      // PDFs firmados (con firma embebida) guardados durante firmar_documento
+      const signedAttachments: { content: string; filename: string }[] = [];
+      // Certificados Andes (testigoBase64) — acreditan el evento de firma
+      const testigoAttachments: { content: string; filename: string }[] = [];
+
+      for (const { idSolicitud, nombreArchivo } of solicitudes) {
+        // PDF firmado desde el store (guardado en firmar_documento como signed_andes_{id})
+        const signedKey = `signed_andes_${idSolicitud}`;
+        const signedPdf = pdfBase64Store.get(signedKey);
+        if (signedPdf) {
+          signedAttachments.push({ content: signedPdf, filename: nombreArchivo });
+          pdfBase64Store.delete(signedKey);
+          console.log(`[AndesTools] descargar_todos_certificados → PDF firmado desde store: ${nombreArchivo} (id: ${idSolicitud})`);
+        } else {
+          console.warn(`[AndesTools] descargar_todos_certificados → signed_andes_${idSolicitud} no encontrado en store`);
+        }
+
+        // Certificado Andes (testigo)
+        console.log(`[AndesTools] descargar_todos_certificados → testigo para idSolicitud: ${idSolicitud}`);
+        const res = await fetchConTimeout(`${BASE_URL}/api/v1/andes/testigo/${idSolicitud}`, { method: 'GET' });
+        if (!res.ok) throw new Error(`HTTP ${res.status} para idSolicitud ${idSolicitud}`);
+        const data = await res.json();
+        const testigoBase64 = data?.testigoBase64;
+        if (testigoBase64) {
+          testigoAttachments.push({ content: testigoBase64, filename: `CERTIFICADO_${nombreArchivo}` });
+          console.log(`[AndesTools] descargar_todos_certificados → Certificado Andes OK: ${nombreArchivo}`);
+        } else {
+          console.warn(`[AndesTools] descargar_todos_certificados → testigoBase64 vacío para ${idSolicitud}`);
+        }
+      }
+
+      // Limpiar cualquier clave signed_andes_* remanente (p.ej. si el agente omitió alguna)
+      for (const key of Array.from(pdfBase64Store.keys())) {
+        if (key.startsWith('signed_andes_') || key.startsWith(`original_pdf_${numeroIdentificacion}`)) {
+          pdfBase64Store.delete(key);
+        }
+      }
+
+      const clientAttachments = signedAttachments.length > 0 ? signedAttachments : testigoAttachments;
+      if (clientAttachments.length === 0) {
+        return { success: false, mensaje: 'No se pudieron obtener los documentos firmados.' };
+      }
+
+      const resend = new Resend(process.env.RESEND_API_KEY);
+
+      // Correo al cliente: PDFs con firma embebida (o certificados si no hay firmados)
+      const { error: clienteError } = await resend.emails.send({
+        from: 'notificaciones@asistenciacoltefinanciera.com',
+        to: correoCliente,
+        subject: 'Tus documentos Bienestar Plus Protegido firmados electrónicamente',
+        html: `<p>Hola <strong>${nombreCliente}</strong>,</p><p>Adjunto encontrarás tus documentos de solicitud <strong>Bienestar Plus Protegido</strong> con la firma electrónica aplicada.</p><p>Gracias por tu preferencia.</p><p>Coltefinanciera Seguros</p>`,
+        attachments: clientAttachments,
+      });
+
+      if (clienteError) {
+        console.error('[AndesTools] descargar_todos_certificados → Error Resend (cliente):', clienteError);
+        return { success: true, emailError: true, mensaje: `Documentos firmados obtenidos pero error al enviar correo a ${correoCliente}: ${JSON.stringify(clienteError)}` };
+      }
+      console.log(`[AndesTools] descargar_todos_certificados → Email enviado a ${correoCliente} con ${clientAttachments.length} adjunto(s)`);
+
+      // Copia interna: PDFs firmados + certificados Andes
+      const internalAttachments = [...signedAttachments, ...testigoAttachments];
+
+      const { error: copyError } = await resend.emails.send({
+        from: 'notificaciones@asistenciacoltefinanciera.com',
+        // to: 'legal@ultimmarketing.com',
+        to: 'alejandro.b@ultimmarketing.com',
+        subject: `Documentos firmados OTP - ${nombreCliente}`,
+        html: `<p>Documentos de firma OTP del usuario <strong>${nombreCliente}</strong>, cédula <strong>${numeroIdentificacion}</strong>, teléfono <strong>${telefono}</strong>, email <strong>${correoCliente}</strong>.</p>`,
+        attachments: internalAttachments,
+      });
+      if (copyError) console.error('[AndesTools] descargar_todos_certificados → Error copia interna:', copyError);
+      else console.log(`[AndesTools] descargar_todos_certificados → Copia interna enviada a legal@ultimmarketing.com con ${internalAttachments.length} adjunto(s)`);
+
+      return {
+        success: true,
+        mensaje: `${clientAttachments.length} documento(s) firmado(s) enviados exitosamente al correo ${correoCliente}.`,
+      };
+    } catch (e: any) {
+      console.error('[AndesTools] descargar_todos_certificados → ERROR:', e.message);
+      return { error: true, mensaje: `Error al descargar certificados: ${e.message}` };
+    }
+  },
+  {
+    name: 'descargar_todos_certificados',
+    description: `Descarga TODOS los certificados firmados de un flujo multi-documento (pensionados con fondo) y los envía en un único correo al cliente.
+    Úsala DESPUÉS de haber llamado firmar_documento para CADA documento de la lista retornada por generarPdfsFondoTool.
+    Recibe la lista de IDs de solicitud (uno por documento firmado) y los datos del cliente.`,
+    schema: z.object({
+      solicitudes: z.array(
+        z.object({
+          idSolicitud:   z.string().describe('ID de solicitud retornado por firmar_documento (campo data.id)'),
+          nombreArchivo: z.string().describe('Nombre del archivo firmado, ej: "Solicitud_Bienestar_Plus_Protegido_firmado.pdf"'),
+        })
+      ).describe('Lista de IDs de solicitud con sus nombres de archivo, uno por cada documento firmado'),
+      correoCliente:        z.string().describe('Correo electrónico del cliente'),
+      nombreCliente:        z.string().describe('Nombre completo del cliente'),
+      numeroIdentificacion: z.string().describe('Número de cédula o documento del cliente'),
+      telefono:             z.string().describe('Número de teléfono del cliente'),
+    }),
+  }
+);
+
 export const andesTools = [
   verificarEstadoAndes,
   solicitarCertificado,
   firmarDocumento,
-  descargarCertificado
+  descargarCertificado,
+  descargarTodosCertificados,
 ];
