@@ -132,6 +132,31 @@ function buildLibranzaFields(d: ClienteData, transactionId: string, fechaPrimera
   };
 }
 
+function buildAutorizacionFields(d: ClienteData, transactionId: string): Record<string, string> {
+  const now = new Date();
+  const todayDay       = String(now.getDate()).padStart(2, '0');
+  const todayYear      = String(now.getFullYear());
+  const todayMonthName = now.toLocaleDateString('es-CO', { month: 'long' });
+  const nextMonthDate  = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+  const nextMonthName  = nextMonthDate.toLocaleDateString('es-CO', { month: 'long' });
+  const nextMonthYear  = String(nextMonthDate.getFullYear());
+  return {
+    'text_1luco': d.nombresApellidos,       // "Yo ___"
+    'text_2tudq': d.numeroIdentificacion,   // cédula número
+    'text_4oiwk': '$15.589',                // "valor de ___" (cuota mensual)
+    'text_5mpts': transactionId,            // "a través de la libranza número ___"
+    'text_6jgbh': todayDay,                 // "suscrita por mí el día ___"
+    'text_7tgav': todayMonthName,           // "del mes de ___" (firma)
+    'text_8amru': todayYear,                // "del año ___" (firma)
+    'text_9rqma': 'COOPERATIVA ACTIVA',    // "a favor de ___"
+    'text_10jhfr': nextMonthName,           // "nómina del mes de ___"
+    'text_11dgnu': nextMonthYear,           // "del año ___" (nómina)
+    'text_12gbpz': todayDay,                // constancia "_____ días"
+    'text_13oobu': todayMonthName,          // constancia "del mes de ___"
+    'text_14hgrq': todayYear,               // constancia "del año ___"
+  };
+}
+
 function buildFVC01Fields(d: ClienteData, fondoPagador: string): Record<string, string> {
   const [fnbDay, fnbMonth, fnbYear] = d.fechaNacimiento.split('/');
   const [fexDay, fexMonth, fexYear] = d.fechaExpedicion.split('/');
@@ -172,10 +197,10 @@ export const generarPdfsFondoTool = new DynamicStructuredTool({
   name: "generarPdfsFondoTool",
   description: `Genera TODOS los documentos PDF del fondo de pensión del cliente (Casur, Cremil o Fiduprevisora) y los prepara para firma electrónica con Andes.
   Úsalo EXCLUSIVAMENTE en el flujo de descuento por pensión, DESPUÉS de recopilar los 15 datos del cliente y conocer su fondo.
-  Rellena automáticamente los 3 documentos: SOLICITUD (12 campos), LIBRANZA (campos financieros hardcoded + datos del cliente) y FVC01 (datos personales, económicos y de afiliación).
+  Casur y Cremil generan 3 documentos (SOLICITUD, LIBRANZA, FVC01). Fiduprevisora genera 4 documentos (SOLICITUD, FORMATO AUTORIZACIÓN DESCUENTO LIBRANZAS, LIBRANZA, FVC01).
   El transactionId se genera automáticamente de forma secuencial.
   Retorna la lista de documentos generados con sus claves (key) y nombres de archivo.
-  Guarda esa lista — necesitarás cada 'key' para llamar a firmar_documento por separado.`,
+  CRÍTICO: Guarda TODOS los elementos de esa lista — necesitarás la 'key' de CADA UNO para llamar a firmar_documento por separado. No omitas ninguno.`,
   schema: z.object({
     fondoPension: z
       .enum(['casur', 'cremil', 'fiduprevisora'])
@@ -277,9 +302,10 @@ export const generarPdfsFondoTool = new DynamicStructuredTool({
         let pdfFinal: Uint8Array;
 
         const nombreUp = nombreArchivo.toUpperCase();
-        const esSOLICITUD = nombreUp.includes('SOLICITUD');
-        const esLIBRANZA  = nombreUp.includes('LIBRANZA');
-        const esFVC01     = nombreUp.includes('FVC01') || nombreUp.includes('FVC');
+        const esSOLICITUD    = nombreUp.includes('SOLICITUD');
+        const esAUTORIZACION = nombreUp.includes('AUTORIZACION');
+        const esLIBRANZA     = nombreUp.includes('LIBRANZA') && !esAUTORIZACION;
+        const esFVC01        = nombreUp.includes('FVC01') || nombreUp.includes('FVC');
 
         if (esSOLICITUD || esLIBRANZA) {
           const pdfDoc = await PDFDocument.load(pdfBytes);
@@ -325,6 +351,15 @@ export const generarPdfsFondoTool = new DynamicStructuredTool({
           }
           pdfFinal = await pdfDoc.save({ useObjectStreams: false });
           console.log(`[generarPdfsFondoTool] FVC01 diligenciado: ${nombreArchivo}`);
+        } else if (esAUTORIZACION) {
+          const pdfDoc = await PDFDocument.load(pdfBytes);
+          const form   = pdfDoc.getForm();
+          const autFields = buildAutorizacionFields(clienteData, transactionId);
+          for (const [f, v] of Object.entries(autFields)) {
+            try { form.getTextField(f).setText(v); } catch { /* campo ausente */ }
+          }
+          pdfFinal = await pdfDoc.save({ useObjectStreams: false });
+          console.log(`[generarPdfsFondoTool] AUTORIZACION diligenciada: ${nombreArchivo}`);
         } else {
           pdfFinal = pdfBytes;
           console.log(`[generarPdfsFondoTool] PDF adjunto sin modificación: ${nombreArchivo}`);

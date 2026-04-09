@@ -125,7 +125,7 @@ export const firmarDocumento = tool(
       }, 30_000); // 30s — la firma puede tardar más que otras operaciones
       const rawText = await res.text();
       if (!res.ok) {
-        console.error('[AndesTools] firmar_documento → ERROR body:', rawText);
+        console.error(`[AndesTools] firmar_documento → ERROR storeKey: "${storeKey}" | body:`, rawText);
         let errorData: any = {};
         try { errorData = JSON.parse(rawText); } catch {}
         if (errorData?.estadoAndes === 121) {

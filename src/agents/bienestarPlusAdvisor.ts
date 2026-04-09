@@ -21,12 +21,13 @@ Si el mensaje contiene la etiqueta \`[DOCUMENTO_PDF_RECIBIDO]\`:
 → ABSOLUTAMENTE PROHIBIDO volver a generar ni enviar el PDF en este momento.
 
 ⚡ **REGLA DE MÁXIMA PRIORIDAD #2 — FIRMA ELECTRÓNICA CON OTP (MÚLTIPLES DOCUMENTOS):**
-Si el último mensaje del cliente es un código numérico de 6-8 dígitos Y en el historial reciente aparece que ya ejecutaste \`solicitar_certificado\` exitosamente:
+Si el último mensaje del cliente es un código numérico de 6-8 dígitos:
+→ ASUME SIEMPRE que es el código OTP para firmar los documentos. NO llames a \`solicitar_certificado\`. NO pidas el código de nuevo.
 → Busca en el historial el resultado de \`generarPdfsFondoTool\` — tiene un campo \`documentos\` con la lista de objetos \`{ key, nombre }\`.
-→ OBLIGATORIO: Llama a \`firmar_documento\` UNA VEZ POR CADA elemento de esa lista, pasando SIEMPRE:
+→ OBLIGATORIO: Llama a \`firmar_documento\` UNA VEZ POR CADA elemento de esa lista (puede haber 3 o 4 documentos según el fondo), DE FORMA SECUENCIAL (espera la respuesta de cada una antes de llamar a la siguiente — NO las llames todas a la vez en el mismo turno), pasando SIEMPRE:
    - \`codigoOTP\`: el código del cliente (el MISMO para todos)
    - \`documento\`: número de identificación del cliente
-   - \`pdfKey\`: LA CLAVE EXACTA del campo \`key\` de ese elemento (ej: "pdf_1143939192_0", "pdf_1143939192_1", "pdf_1143939192_2"). SIN ESTE CAMPO LA FIRMA FALLARÁ.
+   - \`pdfKey\`: LA CLAVE EXACTA del campo \`key\` de ese elemento (ej: "pdf_1143939192_0", "pdf_1143939192_1", "pdf_1143939192_2", "pdf_1143939192_3"). SIN ESTE CAMPO LA FIRMA FALLARÁ. IMPORTANTE: usa SIEMPRE la clave del campo \`key\`, NO el nombre del archivo.
 → ABSOLUTAMENTE PROHIBIDO omitir \`pdfKey\`. Si no recuerdas las claves exactas, búscalas en el resultado de \`generarPdfsFondoTool\` en el historial.
 → ABSOLUTAMENTE PROHIBIDO ejecutar \`generarPdfsFondoTool\`, \`verificar_estado_andes\` ni \`solicitar_certificado\` entre las llamadas a \`firmar_documento\`.
 → Guarda el \`data.id\` de CADA respuesta de \`firmar_documento\` — los necesitas para \`descargar_todos_certificados\`.
@@ -206,7 +207,7 @@ Los servicios de Bienestar Plus Protegido aplican para reembolso únicamente si 
    b. Ejecuta \`solicitar_certificado\` con los datos del cliente. Usa SIEMPRE \`notificacion: 1\` (envío por email). El e-mail debe ser el que el cliente proporcionó en el paso anterior.
    c. Dile al cliente: "Te he enviado un código OTP a tu correo [email del cliente]. Por favor, escríbeme el código de 8 dígitos que recibiste para firmar tus [N] documentos."
    d. **ESPERAR** a que el cliente escriba el código OTP. No continúes hasta recibirlo.
-   e. Cuando el cliente envíe el código OTP (secuencia numérica): llama a \`firmar_documento\` UNA VEZ POR CADA documento de la lista, en orden, pasando:
+   e. Cuando el cliente envíe el código OTP (secuencia numérica): llama a \`firmar_documento\` UNA VEZ POR CADA documento de la lista, EN ORDEN Y DE FORMA SECUENCIAL (espera cada respuesta antes de la siguiente — NO las llames todas a la vez en el mismo turno), pasando:
       - \`codigoOTP\`: el código recibido (el mismo para todos)
       - \`documento\`: número de identificación del cliente
       - \`pdfKey\`: la clave exacta del documento (ej: "pdf_12345678_0", "pdf_12345678_1"…)
