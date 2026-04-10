@@ -3,7 +3,7 @@ import twilio from 'twilio';
 import { ChatHistoryService } from '../services/chatHistoryService.js';
 import { elevenLabsService } from '../services/elevenLabsService.js';
 import { processTwilioMedia } from '../utils/mediaHandler.js';
-import { graph } from '../supervisor.js';
+import { graph, trackThreadActivity } from '../supervisor.js';
 import { HumanMessage } from '@langchain/core/messages';
 import { fileURLToPath } from 'url';
 import path from 'path';
@@ -181,6 +181,7 @@ router.post('/seguros-colte/receive-message', async (req: Request, res: Response
       };
 
       console.log(`📋 Invocando grafo con thread_id: ${conversation.id}`);
+      trackThreadActivity(conversation.id.toString());
 
       // Agregar timeout para evitar que se quede colgado
       const timeoutPromise = new Promise<never>((_, reject) => {

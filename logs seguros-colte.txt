@@ -1,0 +1,932 @@
+📱 Número formateado: +573147699988
+Buscando cliente con número: +573147699988
+Número formateado: +573147699988
+Cliente no encontrado para el número: +573147699988
+ℹ️  Cliente no encontrado en la base de datos para: +573147699988
+JSON Parse Error: Unexpected token 'M', "Muy bien, "... is not valid JSON, falling back to bienestar_plus_advisor
+Supervisor Decision: -> [Bienestar Plus Advisor]
+✅ Respuesta generada exitosamente (877 chars)
+🔍 Verificando primer mensaje: 30 mensajes previos del agente
+Saving message with params: {
+  conversationId: 8,
+  sender: 'assistant',
+  messageLength: 877,
+  twilioSid: 'SM19a1a71eec91f3184969d1e9aca1d11e',
+  type: undefined
+}
+Message saved successfully to conversation: 8
+📡 [2026-04-09T19:50:47.699Z] POST /seguros-colte/receive-message
+   Headers: {"host":"3e2f-2800-e2-1c80-2219-a11d-eb0e-b72b-8cc1.ngrok-free.app","user-agent":"TwilioProxy/1.1","content-length":"600","accept":"*/*","content-type":"application/x-www-form-urlencoded","i-twilio-idempotency-token":"d9753bb9-445b-4fed-bbee-d9c0bc1b61ce","x-forwarded-for":"3.81.101.125","x-forwarded-host":"3e2f-2800-e2-1c80-2219-a11d-eb0e-b72b-8cc1.ngrok-free.app","x-forwarded-proto":"https","x-home-region":"us1","x-twilio-signature":"RgmczJKzWdAy88BW8bBatHNvEQQ=","accept-encoding":"gzip"}
+Mensaje de +573126862772 (Stefannia Cordoba)
+Found existing conversation for: +573126862772
+Saving message with params: {
+  conversationId: 163,
+  sender: 'user',
+  messageLength: 28,
+  twilioSid: 'SMd2a97032d1cdd70bea9430d277a4709d',
+  type: 'text'
+}
+Message saved successfully to conversation: 163
+IA procesando...
+📋 Invocando grafo con thread_id: 163
+🔄 Cliente ya identificado anteriormente - Reutilizando datos
+Supervisor detected client service: bienestar
+Service-based Routing: -> [Bienestar Plus Advisor]
+🔄 [Supervisor] Handing over to Bienestar Plus Advisor (Service Routing)
+✅ Respuesta generada exitosamente (190 chars)
+🔍 Verificando primer mensaje: 18 mensajes previos del agente
+Saving message with params: {
+  conversationId: 163,
+  sender: 'assistant',
+  messageLength: 190,
+  twilioSid: 'SM8187ec7fe2204953bc19877ed07c277a',
+  type: undefined
+}
+Message saved successfully to conversation: 163
+📡 [2026-04-09T19:50:55.310Z] POST /seguros-colte/receive-message
+   Headers: {"host":"3e2f-2800-e2-1c80-2219-a11d-eb0e-b72b-8cc1.ngrok-free.app","user-agent":"TwilioProxy/1.1","content-length":"594","accept":"*/*","content-type":"application/x-www-form-urlencoded","i-twilio-idempotency-token":"0cfd04cd-a042-4a84-bad3-f08016675032","x-forwarded-for":"3.81.101.125","x-forwarded-host":"3e2f-2800-e2-1c80-2219-a11d-eb0e-b72b-8cc1.ngrok-free.app","x-forwarded-proto":"https","x-home-region":"us1","x-twilio-signature":"pBKCxckdRWDBHF/ld7YdreGy1Oc=","accept-encoding":"gzip"}
+Mensaje de +573126862772 (Stefannia Cordoba)
+Found existing conversation for: +573126862772
+Saving message with params: {
+  conversationId: 163,
+  sender: 'user',
+  messageLength: 22,
+  twilioSid: 'SM3b76ffc2f74ecb41f346aa2c4c33ac5a',
+  type: 'text'
+}
+Message saved successfully to conversation: 163
+IA procesando...
+📋 Invocando grafo con thread_id: 163
+🔄 Cliente ya identificado anteriormente - Reutilizando datos
+Supervisor detected client service: bienestar
+Service-based Routing: -> [Bienestar Plus Advisor]
+🔄 [Supervisor] Handing over to Bienestar Plus Advisor (Service Routing)
+Búsqueda específica en documentos Bienestar Plus: "renovación anual Bienestar Plus Protegido"
+🔍 Buscando: "renovación anual Bienestar Plus Protegido"...
+Consultando 4 fragmentos...
+✅ Respuesta generada exitosamente (356 chars)
+🔍 Verificando primer mensaje: 19 mensajes previos del agente
+Saving message with params: {
+  conversationId: 163,
+  sender: 'assistant',
+  messageLength: 356,
+  twilioSid: 'SM6c6983826cdf7398817304da9cb60643',
+  type: undefined
+}
+Message saved successfully to conversation: 163
+📡 [2026-04-09T19:51:10.727Z] POST /seguros-colte/receive-message
+   Headers: {"host":"3e2f-2800-e2-1c80-2219-a11d-eb0e-b72b-8cc1.ngrok-free.app","user-agent":"TwilioProxy/1.1","content-length":"584","accept":"*/*","content-type":"application/x-www-form-urlencoded","i-twilio-idempotency-token":"3dc20b39-5b8a-49bf-901f-922dace57565","x-forwarded-for":"34.224.32.38","x-forwarded-host":"3e2f-2800-e2-1c80-2219-a11d-eb0e-b72b-8cc1.ngrok-free.app","x-forwarded-proto":"https","x-home-region":"us1","x-twilio-signature":"6FyMOxfQzM/OmK1lAwWr09ZqRWY=","accept-encoding":"gzip"}
+Mensaje de +573126862772 (Stefannia Cordoba)
+Found existing conversation for: +573126862772
+Saving message with params: {
+  conversationId: 163,
+  sender: 'user',
+  messageLength: 14,
+  twilioSid: 'SM35752851ee27655e53ed99bd2d1debc9',
+  type: 'text'
+}
+Message saved successfully to conversation: 163
+IA procesando...
+📋 Invocando grafo con thread_id: 163
+🔄 Cliente ya identificado anteriormente - Reutilizando datos
+Supervisor detected client service: bienestar
+Service-based Routing: -> [Bienestar Plus Advisor]
+🔄 [Supervisor] Handing over to Bienestar Plus Advisor (Service Routing)
+✅ Respuesta generada exitosamente (205 chars)
+🔍 Verificando primer mensaje: 20 mensajes previos del agente
+Saving message with params: {
+  conversationId: 163,
+  sender: 'assistant',
+  messageLength: 205,
+  twilioSid: 'SMd2fc4739067dc3e299580f8c2925f059',
+  type: undefined
+}
+Message saved successfully to conversation: 163
+📡 [2026-04-09T19:51:51.949Z] POST /seguros-colte/receive-message
+   Headers: {"host":"3e2f-2800-e2-1c80-2219-a11d-eb0e-b72b-8cc1.ngrok-free.app","user-agent":"TwilioProxy/1.1","content-length":"583","accept":"*/*","content-type":"application/x-www-form-urlencoded","i-twilio-idempotency-token":"59a1d105-8610-42e9-9166-47cd4f26150a","x-forwarded-for":"54.204.159.129","x-forwarded-host":"3e2f-2800-e2-1c80-2219-a11d-eb0e-b72b-8cc1.ngrok-free.app","x-forwarded-proto":"https","x-home-region":"us1","x-twilio-signature":"C8TTjuz1OSCgg6CcNJZHAyXLZfc=","accept-encoding":"gzip"}
+Mensaje de +573126862772 (Stefannia Cordoba)
+Found existing conversation for: +573126862772
+Saving message with params: {
+  conversationId: 163,
+  sender: 'user',
+  messageLength: 13,
+  twilioSid: 'SMc7d2fdae688f397058c832fce606d769',
+  type: 'text'
+}
+Message saved successfully to conversation: 163
+IA procesando...
+📋 Invocando grafo con thread_id: 163
+🔄 Cliente ya identificado anteriormente - Reutilizando datos
+Supervisor detected client service: bienestar
+Service-based Routing: -> [Bienestar Plus Advisor]
+🔄 [Supervisor] Handing over to Bienestar Plus Advisor (Service Routing)
+✅ Respuesta generada exitosamente (889 chars)
+🔍 Verificando primer mensaje: 21 mensajes previos del agente
+Saving message with params: {
+  conversationId: 163,
+  sender: 'assistant',
+  messageLength: 889,
+  twilioSid: 'SM45ac1dfe42a3928d330e9e1114aaae2b',
+  type: undefined
+}
+Message saved successfully to conversation: 163
+📡 [2026-04-09T19:52:38.606Z] POST /seguros-colte/receive-message
+   Headers: {"host":"3e2f-2800-e2-1c80-2219-a11d-eb0e-b72b-8cc1.ngrok-free.app","user-agent":"TwilioProxy/1.1","content-length":"802","accept":"*/*","content-type":"application/x-www-form-urlencoded","i-twilio-idempotency-token":"4f4aa291-53dd-4a66-8668-96b5b920a1f8","x-forwarded-for":"54.242.91.79","x-forwarded-host":"3e2f-2800-e2-1c80-2219-a11d-eb0e-b72b-8cc1.ngrok-free.app","x-forwarded-proto":"https","x-home-region":"us1","x-twilio-signature":"TgQNIjEHvDKKLRVVyOVWGkw1VB4=","accept-encoding":"gzip"}
+Mensaje de +573147699988 (Miguel Jaramillo )
+Found existing conversation for: +573147699988
+Saving message with params: {
+  conversationId: 8,
+  sender: 'user',
+  messageLength: 189,
+  twilioSid: 'SMa946e8ae856533112667cd5743a891ea',
+  type: 'text'
+}
+Message saved successfully to conversation: 8
+IA procesando...
+📋 Invocando grafo con thread_id: 8
+🔍 INICIANDO IDENTIFICACIÓN DE CLIENTE...
+📱 Número de teléfono detectado: +573147699988
+📱 Número formateado: +573147699988
+Buscando cliente con número: +573147699988
+Número formateado: +573147699988
+Cliente no encontrado para el número: +573147699988
+ℹ️  Cliente no encontrado en la base de datos para: +573147699988
+JSON Parse Error: Unexpected token 'G', "Gracias po"... is not valid JSON, falling back to bienestar_plus_advisor
+Supervisor Decision: -> [Bienestar Plus Advisor]
+✅ Respuesta generada exitosamente (128 chars)
+🔍 Verificando primer mensaje: 31 mensajes previos del agente
+Saving message with params: {
+  conversationId: 8,
+  sender: 'assistant',
+  messageLength: 128,
+  twilioSid: 'SM5d4fe58ac7dbd638196305b39a593646',
+  type: undefined
+}
+Message saved successfully to conversation: 8
+📡 [2026-04-09T19:53:10.535Z] POST /seguros-colte/receive-message
+   Headers: {"host":"3e2f-2800-e2-1c80-2219-a11d-eb0e-b72b-8cc1.ngrok-free.app","user-agent":"TwilioProxy/1.1","content-length":"584","accept":"*/*","content-type":"application/x-www-form-urlencoded","i-twilio-idempotency-token":"2305190b-c2f7-45b4-a891-41b042cae507","x-forwarded-for":"98.81.237.92","x-forwarded-host":"3e2f-2800-e2-1c80-2219-a11d-eb0e-b72b-8cc1.ngrok-free.app","x-forwarded-proto":"https","x-home-region":"us1","x-twilio-signature":"p5WaLjSC9jUc8wqg7KH8pVMNHQo=","accept-encoding":"gzip"}
+Mensaje de +573147699988 (Miguel Jaramillo )
+Found existing conversation for: +573147699988
+Saving message with params: {
+  conversationId: 8,
+  sender: 'user',
+  messageLength: 10,
+  twilioSid: 'SM1c03e89cddbff217e94da3d3a33f82e3',
+  type: 'text'
+}
+Message saved successfully to conversation: 8
+IA procesando...
+📋 Invocando grafo con thread_id: 8
+🔍 INICIANDO IDENTIFICACIÓN DE CLIENTE...
+📱 Número de teléfono detectado: +573147699988
+📱 Número formateado: +573147699988
+Buscando cliente con número: +573147699988
+Número formateado: +573147699988
+Cliente no encontrado para el número: +573147699988
+ℹ️  Cliente no encontrado en la base de datos para: +573147699988
+JSON Parse Error: Unexpected token 'P', "Perfecto, "... is not valid JSON, falling back to bienestar_plus_advisor
+Supervisor Decision: -> [Bienestar Plus Advisor]
+[generarPdfsFondoTool] Iniciando para fondo 'cremil', doc: 1037644528
+[generarPdfsFondoTool] transactionId: 0000029 | fechaPrimeraCuota: 15/5/2026
+[generarPdfsFondoTool] FVC01 diligenciado: 30032026_FVC01-022026-V2 (1).pdf
+[generarPdfsFondoTool] LIBRANZA diligenciado: libranza_template.pdf
+[generarPdfsFondoTool] SOLICITUD diligenciado: SOLICITUD ASISTENCIA BIENESTAR PLUS PROTEGIDO.pdf
+Datos guardados exitosamente en Google Sheets: 'Producción'!A50:X50
+[generarPdfsFondoTool] Datos registrados en Google Sheets para 1037644528
+[generarPdfsFondoTool] 3 PDFs listos para fondo 'cremil'.
+[AndesTools] verificar_estado_andes → llamando backend...
+[AndesTools] verificar_estado_andes → respuesta OK
+[AndesTools] solicitar_certificado → payload: {
+  "datosFirmante": {
+    "documento": "1037644528",
+    "primerNombre": "Miguel",
+    "primerApellido": "Jaramillo",
+    "correo": "miguel@gmail.com",
+    "celular": "3147699988",
+    "segundoNombre": "",
+    "segundoApellido": "",
+    "notificacion": 1,
+    "idTipoDocumento": 1
+  }
+}
+[AndesTools] solicitar_certificado → HTTP status: 200
+[AndesTools] solicitar_certificado → respuesta raw: {"success":true,"data":{"estado":0,"mensaje":"Se realizo el registro de la solicitud de certificado para 1037644528"}}
+[AndesTools] solicitar_certificado → data parseada: {
+  "success": true,
+  "data": {
+    "estado": 0,
+    "mensaje": "Se realizo el registro de la solicitud de certificado para 1037644528"
+  }
+}
+✅ Respuesta generada exitosamente (145 chars)
+🔍 Verificando primer mensaje: 32 mensajes previos del agente
+Saving message with params: {
+  conversationId: 8,
+  sender: 'assistant',
+  messageLength: 145,
+  twilioSid: 'SM1769c07432e992641f9fd2cbeca01a99',
+  type: undefined
+}
+Message saved successfully to conversation: 8
+📡 [2026-04-09T19:53:43.684Z] POST /seguros-colte/receive-message
+   Headers: {"host":"3e2f-2800-e2-1c80-2219-a11d-eb0e-b72b-8cc1.ngrok-free.app","user-agent":"TwilioProxy/1.1","content-length":"596","accept":"*/*","content-type":"application/x-www-form-urlencoded","i-twilio-idempotency-token":"5fa3054f-5109-4a16-9b0b-18b9baaa205b","x-forwarded-for":"54.83.97.248","x-forwarded-host":"3e2f-2800-e2-1c80-2219-a11d-eb0e-b72b-8cc1.ngrok-free.app","x-forwarded-proto":"https","x-home-region":"us1","x-twilio-signature":"oK3yvgf0Su6WIIxpabMswpI2C2Y=","accept-encoding":"gzip"}
+Mensaje de +573147699988 (Miguel Jaramillo )
+Found existing conversation for: +573147699988
+Saving message with params: {
+  conversationId: 8,
+  sender: 'user',
+  messageLength: 21,
+  twilioSid: 'SM84b1fbd7da61f77cdc0bcf840c60f01a',
+  type: 'text'
+}
+Message saved successfully to conversation: 8
+IA procesando...
+📋 Invocando grafo con thread_id: 8
+🔍 INICIANDO IDENTIFICACIÓN DE CLIENTE...
+📱 Número de teléfono detectado: +573147699988
+📱 Número formateado: +573147699988
+Buscando cliente con número: +573147699988
+Número formateado: +573147699988
+Cliente no encontrado para el número: +573147699988
+ℹ️  Cliente no encontrado en la base de datos para: +573147699988
+JSON Parse Error: Unexpected token 'P', "Por favor,"... is not valid JSON, falling back to bienestar_plus_advisor
+Supervisor Decision: -> [Bienestar Plus Advisor]
+✅ Respuesta generada exitosamente (164 chars)
+🔍 Verificando primer mensaje: 33 mensajes previos del agente
+Saving message with params: {
+  conversationId: 8,
+  sender: 'assistant',
+  messageLength: 164,
+  twilioSid: 'SM82bba282fd169234b2b6dbdf9d8a8861',
+  type: undefined
+}
+Message saved successfully to conversation: 8
+📡 [2026-04-09T19:54:05.580Z] POST /seguros-colte/receive-message
+   Headers: {"host":"3e2f-2800-e2-1c80-2219-a11d-eb0e-b72b-8cc1.ngrok-free.app","user-agent":"TwilioProxy/1.1","content-length":"601","accept":"*/*","content-type":"application/x-www-form-urlencoded","i-twilio-idempotency-token":"9cb8b113-b773-40ef-9f22-e7bdfbd10bf9","x-forwarded-for":"100.53.13.135","x-forwarded-host":"3e2f-2800-e2-1c80-2219-a11d-eb0e-b72b-8cc1.ngrok-free.app","x-forwarded-proto":"https","x-home-region":"us1","x-twilio-signature":"CqfKzOGMgWlU3WORk9k7+n49TrY=","accept-encoding":"gzip"}
+Mensaje de +573147699988 (Miguel Jaramillo )
+Found existing conversation for: +573147699988
+Saving message with params: {
+  conversationId: 8,
+  sender: 'user',
+  messageLength: 29,
+  twilioSid: 'SMaec0d8533a52cc08a07b2a5ed0ea7443',
+  type: 'text'
+}
+Message saved successfully to conversation: 8
+IA procesando...
+📋 Invocando grafo con thread_id: 8
+🔍 INICIANDO IDENTIFICACIÓN DE CLIENTE...
+📱 Número de teléfono detectado: +573147699988
+📱 Número formateado: +573147699988
+Buscando cliente con número: +573147699988
+Número formateado: +573147699988
+Cliente no encontrado para el número: +573147699988
+ℹ️  Cliente no encontrado en la base de datos para: +573147699988
+JSON Parse Error: Unexpected token 'P', "Perfecto, "... is not valid JSON, falling back to bienestar_plus_advisor
+Supervisor Decision: -> [Bienestar Plus Advisor]
+[generarPdfsFondoTool] Iniciando para fondo 'cremil', doc: 1037644528
+[generarPdfsFondoTool] transactionId: 0000030 | fechaPrimeraCuota: 15/5/2026
+[generarPdfsFondoTool] FVC01 diligenciado: 30032026_FVC01-022026-V2 (1).pdf
+[generarPdfsFondoTool] LIBRANZA diligenciado: libranza_template.pdf
+[generarPdfsFondoTool] SOLICITUD diligenciado: SOLICITUD ASISTENCIA BIENESTAR PLUS PROTEGIDO.pdf
+Datos guardados exitosamente en Google Sheets: 'Producción'!A51:X51
+[generarPdfsFondoTool] Datos registrados en Google Sheets para 1037644528
+[generarPdfsFondoTool] 3 PDFs listos para fondo 'cremil'.
+[AndesTools] verificar_estado_andes → llamando backend...
+[AndesTools] verificar_estado_andes → respuesta OK
+[AndesTools] solicitar_certificado → payload: {
+  "datosFirmante": {
+    "documento": "1037644528",
+    "primerNombre": "Miguel",
+    "primerApellido": "Jaramillo",
+    "correo": "migueljaramillo.upb@gmail.com",
+    "celular": "3147699988",
+    "segundoNombre": "",
+    "segundoApellido": "",
+    "notificacion": 1,
+    "idTipoDocumento": 1
+  }
+}
+[AndesTools] solicitar_certificado → HTTP status: 200
+[AndesTools] solicitar_certificado → respuesta raw: {"success":true,"data":{"estado":0,"mensaje":"Se realizo el registro de la solicitud de certificado para 1037644528"}}
+[AndesTools] solicitar_certificado → data parseada: {
+  "success": true,
+  "data": {
+    "estado": 0,
+    "mensaje": "Se realizo el registro de la solicitud de certificado para 1037644528"
+  }
+}
+✅ Respuesta generada exitosamente (219 chars)
+🔍 Verificando primer mensaje: 34 mensajes previos del agente
+Saving message with params: {
+  conversationId: 8,
+  sender: 'assistant',
+  messageLength: 219,
+  twilioSid: 'SM745f4084b93c8965fa7e99138e0b5866',
+  type: undefined
+}
+Message saved successfully to conversation: 8
+📡 [2026-04-09T19:56:03.647Z] POST /seguros-colte/receive-message
+   Headers: {"host":"3e2f-2800-e2-1c80-2219-a11d-eb0e-b72b-8cc1.ngrok-free.app","user-agent":"TwilioProxy/1.1","content-length":"586","accept":"*/*","content-type":"application/x-www-form-urlencoded","i-twilio-idempotency-token":"651e0647-83b0-4c3a-95b1-f5eb3620951a","x-forwarded-for":"54.197.205.230","x-forwarded-host":"3e2f-2800-e2-1c80-2219-a11d-eb0e-b72b-8cc1.ngrok-free.app","x-forwarded-proto":"https","x-home-region":"us1","x-twilio-signature":"h4n09Ztkh0jkeCcO8GrNxBt3yi0=","accept-encoding":"gzip"}
+Mensaje de +573147699988 (Miguel Jaramillo )
+Found existing conversation for: +573147699988
+Saving message with params: {
+  conversationId: 8,
+  sender: 'user',
+  messageLength: 11,
+  twilioSid: 'SM40328039ce2679da3c5f40123568c929',
+  type: 'text'
+}
+Message saved successfully to conversation: 8
+IA procesando...
+📋 Invocando grafo con thread_id: 8
+🔍 INICIANDO IDENTIFICACIÓN DE CLIENTE...
+📱 Número de teléfono detectado: +573147699988
+📱 Número formateado: +573147699988
+Buscando cliente con número: +573147699988
+Número formateado: +573147699988
+Cliente no encontrado para el número: +573147699988
+ℹ️  Cliente no encontrado en la base de datos para: +573147699988
+JSON Parse Error: Unexpected token 'R', "Revisaré e"... is not valid JSON, falling back to bienestar_plus_advisor
+Supervisor Decision: -> [Bienestar Plus Advisor]
+✅ Respuesta generada exitosamente (202 chars)
+🔍 Verificando primer mensaje: 35 mensajes previos del agente
+Saving message with params: {
+  conversationId: 8,
+  sender: 'assistant',
+  messageLength: 202,
+  twilioSid: 'SMcd043e82fb7271cae9ba48b645e8eb12',
+  type: undefined
+}
+Message saved successfully to conversation: 8
+📡 [2026-04-09T19:56:27.061Z] POST /seguros-colte/receive-message
+   Headers: {"host":"3e2f-2800-e2-1c80-2219-a11d-eb0e-b72b-8cc1.ngrok-free.app","user-agent":"TwilioProxy/1.1","content-length":"843","accept":"*/*","content-type":"application/x-www-form-urlencoded","i-twilio-idempotency-token":"d076bbdc-aa1e-4f84-829e-4c417bcf01c1","x-forwarded-for":"100.53.13.135","x-forwarded-host":"3e2f-2800-e2-1c80-2219-a11d-eb0e-b72b-8cc1.ngrok-free.app","x-forwarded-proto":"https","x-home-region":"us1","x-twilio-signature":"S09yPMl/hRm4PkxnAktEfBo0+Mw=","accept-encoding":"gzip"}
+Mensaje de +573126862772 (Stefannia Cordoba)
+Found existing conversation for: +573126862772
+Saving message with params: {
+  conversationId: 163,
+  sender: 'user',
+  messageLength: 208,
+  twilioSid: 'SMa088f62c6e9d8380f7994ab1a3bac330',
+  type: 'text'
+}
+Message saved successfully to conversation: 163
+IA procesando...
+📋 Invocando grafo con thread_id: 163
+🔄 Cliente ya identificado anteriormente - Reutilizando datos
+Supervisor detected client service: bienestar
+Service-based Routing: -> [Bienestar Plus Advisor]
+🔄 [Supervisor] Handing over to Bienestar Plus Advisor (Service Routing)
+[generarPdfsFondoTool] Iniciando para fondo 'fiduprevisora', doc: 1007240885
+[generarPdfsFondoTool] transactionId: 0000031 | fechaPrimeraCuota: 15/5/2026
+[generarPdfsFondoTool] FVC01 diligenciado: 30032026_FVC01-022026-V2 (1).pdf
+[generarPdfsFondoTool] AUTORIZACION diligenciada: formato autorizacion de descuento.pdf
+[generarPdfsFondoTool] LIBRANZA diligenciado: libranza_template.pdf
+[generarPdfsFondoTool] SOLICITUD diligenciado: SOLICITUD ASISTENCIA BIENESTAR PLUS PROTEGIDO.pdf
+Datos guardados exitosamente en Google Sheets: 'Producción'!A52:X52
+[generarPdfsFondoTool] Datos registrados en Google Sheets para 1007240885
+[generarPdfsFondoTool] 4 PDFs listos para fondo 'fiduprevisora'.
+[AndesTools] verificar_estado_andes → llamando backend...
+[AndesTools] verificar_estado_andes → respuesta OK
+📡 [2026-04-09T19:56:35.353Z] POST /seguros-colte/receive-message
+   Headers: {"host":"3e2f-2800-e2-1c80-2219-a11d-eb0e-b72b-8cc1.ngrok-free.app","user-agent":"TwilioProxy/1.1","content-length":"579","accept":"*/*","content-type":"application/x-www-form-urlencoded","i-twilio-idempotency-token":"d79dc37f-0353-4bbe-83fb-bdc758f99b08","x-forwarded-for":"34.224.32.38","x-forwarded-host":"3e2f-2800-e2-1c80-2219-a11d-eb0e-b72b-8cc1.ngrok-free.app","x-forwarded-proto":"https","x-home-region":"us1","x-twilio-signature":"5OIu0UqMUXwqJX/mEmmua4qNvU8=","accept-encoding":"gzip"}
+Mensaje de +573147699988 (Miguel Jaramillo )
+Found existing conversation for: +573147699988
+Saving message with params: {
+  conversationId: 8,
+  sender: 'user',
+  messageLength: 9,
+  twilioSid: 'SMd8a09a414fdbef44392e8c9405722d4a',
+  type: 'text'
+}
+Message saved successfully to conversation: 8
+IA procesando...
+📋 Invocando grafo con thread_id: 8
+🔍 INICIANDO IDENTIFICACIÓN DE CLIENTE...
+📱 Número de teléfono detectado: +573147699988
+📱 Número formateado: +573147699988
+Buscando cliente con número: +573147699988
+Número formateado: +573147699988
+[AndesTools] solicitar_certificado → payload: {
+  "datosFirmante": {
+    "documento": "1007240885",
+    "primerNombre": "Stefannia",
+    "primerApellido": "Córdoba",
+    "correo": "stefannia.cordoba@gmail.com",
+    "celular": "3126862772",
+    "segundoNombre": "",
+    "segundoApellido": "Osorno",
+    "notificacion": 1,
+    "idTipoDocumento": 1
+  }
+}
+Cliente no encontrado para el número: +573147699988
+ℹ️  Cliente no encontrado en la base de datos para: +573147699988
+JSON Parse Error: Unexpected token 'P', "Perfecto, "... is not valid JSON, falling back to bienestar_plus_advisor
+Supervisor Decision: -> [Bienestar Plus Advisor]
+[AndesTools] solicitar_certificado → HTTP status: 200
+[AndesTools] solicitar_certificado → respuesta raw: {"success":true,"data":{"estado":0,"mensaje":"Se realizo el registro de la solicitud de certificado para 1007240885"}}
+[AndesTools] solicitar_certificado → data parseada: {
+  "success": true,
+  "data": {
+    "estado": 0,
+    "mensaje": "Se realizo el registro de la solicitud de certificado para 1007240885"
+  }
+}
+[AndesTools] verificar_estado_andes → llamando backend...
+[AndesTools] verificar_estado_andes → respuesta OK
+[AndesTools] solicitar_certificado → payload: {
+  "datosFirmante": {
+    "documento": "1037644528",
+    "primerNombre": "Miguel",
+    "primerApellido": "Jaramillo",
+    "correo": "migueljaramillo.upb@gmail.com",
+    "celular": "3147699988",
+    "segundoNombre": "",
+    "segundoApellido": "",
+    "notificacion": 1,
+    "idTipoDocumento": 1
+  }
+}
+✅ Respuesta generada exitosamente (217 chars)
+🔍 Verificando primer mensaje: 22 mensajes previos del agente
+Saving message with params: {
+  conversationId: 163,
+  sender: 'assistant',
+  messageLength: 217,
+  twilioSid: 'SMedeed7c5e868bca3c7db5cc5f153e3c3',
+  type: undefined
+}
+Message saved successfully to conversation: 163
+[AndesTools] solicitar_certificado → HTTP status: 200
+[AndesTools] solicitar_certificado → respuesta raw: {"success":true,"data":{"estado":0,"mensaje":"Se realizo el registro de la solicitud de certificado para 1037644528"}}
+[AndesTools] solicitar_certificado → data parseada: {
+  "success": true,
+  "data": {
+    "estado": 0,
+    "mensaje": "Se realizo el registro de la solicitud de certificado para 1037644528"
+  }
+}
+✅ Respuesta generada exitosamente (231 chars)
+🔍 Verificando primer mensaje: 36 mensajes previos del agente
+Saving message with params: {
+  conversationId: 8,
+  sender: 'assistant',
+  messageLength: 231,
+  twilioSid: 'SMf0e502b429f6d0188163bca09cc1b02c',
+  type: undefined
+}
+Message saved successfully to conversation: 8
+📡 [2026-04-09T19:57:48.576Z] POST /seguros-colte/receive-message
+   Headers: {"host":"3e2f-2800-e2-1c80-2219-a11d-eb0e-b72b-8cc1.ngrok-free.app","user-agent":"TwilioProxy/1.1","content-length":"578","accept":"*/*","content-type":"application/x-www-form-urlencoded","i-twilio-idempotency-token":"6c020034-c38f-4822-94d1-e0eab39e7e73","x-forwarded-for":"100.24.44.213","x-forwarded-host":"3e2f-2800-e2-1c80-2219-a11d-eb0e-b72b-8cc1.ngrok-free.app","x-forwarded-proto":"https","x-home-region":"us1","x-twilio-signature":"6mLaZaTsRo262whnI4FIl0g2B8E=","accept-encoding":"gzip"}
+Mensaje de +573126862772 (Stefannia Cordoba)
+Found existing conversation for: +573126862772
+Saving message with params: {
+  conversationId: 163,
+  sender: 'user',
+  messageLength: 8,
+  twilioSid: 'SMcfed3105a786c6dda27a014535d87d25',
+  type: 'text'
+}
+Message saved successfully to conversation: 163
+IA procesando...
+📋 Invocando grafo con thread_id: 163
+🔄 Cliente ya identificado anteriormente - Reutilizando datos
+Supervisor detected client service: bienestar
+Service-based Routing: -> [Bienestar Plus Advisor]
+🔄 [Supervisor] Handing over to Bienestar Plus Advisor (Service Routing)
+[AndesTools] firmar_documento → storeKey: "pdf_1007240885_0" | pdfKey explícita: pdf_1007240885_0
+[AndesTools] firmar_documento → PDF resuelto desde store para documento: 1007240885
+[AndesTools] firmar_documento → payload (sin base64): {"codigoOTP":"77641271","datosFirmante":{"documento":"1007240885","idTipoDocumento":1,"nombreAdjunto":"documento_firmado","firmaVisible":"1","coordenadasFirma":"80,20,150,60","pagina":0,"observaciones":"Firma electrónica","tipoFirmaVis":1,"imagenFirma":""}}
+[AndesTools] firmar_documento → respuesta OK: {"estado":0,"id":"1474"}
+[AndesTools] firmar_documento → storeKey: "pdf_1007240885_1" | pdfKey explícita: pdf_1007240885_1
+[AndesTools] firmar_documento → PDF resuelto desde store para documento: 1007240885
+[AndesTools] firmar_documento → payload (sin base64): {"codigoOTP":"77641271","datosFirmante":{"documento":"1007240885","idTipoDocumento":1,"nombreAdjunto":"documento_firmado","firmaVisible":"1","coordenadasFirma":"80,20,150,60","pagina":0,"observaciones":"Firma electrónica","tipoFirmaVis":1,"imagenFirma":""}}
+[AndesTools] firmar_documento → respuesta OK: {"estado":0,"id":"1475"}
+[AndesTools] firmar_documento → storeKey: "pdf_1007240885_2" | pdfKey explícita: pdf_1007240885_2
+[AndesTools] firmar_documento → PDF resuelto desde store para documento: 1007240885
+[AndesTools] firmar_documento → payload (sin base64): {"codigoOTP":"77641271","datosFirmante":{"documento":"1007240885","idTipoDocumento":1,"nombreAdjunto":"documento_firmado","firmaVisible":"1","coordenadasFirma":"80,20,150,60","pagina":0,"observaciones":"Firma electrónica","tipoFirmaVis":1,"imagenFirma":""}}
+[AndesTools] firmar_documento → respuesta OK: {"estado":0,"id":"1476"}
+[AndesTools] firmar_documento → storeKey: "pdf_1007240885_3" | pdfKey explícita: pdf_1007240885_3
+[AndesTools] firmar_documento → PDF resuelto desde store para documento: 1007240885
+[AndesTools] firmar_documento → payload (sin base64): {"codigoOTP":"77641271","datosFirmante":{"documento":"1007240885","idTipoDocumento":1,"nombreAdjunto":"documento_firmado","firmaVisible":"1","coordenadasFirma":"80,20,150,60","pagina":0,"observaciones":"Firma electrónica","tipoFirmaVis":1,"imagenFirma":""}}
+[AndesTools] firmar_documento → respuesta OK: {"estado":0,"id":"1477"}
+[AndesTools] descargar_todos_certificados → descargando 4 certificado(s)...
+[AndesTools] descargar_todos_certificados → PDF firmado desde store: Solicitud_Bienestar_Plus_Protegido_firmado.pdf (id: 1474)
+[AndesTools] descargar_todos_certificados → testigo para idSolicitud: 1474
+[AndesTools] descargar_todos_certificados → Certificado Andes OK: Solicitud_Bienestar_Plus_Protegido_firmado.pdf
+[AndesTools] descargar_todos_certificados → PDF firmado desde store: Formato_Autorizacion_Descuento_Libranzas_firmado.pdf (id: 1475)
+[AndesTools] descargar_todos_certificados → testigo para idSolicitud: 1475
+[AndesTools] descargar_todos_certificados → Certificado Andes OK: Formato_Autorizacion_Descuento_Libranzas_firmado.pdf
+[AndesTools] descargar_todos_certificados → PDF firmado desde store: Libranza_firmado.pdf (id: 1476)
+[AndesTools] descargar_todos_certificados → testigo para idSolicitud: 1476
+[AndesTools] descargar_todos_certificados → Certificado Andes OK: Libranza_firmado.pdf
+[AndesTools] descargar_todos_certificados → PDF firmado desde store: FVC01_firmado.pdf (id: 1477)
+[AndesTools] descargar_todos_certificados → testigo para idSolicitud: 1477
+[AndesTools] descargar_todos_certificados → Certificado Andes OK: FVC01_firmado.pdf
+[AndesTools] descargar_todos_certificados → Email enviado a stefannia.cordoba@gmail.com con 4 adjunto(s)
+[AndesTools] descargar_todos_certificados → Copia interna enviada a legal@ultimmarketing.com con 8 adjunto(s)
+✅ Respuesta generada exitosamente (251 chars)
+🔍 Verificando primer mensaje: 23 mensajes previos del agente
+Saving message with params: {
+  conversationId: 163,
+  sender: 'assistant',
+  messageLength: 251,
+  twilioSid: 'SMac195b3ebe95f59d3f2128f44d9e2f88',
+  type: undefined
+}
+Message saved successfully to conversation: 163
+📡 [2026-04-09T19:58:57.821Z] POST /seguros-colte/receive-message
+   Headers: {"host":"3e2f-2800-e2-1c80-2219-a11d-eb0e-b72b-8cc1.ngrok-free.app","user-agent":"TwilioProxy/1.1","content-length":"628","accept":"*/*","content-type":"application/x-www-form-urlencoded","i-twilio-idempotency-token":"e9872d25-da6a-4193-8fdc-4526fa8d21ba","x-forwarded-for":"35.174.7.15","x-forwarded-host":"3e2f-2800-e2-1c80-2219-a11d-eb0e-b72b-8cc1.ngrok-free.app","x-forwarded-proto":"https","x-home-region":"us1","x-twilio-signature":"+JIY5Y5Titi9UO+j+iaZtTnevEc=","accept-encoding":"gzip"}
+Mensaje de +573126862772 (Stefannia Cordoba)
+Found existing conversation for: +573126862772
+Saving message with params: {
+  conversationId: 163,
+  sender: 'user',
+  messageLength: 56,
+  twilioSid: 'SM5d76e7d9bb1f05dfb8958b9914e9677a',
+  type: 'text'
+}
+Message saved successfully to conversation: 163
+IA procesando...
+📋 Invocando grafo con thread_id: 163
+🔄 Cliente ya identificado anteriormente - Reutilizando datos
+Supervisor detected client service: bienestar
+Service-based Routing: -> [Bienestar Plus Advisor]
+🔄 [Supervisor] Handing over to Bienestar Plus Advisor (Service Routing)
+✅ Respuesta generada exitosamente (284 chars)
+🔍 Verificando primer mensaje: 24 mensajes previos del agente
+Saving message with params: {
+  conversationId: 163,
+  sender: 'assistant',
+  messageLength: 284,
+  twilioSid: 'SMfcb79eafa45686ef19351dfb4e881a20',
+  type: undefined
+}
+Message saved successfully to conversation: 163
+📡 [2026-04-09T19:59:23.595Z] POST /seguros-colte/receive-message
+   Headers: {"host":"3e2f-2800-e2-1c80-2219-a11d-eb0e-b72b-8cc1.ngrok-free.app","user-agent":"TwilioProxy/1.1","content-length":"633","accept":"*/*","content-type":"application/x-www-form-urlencoded","i-twilio-idempotency-token":"4cfc5289-f6b2-4156-96c8-00e8c574992f","x-forwarded-for":"54.197.205.230","x-forwarded-host":"3e2f-2800-e2-1c80-2219-a11d-eb0e-b72b-8cc1.ngrok-free.app","x-forwarded-proto":"https","x-home-region":"us1","x-twilio-signature":"0yU/6kT7IdMOr5LxpAvA6Js7duw=","accept-encoding":"gzip"}
+Mensaje de +573126862772 (Stefannia Cordoba)
+Found existing conversation for: +573126862772
+Saving message with params: {
+  conversationId: 163,
+  sender: 'user',
+  messageLength: 58,
+  twilioSid: 'SMbb1a0ea27918061ef83bce341c101195',
+  type: 'text'
+}
+Message saved successfully to conversation: 163
+IA procesando...
+📋 Invocando grafo con thread_id: 163
+🔄 Cliente ya identificado anteriormente - Reutilizando datos
+Supervisor detected client service: bienestar
+Service-based Routing: -> [Bienestar Plus Advisor]
+🔄 [Supervisor] Handing over to Bienestar Plus Advisor (Service Routing)
+✅ Respuesta generada exitosamente (377 chars)
+🔍 Verificando primer mensaje: 25 mensajes previos del agente
+Saving message with params: {
+  conversationId: 163,
+  sender: 'assistant',
+  messageLength: 377,
+  twilioSid: 'SMb3064c85323535ebfa4ad734c70b6dfb',
+  type: undefined
+}
+Message saved successfully to conversation: 163
+📡 [2026-04-09T19:59:57.585Z] POST /seguros-colte/receive-message
+   Headers: {"host":"3e2f-2800-e2-1c80-2219-a11d-eb0e-b72b-8cc1.ngrok-free.app","user-agent":"TwilioProxy/1.1","content-length":"596","accept":"*/*","content-type":"application/x-www-form-urlencoded","i-twilio-idempotency-token":"b02a1c1d-8723-4aec-9ec0-d9f2ceaaf99c","x-forwarded-for":"3.92.48.77","x-forwarded-host":"3e2f-2800-e2-1c80-2219-a11d-eb0e-b72b-8cc1.ngrok-free.app","x-forwarded-proto":"https","x-home-region":"us1","x-twilio-signature":"EfIJydSo84KYdia6vHPVSwfXYEM=","accept-encoding":"gzip"}
+Mensaje de +573126862772 (Stefannia Cordoba)
+Found existing conversation for: +573126862772
+Saving message with params: {
+  conversationId: 163,
+  sender: 'user',
+  messageLength: 24,
+  twilioSid: 'SMcc61c20db8efa99c0034deb0ee3772aa',
+  type: 'text'
+}
+Message saved successfully to conversation: 163
+IA procesando...
+📋 Invocando grafo con thread_id: 163
+🔄 Cliente ya identificado anteriormente - Reutilizando datos
+Supervisor detected client service: bienestar
+Service-based Routing: -> [Bienestar Plus Advisor]
+🔄 [Supervisor] Handing over to Bienestar Plus Advisor (Service Routing)
+Búsqueda específica en documentos Bienestar Plus: "WhatsApp canal de atención Bienestar Plus Protegido"
+🔍 Buscando: "WhatsApp canal de atención Bienestar Plus Protegido"...
+Consultando 4 fragmentos...
+✅ Respuesta generada exitosamente (287 chars)
+🔍 Verificando primer mensaje: 26 mensajes previos del agente
+Saving message with params: {
+  conversationId: 163,
+  sender: 'assistant',
+  messageLength: 287,
+  twilioSid: 'SMbf586cdd41b443da763dd6a63e6d7873',
+  type: undefined
+}
+Message saved successfully to conversation: 163
+📡 [2026-04-09T20:04:55.102Z] POST /seguros-colte/receive-message
+   Headers: {"host":"3e2f-2800-e2-1c80-2219-a11d-eb0e-b72b-8cc1.ngrok-free.app","user-agent":"TwilioProxy/1.1","content-length":"604","accept":"*/*","content-type":"application/x-www-form-urlencoded","i-twilio-idempotency-token":"f9c713f1-5bd4-46d9-8e81-9adc54fe7c53","x-forwarded-for":"54.165.166.103","x-forwarded-host":"3e2f-2800-e2-1c80-2219-a11d-eb0e-b72b-8cc1.ngrok-free.app","x-forwarded-proto":"https","x-home-region":"us1","x-twilio-signature":"hjeTaHz5vX7rv773CKb71L2iC+w=","accept-encoding":"gzip"}
+Mensaje de +573147699988 (Miguel Jaramillo )
+Found existing conversation for: +573147699988
+Saving message with params: {
+  conversationId: 8,
+  sender: 'user',
+  messageLength: 32,
+  twilioSid: 'SM710dc6b836738c289337c8faa41a2763',
+  type: 'text'
+}
+Message saved successfully to conversation: 8
+IA procesando...
+📋 Invocando grafo con thread_id: 8
+🔍 INICIANDO IDENTIFICACIÓN DE CLIENTE...
+📱 Número de teléfono detectado: +573147699988
+📱 Número formateado: +573147699988
+Buscando cliente con número: +573147699988
+Número formateado: +573147699988
+Cliente no encontrado para el número: +573147699988
+ℹ️  Cliente no encontrado en la base de datos para: +573147699988
+Supervisor Decision: -> [Bienestar Plus Advisor]
+[AndesTools] verificar_estado_andes → llamando backend...
+⚠️ Memoria alta: 540MB
+[AndesTools] verificar_estado_andes → respuesta OK
+[AndesTools] solicitar_certificado → payload: {
+  "datosFirmante": {
+    "documento": "1037644528",
+    "primerNombre": "Miguel",
+    "primerApellido": "Jaramillo",
+    "correo": "migueljaramillo.upb@gmail.com",
+    "celular": "3147699988",
+    "segundoNombre": "",
+    "segundoApellido": "",
+    "notificacion": 1,
+    "idTipoDocumento": 1
+  }
+}
+[AndesTools] solicitar_certificado → HTTP status: 200
+[AndesTools] solicitar_certificado → respuesta raw: {"success":true,"data":{"estado":0,"mensaje":"Se realizo el registro de la solicitud de certificado para 1037644528"}}
+[AndesTools] solicitar_certificado → data parseada: {
+  "success": true,
+  "data": {
+    "estado": 0,
+    "mensaje": "Se realizo el registro de la solicitud de certificado para 1037644528"
+  }
+}
+✅ Respuesta generada exitosamente (230 chars)
+🔍 Verificando primer mensaje: 37 mensajes previos del agente
+Saving message with params: {
+  conversationId: 8,
+  sender: 'assistant',
+  messageLength: 230,
+  twilioSid: 'SM0adeaade76d29a8e59f34514ba93798f',
+  type: undefined
+}
+Message saved successfully to conversation: 8
+⚠️ Memoria alta: 529MB
+📡 [2026-04-09T20:05:58.548Z] POST /seguros-colte/receive-message
+   Headers: {"host":"3e2f-2800-e2-1c80-2219-a11d-eb0e-b72b-8cc1.ngrok-free.app","user-agent":"TwilioProxy/1.1","content-length":"578","accept":"*/*","content-type":"application/x-www-form-urlencoded","i-twilio-idempotency-token":"e6df1544-a667-4f21-994d-3ddf396f47b4","x-forwarded-for":"98.94.81.63","x-forwarded-host":"3e2f-2800-e2-1c80-2219-a11d-eb0e-b72b-8cc1.ngrok-free.app","x-forwarded-proto":"https","x-home-region":"us1","x-twilio-signature":"7+AQl/IH0Z+oGvGG2WT0/ykGaAg=","accept-encoding":"gzip"}
+Mensaje de +573147699988 (Miguel Jaramillo )
+Found existing conversation for: +573147699988
+Saving message with params: {
+  conversationId: 8,
+  sender: 'user',
+  messageLength: 8,
+  twilioSid: 'SM7c932da0f6ec252ed56d0a4b2bfad820',
+  type: 'text'
+}
+Message saved successfully to conversation: 8
+IA procesando...
+📋 Invocando grafo con thread_id: 8
+🔍 INICIANDO IDENTIFICACIÓN DE CLIENTE...
+📱 Número de teléfono detectado: +573147699988
+📱 Número formateado: +573147699988
+Buscando cliente con número: +573147699988
+Número formateado: +573147699988
+⚠️ Memoria alta: 735MB
+Cliente no encontrado para el número: +573147699988
+ℹ️  Cliente no encontrado en la base de datos para: +573147699988
+JSON Parse Error: Unexpected token 'G', "Gracias po"... is not valid JSON, falling back to bienestar_plus_advisor
+Supervisor Decision: -> [Bienestar Plus Advisor]
+[AndesTools] firmar_documento → storeKey: "pdf_1037644528_0" | pdfKey explícita: pdf_1037644528_0
+[AndesTools] firmar_documento → PDF resuelto desde store para documento: 1037644528
+[AndesTools] firmar_documento → payload (sin base64): {"codigoOTP":"87472624","datosFirmante":{"documento":"1037644528","idTipoDocumento":1,"nombreAdjunto":"documento_firmado","firmaVisible":"1","coordenadasFirma":"80,20,150,60","pagina":0,"observaciones":"Firma electrónica","tipoFirmaVis":1,"imagenFirma":""}}
+[AndesTools] firmar_documento → ERROR storeKey: "pdf_1037644528_0" | body: {"success":false,"error":"El codigo OTP no es valido, por favor consuma el metodo 'SolicitudCertificado'","estadoAndes":142}
+^A✅ Respuesta generada exitosamente (199 chars)
+🔍 Verificando primer mensaje: 38 mensajes previos del agente
+Saving message with params: {
+  conversationId: 8,
+  sender: 'assistant',
+  messageLength: 199,
+  twilioSid: 'SM299e3dcc081f254865f8e30843910646',
+  type: undefined
+}
+Message saved successfully to conversation: 8
+⚠️ Memoria alta: 874MB
+📡 [2026-04-09T20:06:39.137Z] POST /seguros-colte/receive-message
+   Headers: {"host":"3e2f-2800-e2-1c80-2219-a11d-eb0e-b72b-8cc1.ngrok-free.app","user-agent":"TwilioProxy/1.1","content-length":"578","accept":"*/*","content-type":"application/x-www-form-urlencoded","i-twilio-idempotency-token":"8a18c985-c399-4181-9280-73ae4594dbed","x-forwarded-for":"54.175.24.84","x-forwarded-host":"3e2f-2800-e2-1c80-2219-a11d-eb0e-b72b-8cc1.ngrok-free.app","x-forwarded-proto":"https","x-home-region":"us1","x-twilio-signature":"h+g0af0PH5q4HMRRPPSuobgBjCY=","accept-encoding":"gzip"}
+Mensaje de +573147699988 (Miguel Jaramillo )
+Found existing conversation for: +573147699988
+Saving message with params: {
+  conversationId: 8,
+  sender: 'user',
+  messageLength: 8,
+  twilioSid: 'SM075342f49d0037bc0aa2f8d78cb41c84',
+  type: 'text'
+}
+Message saved successfully to conversation: 8
+IA procesando...
+📋 Invocando grafo con thread_id: 8
+🔍 INICIANDO IDENTIFICACIÓN DE CLIENTE...
+📱 Número de teléfono detectado: +573147699988
+📱 Número formateado: +573147699988
+Buscando cliente con número: +573147699988
+Número formateado: +573147699988
+Cliente no encontrado para el número: +573147699988
+ℹ️  Cliente no encontrado en la base de datos para: +573147699988
+JSON Parse Error: Unexpected token 'E', "El código "... is not valid JSON, falling back to bienestar_plus_advisor
+Supervisor Decision: -> [Bienestar Plus Advisor]
+[AndesTools] firmar_documento → storeKey: "pdf_1037644528_0" | pdfKey explícita: pdf_1037644528_0
+[AndesTools] firmar_documento → PDF resuelto desde store para documento: 1037644528
+[AndesTools] firmar_documento → payload (sin base64): {"codigoOTP":"87472624","datosFirmante":{"documento":"1037644528","idTipoDocumento":1,"nombreAdjunto":"documento_firmado","firmaVisible":"1","coordenadasFirma":"80,20,150,60","pagina":0,"observaciones":"Firma electrónica","tipoFirmaVis":1,"imagenFirma":""}}
+[AndesTools] firmar_documento → ERROR storeKey: "pdf_1037644528_0" | body: {"success":false,"error":"El codigo OTP no es valido, por favor consuma el metodo 'SolicitudCertificado'","estadoAndes":142}
+⚠️ Memoria alta: 1375MB
+✅ Respuesta generada exitosamente (199 chars)
+🔍 Verificando primer mensaje: 39 mensajes previos del agente
+Saving message with params: {
+  conversationId: 8,
+  sender: 'assistant',
+  messageLength: 199,
+  twilioSid: 'SM921a6a5bdf811b8285e8da2339ba9ad1',
+  type: undefined
+}
+Message saved successfully to conversation: 8
+📡 [2026-04-09T20:07:23.901Z] POST /seguros-colte/receive-message
+   Headers: {"host":"3e2f-2800-e2-1c80-2219-a11d-eb0e-b72b-8cc1.ngrok-free.app","user-agent":"TwilioProxy/1.1","content-length":"633","accept":"*/*","content-type":"application/x-www-form-urlencoded","i-twilio-idempotency-token":"9ef37ca9-c95d-4e34-8763-51edacfb7c46","x-forwarded-for":"18.208.131.16","x-forwarded-host":"3e2f-2800-e2-1c80-2219-a11d-eb0e-b72b-8cc1.ngrok-free.app","x-forwarded-proto":"https","x-home-region":"us1","x-twilio-signature":"0uHkBtrdNyZI3cM7vLTtW3BPnF4=","accept-encoding":"gzip"}
+Mensaje de +573147699988 (Miguel Jaramillo )
+Found existing conversation for: +573147699988
+Saving message with params: {
+  conversationId: 8,
+  sender: 'user',
+  messageLength: 56,
+  twilioSid: 'SMdcb513742c2f67ea1ee3524421b05ad7',
+  type: 'text'
+}
+Message saved successfully to conversation: 8
+IA procesando...
+📋 Invocando grafo con thread_id: 8
+🔍 INICIANDO IDENTIFICACIÓN DE CLIENTE...
+📱 Número de teléfono detectado: +573147699988
+📱 Número formateado: +573147699988
+Buscando cliente con número: +573147699988
+Número formateado: +573147699988
+Cliente no encontrado para el número: +573147699988
+ℹ️  Cliente no encontrado en la base de datos para: +573147699988
+⚠️ Memoria alta: 2518MB
+Supervisor Decision: -> [Bienestar Plus Advisor]
+[AndesTools] solicitar_certificado → payload: {
+  "datosFirmante": {
+    "documento": "1037644528",
+    "primerNombre": "Miguel",
+    "primerApellido": "Jaramillo",
+    "correo": "migueljaramillo.upb@gmail.com",
+    "celular": "3147699988",
+    "segundoNombre": "",
+    "segundoApellido": "",
+    "notificacion": 1,
+    "idTipoDocumento": 1
+  }
+}
+[AndesTools] solicitar_certificado → HTTP status: 200
+[AndesTools] solicitar_certificado → respuesta raw: {"success":true,"data":{"estado":0,"mensaje":"Se realizo el registro de la solicitud de certificado para 1037644528"}}
+[AndesTools] solicitar_certificado → data parseada: {
+  "success": true,
+  "data": {
+    "estado": 0,
+    "mensaje": "Se realizo el registro de la solicitud de certificado para 1037644528"
+  }
+}
+✅ Respuesta generada exitosamente (239 chars)
+🔍 Verificando primer mensaje: 40 mensajes previos del agente
+Saving message with params: {
+  conversationId: 8,
+  sender: 'assistant',
+  messageLength: 239,
+  twilioSid: 'SMcc975cf07ba7a97cce52d1fc31ed8d62',
+  type: undefined
+}
+Message saved successfully to conversation: 8
+📡 [2026-04-09T20:08:01.726Z] POST /seguros-colte/receive-message
+   Headers: {"host":"3e2f-2800-e2-1c80-2219-a11d-eb0e-b72b-8cc1.ngrok-free.app","user-agent":"TwilioProxy/1.1","content-length":"578","accept":"*/*","content-type":"application/x-www-form-urlencoded","i-twilio-idempotency-token":"7d955dff-b55b-4d23-a70a-0f4f24163e9f","x-forwarded-for":"3.81.226.59","x-forwarded-host":"3e2f-2800-e2-1c80-2219-a11d-eb0e-b72b-8cc1.ngrok-free.app","x-forwarded-proto":"https","x-home-region":"us1","x-twilio-signature":"MgJDqmxjWmcwWVjEcBBtmK1yY+A=","accept-encoding":"gzip"}
+Mensaje de +573147699988 (Miguel Jaramillo )
+Found existing conversation for: +573147699988
+Saving message with params: {
+  conversationId: 8,
+  sender: 'user',
+  messageLength: 8,
+  twilioSid: 'SM583f6fdeb25019a8c845b3525d9fbf8e',
+  type: 'text'
+}
+Message saved successfully to conversation: 8
+IA procesando...
+📋 Invocando grafo con thread_id: 8
+🔍 INICIANDO IDENTIFICACIÓN DE CLIENTE...
+📱 Número de teléfono detectado: +573147699988
+📱 Número formateado: +573147699988
+Buscando cliente con número: +573147699988
+Número formateado: +573147699988
+⚠️ Memoria alta: 3473MB
+Cliente no encontrado para el número: +573147699988
+ℹ️  Cliente no encontrado en la base de datos para: +573147699988
+❌ ERROR CRÍTICO EN GRAPH.INVOKE:
+   Type: Error
+   Message: ⏱️ Timeout: El grafo tardó más de 45 segundos
+   Stack: Error: ⏱️ Timeout: El grafo tardó más de 45 segundos
+    at Timeout._onTimeout (C:\Users\alejo\Desktop\Desarrollo\ai\seguros-colte\src\routes\chatRoutes.ts:187:33)
+    at listOnTimeout (node:internal/timers:605:17)
+    at process.processTimers (node:internal/timers:541:7)
+🔍 Verificando primer mensaje: 41 mensajes previos del agente
+Saving message with params: {
+  conversationId: 8,
+  sender: 'assistant',
+  messageLength: 79,
+  twilioSid: 'SMfc396501fd87df46e5f24e320354261a',
+  type: undefined
+}
+JSON Parse Error: Unexpected token 'P', "Perfecto, "... is not valid JSON, falling back to bienestar_plus_advisor
+Supervisor Decision: -> [Bienestar Plus Advisor]
+⚠️ Memoria alta: 3621MB
+Message saved successfully to conversation: 8
+📡 [2026-04-09T20:09:13.947Z] POST /seguros-colte/receive-message
+   Headers: {"host":"3e2f-2800-e2-1c80-2219-a11d-eb0e-b72b-8cc1.ngrok-free.app","user-agent":"TwilioProxy/1.1","content-length":"577","accept":"*/*","content-type":"application/x-www-form-urlencoded","i-twilio-idempotency-token":"6a7d3157-b752-49dd-a4e4-15d07605e6a6","x-forwarded-for":"100.53.13.135","x-forwarded-host":"3e2f-2800-e2-1c80-2219-a11d-eb0e-b72b-8cc1.ngrok-free.app","x-forwarded-proto":"https","x-home-region":"us1","x-twilio-signature":"uEPhz33JdQvH0+DZ97FAhxhibk4=","accept-encoding":"gzip"}
+Mensaje de +573147699988 (Miguel Jaramillo )
+Found existing conversation for: +573147699988
+Saving message with params: {
+  conversationId: 8,
+  sender: 'user',
+  messageLength: 5,
+  twilioSid: 'SMaf7b0d75f961a79c828c5305b1c08c77',
+  type: 'text'
+}
+Message saved successfully to conversation: 8
+IA procesando...
+📋 Invocando grafo con thread_id: 8
+🔍 INICIANDO IDENTIFICACIÓN DE CLIENTE...
+📱 Número de teléfono detectado: +573147699988
+📱 Número formateado: +573147699988
+Buscando cliente con número: +573147699988
+Número formateado: +573147699988
+⚠️ Memoria alta: 3960MB
+❌ ERROR CRÍTICO EN GRAPH.INVOKE:
+   Type: Error
+   Message: ⏱️ Timeout: El grafo tardó más de 45 segundos
+   Stack: Error: ⏱️ Timeout: El grafo tardó más de 45 segundos
+    at Timeout._onTimeout (C:\Users\alejo\Desktop\Desarrollo\ai\seguros-colte\src\routes\chatRoutes.ts:187:33)
+    at listOnTimeout (node:internal/timers:605:17)
+    at process.processTimers (node:internal/timers:541:7)
+📡 [2026-04-09T20:10:23.985Z] POST /seguros-colte/receive-message
+   Headers: {"host":"3e2f-2800-e2-1c80-2219-a11d-eb0e-b72b-8cc1.ngrok-free.app","user-agent":"TwilioProxy/1.1","content-length":"587","accept":"*/*","content-type":"application/x-www-form-urlencoded","i-twilio-idempotency-token":"dad6e952-d912-44c7-be1b-8476a9e7bd4e","x-forwarded-for":"34.227.116.72","x-forwarded-host":"3e2f-2800-e2-1c80-2219-a11d-eb0e-b72b-8cc1.ngrok-free.app","x-forwarded-proto":"https","x-home-region":"us1","x-twilio-signature":"wmfRSob+H37iQ+xG/ezG4NYImXE=","accept-encoding":"gzip"}
+Mensaje de +573147699988 (Miguel Jaramillo )
+[AndesTools] firmar_documento → storeKey: "pdf_1037644528_0" | pdfKey explícita: pdf_1037644528_0
+[AndesTools] firmar_documento → PDF resuelto desde store para documento: 1037644528
+[AndesTools] firmar_documento → payload (sin base64): {"codigoOTP":"04103792","datosFirmante":{"documento":"1037644528","idTipoDocumento":1,"nombreAdjunto":"documento_firmado","firmaVisible":"1","coordenadasFirma":"80,20,150,60","pagina":0,"observaciones":"Firma electrónica","tipoFirmaVis":1,"imagenFirma":""}}
+Cliente no encontrado para el número: +573147699988
+ℹ️  Cliente no encontrado en la base de datos para: +573147699988
+⚠️ Memoria alta: 3334MB
+[AndesTools] firmar_documento → ERROR: This operation was aborted
+🔍 Verificando primer mensaje: 42 mensajes previos del agente
+Found existing conversation for: +573147699988
+Saving message with params: {
+  conversationId: 8,
+  sender: 'user',
+  messageLength: 17,
+  twilioSid: 'SM7153218c58bb9ce6964ae43ffc853e7c',
+  type: 'text'
+}
+Saving message with params: {
+  conversationId: 8,
+  sender: 'assistant',
+  messageLength: 79,
+  twilioSid: 'SM88d58e565b784f82473b7e875787cfb0',
+  type: undefined
+}
+JSON Parse Error: Unexpected token '¡', "¡Hola! Soy"... is not valid JSON, falling back to bienestar_plus_advisor
+Supervisor Decision: -> [Bienestar Plus Advisor]
+Message saved successfully to conversation: 8
+IA procesando...
+📋 Invocando grafo con thread_id: 8
+
+<--- Last few GCs --->
+
+[432:00000296C4339000]  1992072 ms: Mark-Compact 3983.6 (4195.8) -> 3940.2 (4217.0) MB, pooled: 5 MB, 1676.98 / 0.00 ms  (average mu = 0.208, current mu = 0.049) allocation failure; scavenge might not succeed
+[432:00000296C4339000]  1994311 ms: Mark-Compact 4004.2 (4217.0) -> 3960.8 (4241.5) MB, pooled: 2 MB, 2135.53 / 0.00 ms  (average mu = 0.123, current mu = 0.046) allocation failure; scavenge might not succeed
+
+FATAL ERROR: Reached heap limit Allocation failed - JavaScript heap out of memory
+----- Native stack trace -----
+
+ 1: 00007FF721F0C36F node::OnFatalError+1343
+ 2: 00007FF722B54D77 v8::Function::NewInstance+423
+ 3: 00007FF722955467 v8::base::AddressSpaceReservation::AddressSpaceReservation+322071
+ 4: 00007FF722953106 v8::base::AddressSpaceReservation::AddressSpaceReservation+313014
+ 5: 00007FF72296D7BA X509_STORE_set_cleanup+5098
+ 6: 00007FF722979C56 uv_timer_set_repeat+20694
+ 7: 00007FF72254CD47 v8::String::Utf8Value::~Utf8Value+143495
+ 8: 00000296FCB3733A
+[nodemon] app crashed - waiting for file changes before starting...

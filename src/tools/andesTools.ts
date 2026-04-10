@@ -82,9 +82,9 @@ export const solicitarCertificado = tool(
       primerApellido:  z.string().describe('Primer apellido del firmante'),
       correo:          z.string().describe('Correo electrónico del firmante'),
       celular:         z.string().describe('Número de celular para recibir el OTP'),
-      segundoNombre:   z.string().default('').describe('Segundo nombre del firmante (opcional)'),
-      segundoApellido: z.string().default('').describe('Segundo apellido del firmante (opcional)'),
-      notificacion:    z.number().default(1).describe('Canal de envío del OTP: 1=Email, 2=SMS')
+      segundoNombre:   z.string().nullable().default('').describe('Segundo nombre del firmante (opcional)'),
+      segundoApellido: z.string().nullable().default('').describe('Segundo apellido del firmante (opcional)'),
+      notificacion:    z.number().nullable().default(1).describe('Canal de envío del OTP: 1=Email, 2=SMS')
     })
   }
 );
@@ -173,14 +173,14 @@ export const firmarDocumento = tool(
     schema: z.object({
       documento:        z.string().describe('Número de documento de identidad del firmante'),
       codigoOTP:        z.string().describe('Código OTP recibido por el firmante en su correo'),
-      pdfKey:           z.string().optional().describe('Clave exacta del PDF en el store (retornada por generarPdfsFondoTool). Si se omite, se usa pdf_{documento}. Obligatorio en el flujo multi-documento.'),
-      nombreAdjunto:    z.string().default('documento_firmado').describe('Nombre del archivo resultante (sin extensión)'),
-      firmaVisible:     z.string().default('1').describe('Visibilidad de la firma: 1=visible, 2=no visible'),
-      coordenadasFirma: z.string().default('80,20,150,60').describe('Posición de la firma en el PDF: x,y,ancho,alto'),
-      pagina:           z.number().default(0).describe('Página donde se coloca la firma. 0=última página'),
-      observaciones:    z.string().default('Firma electrónica').describe('Texto de observaciones que acompaña la firma'),
-      tipoFirmaVis:     z.number().default(1).describe('Estilo visual de la firma: 1=estándar'),
-      imagenFirma:      z.string().default('').describe('Imagen personalizada de firma en Base64 (dejar vacío para firma estándar)')
+      pdfKey:           z.string().nullable().optional().describe('Clave exacta del PDF en el store (retornada por generarPdfsFondoTool). Si se omite, se usa pdf_{documento}. Obligatorio en el flujo multi-documento.'),
+      nombreAdjunto:    z.string().nullable().default('documento_firmado').describe('Nombre del archivo resultante (sin extensión)'),
+      firmaVisible:     z.string().nullable().default('1').describe('Visibilidad de la firma: 1=visible, 2=no visible'),
+      coordenadasFirma: z.string().nullable().default('80,20,150,60').describe('Posición de la firma en el PDF: x,y,ancho,alto'),
+      pagina:           z.number().nullable().default(0).describe('Página donde se coloca la firma. 0=última página'),
+      observaciones:    z.string().nullable().default('Firma electrónica').describe('Texto de observaciones que acompaña la firma'),
+      tipoFirmaVis:     z.number().nullable().default(1).describe('Estilo visual de la firma: 1=estándar'),
+      imagenFirma:      z.string().nullable().default('').describe('Imagen personalizada de firma en Base64 (dejar vacío para firma estándar)')
     })
   }
 );

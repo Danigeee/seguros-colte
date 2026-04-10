@@ -1,5 +1,6 @@
 import { HumanMessage, SystemMessage } from "@langchain/core/messages";
-import { StateGraph, END, MemorySaver } from "@langchain/langgraph";
+import { StateGraph, END } from "@langchain/langgraph";
+import { PostgresSaver } from "@langchain/langgraph-checkpoint-postgres";
 import { ChatOpenAI } from "@langchain/openai";
 import { AgentState } from "./agents/agentState.js";
 import { bienestarPlusWorkflow } from "./agents/bienestarPlusAdvisor.js";
@@ -10,11 +11,34 @@ import { seguroAutosAdvisor } from "./agents/seguroAutosAdvisor.js";
 import { dentixAdvisor } from "./agents/dentixAdvisor.js";
 import { identifyClientNode } from "./agents/identifyClient.js";
 
-const checkpointer = new MemorySaver();
+// Checkpointer persistente en Supabase (PostgreSQL).
+// Las tablas se crean automáticamente al importar este módulo.
+// El estado sobrevive reinicios del servidor — las conversaciones no se pierden.
+export const checkpointer = PostgresSaver.fromConnString(
+  process.env.SUPABASE_DB_URL_CHAT!
+);
 
-const supervisorModel = new ChatOpenAI({ 
-    model: "gpt-4.1-mini-2025-04-14", 
-    temperature: 0 
+/** Promesa que se resuelve cuando las tablas del checkpointer están listas. */
+export const checkpointerReady: Promise<void> = checkpointer
+  .setup()
+  .then(() => console.log("✅ Checkpointer PostgreSQL listo (tablas verificadas en Supabase)"))
+  .catch((err) => console.error("❌ Error inicializando checkpointer PostgreSQL:", err.message));
+
+/** @deprecated Usar checkpointerReady directamente. Se mantiene por compatibilidad con index.ts. */
+export async function setupCheckpointer(): Promise<void> {
+  return checkpointerReady;
+}
+
+// trackThreadActivity y cleanupInactiveThreads se mantienen como no-ops compatibles
+// para que chatRoutes.ts e index.ts no requieran cambios.
+// Con PostgresSaver la limpieza se delega a Supabase (ver nota en index.ts).
+export function trackThreadActivity(_threadId: string): void { /* no-op */ }
+export function cleanupInactiveThreads(_maxIdleMinutes?: number): number { return 0; }
+
+const supervisorModel = new ChatOpenAI({
+    model: "gpt-4.1-2025-04-14",
+    temperature: 0,
+    modelKwargs: { response_format: { type: "json_object" } },
 });
 
 const SUPERVISOR_PROMPT = `Actúas como Lucía, una asesora comercial experta y vendedora profesional de Coltefinanciera Seguros, una empresa líder en soluciones de protección y seguros especializados.
@@ -109,14 +133,13 @@ SI el usuario menciona CUALQUIERA de estos temas:
 - **Cualquier pregunta específica sobre servicios o productos de seguros**
 -> RETURN JSON: { "next": "bienestar_plus_advisor" }
 
-**CASO 7: CONVERSACIÓN GENERAL (SOLO SALUDOS MUY BÁSICOS Y PERFECTOS)**
-SI el usuario dice ÚNICAMENTE (sin errores de tipeo):
-- "Hola" (exactamente, una sola palabra)
-- "Buenos días" (exactamente, sin más contexto)
-- "¿Quién eres?" (exactamente)
+**CASO 7: CONVERSACIÓN GENERAL (SOLO PRIMER SALUDO SIN CONTEXTO PREVIO)**
+ÚNICAMENTE si se cumplen las DOS condiciones simultáneamente:
+1. El mensaje del usuario es un saludo simple y puro: "Hola", "Hola buenas", "Buenos días", "Buenas tardes", "Buenas noches" (sin ningún contenido adicional)
+2. NO hay historial de conversación previo (es el primer mensaje del hilo)
 -> RETURN JSON: { "next": "FINISH", "reply": "¡Hola! Soy Lucía de Coltefinanciera Seguros. ¿Te interesa conocer nuestros seguros de bienestar, mascotas, SOAT o protección de créditos?" }
 
-**NOTA**: Mensajes con errores de tipeo (como "hoal", "hla", etc.) deben ir a "bienestar_plus_advisor" para manejo profesional.
+**NOTA CRÍTICA**: Si hay historial previo en la conversación, NUNCA uses FINISH — siempre rutea al especialista correspondiente aunque el mensaje parezca una pregunta general (ej: "¿eres robot?", "¿quién eres?", "¿cómo funciona esto?"). El especialista sabrá responder en contexto.
 
 **IMPORTANTE**: Si hay CUALQUIER duda sobre la intención del mensaje, o si el mensaje parece incompleto, truncado, o podría ser una consulta sobre seguros, SIEMPRE rutea a "bienestar_plus_advisor".
 

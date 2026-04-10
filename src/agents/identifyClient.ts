@@ -7,15 +7,18 @@ import { SystemMessage } from "@langchain/core/messages";
  * y enriquece el estado con la información del cliente
  */
 export async function identifyClientNode(state: typeof AgentState.State, config?: any) {
-  // ✅ OPTIMIZACIÓN: Verificar si ya hay identificación en los mensajes
-  const existingClientInfo = state.messages?.find(msg => 
-    msg._getType() === 'system' && 
-    String(msg.content).includes('INFORMACIÓN DEL CLIENTE IDENTIFICADO')
+  // ✅ OPTIMIZACIÓN: si ya corrió en este thread (cliente encontrado, no encontrado o error),
+  // no volver a consultar la DB ni añadir otro SystemMessage al historial.
+  const yaIdentificado = state.messages?.some(msg =>
+    msg._getType() === 'system' && (
+      String(msg.content).includes('INFORMACIÓN DEL CLIENTE IDENTIFICADO') ||
+      String(msg.content).includes('CLIENTE NO IDENTIFICADO') ||
+      String(msg.content).includes('ERROR EN IDENTIFICACIÓN')
+    )
   );
-  
-  if (existingClientInfo) {
-    console.log('🔄 Cliente ya identificado anteriormente - Reutilizando datos');
-    return {}; // No hacer nada, mantener estado actual
+
+  if (yaIdentificado) {
+    return {}; // No hacer nada — el SystemMessage ya está en el historial
   }
   
   console.log('🔍 INICIANDO IDENTIFICACIÓN DE CLIENTE...');
@@ -66,7 +69,7 @@ export async function identifyClientNode(state: typeof AgentState.State, config?
       
       return {
         clientData,
-        messages: [systemMessage, ...(state.messages || [])]
+        messages: [systemMessage]
       };
       
     } else {
@@ -81,23 +84,23 @@ export async function identifyClientNode(state: typeof AgentState.State, config?
       
       return {
         clientData: null,
-        messages: [systemMessage, ...(state.messages || [])]
+        messages: [systemMessage]
       };
     }
-    
+
   } catch (error) {
     console.error('❌ Error en identificación de cliente:', error);
-    
+
     const systemMessage = new SystemMessage(
       `ERROR EN IDENTIFICACIÓN DE CLIENTE:
 - No se pudo consultar la base de datos
 - Trata al cliente de manera genérica
 - Solicita información de contacto si es necesario`
     );
-    
+
     return {
       clientData: null,
-      messages: [systemMessage, ...(state.messages || [])]
+      messages: [systemMessage]
     };
   }
 }

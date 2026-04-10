@@ -6,11 +6,47 @@ import * as path from "path";
 import { googleSheetsService } from "../services/googleSheetsService.js";
 
 /**
- * Store servidor-side para el Base64 del PDF.
+ * Store servidor-side para el Base64 del PDF con TTL automático.
  * El agente recibe solo la clave corta (pdfKey), evitando inflar el contexto del LLM
  * con cientos de KB de texto en Base64 en cada mensaje.
+ * Los PDFs se eliminan automáticamente tras 15 minutos de inactividad.
  */
-export const pdfBase64Store = new Map<string, string>();
+class PdfStore {
+  private store = new Map<string, { data: string; createdAt: number }>();
+
+  set(key: string, value: string): void {
+    this.store.set(key, { data: value, createdAt: Date.now() });
+  }
+  get(key: string): string | undefined {
+    return this.store.get(key)?.data;
+  }
+  delete(key: string): boolean {
+    return this.store.delete(key);
+  }
+  has(key: string): boolean {
+    return this.store.has(key);
+  }
+  keys(): IterableIterator<string> {
+    return this.store.keys();
+  }
+  get size(): number {
+    return this.store.size;
+  }
+  /** Elimina entradas con más de maxAgeMinutes minutos de antigüedad */
+  cleanup(maxAgeMinutes = 15): number {
+    const cutoff = Date.now() - maxAgeMinutes * 60_000;
+    let removed = 0;
+    for (const [key, entry] of this.store) {
+      if (entry.createdAt < cutoff) {
+        this.store.delete(key);
+        removed++;
+      }
+    }
+    return removed;
+  }
+}
+
+export const pdfBase64Store = new PdfStore();
 
 /**
  * Genera el PDF de solicitud "SOLICITUD ASISTENCIA BIENESTAR PLUS PROTEGIDO"

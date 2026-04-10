@@ -207,9 +207,9 @@ export const generarPdfsFondoTool = new DynamicStructuredTool({
       .describe("Fondo de pensión del cliente: 'casur', 'cremil' o 'fiduprevisora'"),
     nombresApellidos: z.string().describe("Nombres y apellidos completos del titular"),
     primerNombre:     z.string().describe("Primer nombre del titular"),
-    segundoNombre:    z.string().default('').describe("Segundo nombre del titular (puede estar vacío)"),
+    segundoNombre:    z.string().nullable().default('').describe("Segundo nombre del titular (puede estar vacío)"),
     primerApellido:   z.string().describe("Primer apellido del titular"),
-    segundoApellido:  z.string().default('').describe("Segundo apellido del titular (puede estar vacío)"),
+    segundoApellido:  z.string().nullable().default('').describe("Segundo apellido del titular (puede estar vacío)"),
     tipoIdentificacion: z.string().describe("Tipo de identificación (CC, CE, etc.)"),
     numeroIdentificacion: z.string().describe("Número del documento de identidad"),
     fechaNacimiento:  z.string().describe("Fecha de nacimiento del titular (DD/MM/AAAA)"),
@@ -256,6 +256,32 @@ export const generarPdfsFondoTool = new DynamicStructuredTool({
       const zonaUp = zona.trim().toLowerCase();
       const zonaNorm = zonaUp === 'urbana' ? 'Urbana' : zonaUp === 'rural' ? 'Rural' : zona;
 
+      // ── Idempotencia: si los PDFs ya están en el store, no regenerar ──────────
+      // Evita duplicar registros en Google Sheets cuando el agente llama al tool
+      // por segunda vez (ej: tras un fallo de Andes sin OTP).
+      const firstKey = `pdf_${numeroIdentificacion}_0`;
+      if (pdfBase64Store.has(firstKey)) {
+        const fondoDir0 = path.resolve(process.cwd(), "docs", fondoPension);
+        const pdfFiles0 = fs.existsSync(fondoDir0)
+          ? fs.readdirSync(fondoDir0).filter(f => {
+              const l = f.toLowerCase();
+              return l.endsWith('.pdf') && !l.includes('__diagnostico') && !l.includes('__preview');
+            })
+          : [];
+        const existingDocs = pdfFiles0
+          .map((nombre, i) => ({ key: `pdf_${numeroIdentificacion}_${i}`, nombre }))
+          .filter(({ key }) => pdfBase64Store.has(key));
+
+        console.log(`[generarPdfsFondoTool] PDFs ya en store para ${numeroIdentificacion} — omitiendo regeneración.`);
+        return JSON.stringify({
+          success: true,
+          fondo: fondoPension,
+          documentos: existingDocs,
+          mensaje: `Los ${existingDocs.length} documento(s) del fondo ${fondoPension.toUpperCase()} ya estaban generados. Procede directamente con la firma Andes: verificar_estado_andes → solicitar_certificado → firmar_documento por cada elemento.`,
+        });
+      }
+      // ─────────────────────────────────────────────────────────────────────────
+
       console.log(`[generarPdfsFondoTool] Iniciando para fondo '${fondoPension}', doc: ${numeroIdentificacion}`);
 
       const fondoDir = path.resolve(process.cwd(), "docs", fondoPension);
@@ -283,7 +309,7 @@ export const generarPdfsFondoTool = new DynamicStructuredTool({
 
       const clienteData: ClienteData = {
         fondoPension, nombresApellidos,
-        primerNombre, segundoNombre, primerApellido, segundoApellido,
+        primerNombre, segundoNombre: segundoNombre ?? '', primerApellido, segundoApellido: segundoApellido ?? '',
         tipoIdentificacion, numeroIdentificacion,
         fechaNacimiento, lugarNacimiento, sexo,
         direccionResidencia, ciudad, departamento, paisResidencia,
