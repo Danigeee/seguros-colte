@@ -1,8 +1,7 @@
-import twilio from 'twilio';
-const accountSid = process.env.TWILIO_ACCOUNT_SID;
-const authToken = process.env.TWILIO_AUTH_TOKEN;
-const defaultFrom = process.env.TWILIO_PHONE_NUMBER || 'whatsapp:+5742044840';
-const client = twilio(accountSid, authToken);
+import twilioClient from '../config/twilioConfig.js';
+//const defaultFrom = "whatsapp:+5742044840";
+const defaultFrom = "whatsapp:+14155238886";
+const client = twilioClient;
 export const whatsappService = {
     async sendMessage(to, body, mediaUrl) {
         try {

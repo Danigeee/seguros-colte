@@ -4,15 +4,15 @@ dotenv.config();
 async function testPaymentFlow() {
     console.log('🚀 Iniciando prueba de flujo de pago...');
     const testData = {
-        firstname: 'Alejandro',
-        lastname: 'Betancur',
-        identification: '1143939192',
-        email: 'alejandro.b@ultimmarketing.com',
-        phone: '3045655669',
+        firstname: "Alejandro",
+        lastname: "Betancur",
+        identification: "1143939192",
+        email: "daniel@ultimmarketing.com",
+        phone: "3045655669",
         amount: 15589,
-        description: 'Prueba de Seguro Bienestar Plus - $15.589 COP',
+        description: "Prueba de Seguro Bienestar Plus - $15.589 COP",
         clientId: 12, // Usamos un ID de cliente existente o ficticio para la prueba
-        totalInstallments: 4
+        totalInstallments: 4,
     };
     try {
         console.log('Datos de prueba:', JSON.stringify(testData, null, 2));

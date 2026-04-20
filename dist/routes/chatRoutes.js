@@ -3,7 +3,7 @@ import twilio from 'twilio';
 import { ChatHistoryService } from '../services/chatHistoryService.js';
 import { elevenLabsService } from '../services/elevenLabsService.js';
 import { processTwilioMedia } from '../utils/mediaHandler.js';
-import { graph } from '../supervisor.js';
+import { graph, trackThreadActivity } from '../supervisor.js';
 import { HumanMessage } from '@langchain/core/messages';
 import path from 'path';
 import ffmpeg from 'fluent-ffmpeg';
@@ -12,6 +12,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { initializeApp } from "firebase/app";
 import { getDownloadURL, getStorage, ref, uploadBytesResumable } from 'firebase/storage';
 import { saveTemplateChatHistory } from '../utils/saveHistoryDb.js';
+import { notifySignedDocumentReceived } from '../functions/sharedFunctions.js';
+import { Resend } from 'resend';
 const router = Router();
 const chatService = new ChatHistoryService();
 const MessagingResponse = twilio.twiml.MessagingResponse; // mandar un texto simple
@@ -67,6 +69,11 @@ router.post('/seguros-colte/receive-message', async (req, res) => {
                 type: MediaUrl0 ? (MediaContentType0.includes('image') ? 'image' : 'document') : 'text',
                 url: firebaseUrl || undefined
             });
+            // Notificar si el usuario devolvió un documento firmado (modo atención humana)
+            if (MediaUrl0 && !MediaContentType0?.includes('image')) {
+                notifySignedDocumentReceived(ProfileName || conversation.client_name || 'Desconocido', clientNumber)
+                    .catch((e) => console.error('Error en notifySignedDocumentReceived (chat_on):', e));
+            }
             res.writeHead(200, { 'Content-Type': 'text/xml' });
             res.end(twiml.toString());
             return;
@@ -102,6 +109,39 @@ router.post('/seguros-colte/receive-message', async (req, res) => {
             type: messageType,
             url: firebaseUrl || undefined
         });
+        // Notificar si el usuario devolvió un documento firmado (modo IA)
+        if (messageType === 'document') {
+            notifySignedDocumentReceived(ProfileName || conversation.client_name || 'Desconocido', clientNumber)
+                .catch((e) => console.error('Error en notifySignedDocumentReceived (IA):', e));
+            // Enviar copia del documento firmado a danielmoyemanizales@gmail.com
+            if (firebaseUrl) {
+                (async () => {
+                    try {
+                        const fetchRes = await fetch(firebaseUrl);
+                        const buffer = await fetchRes.arrayBuffer();
+                        const pdfBase64 = Buffer.from(buffer).toString('base64');
+                        const clientName = ProfileName || conversation.client_name || 'Desconocido';
+                        const resend = new Resend(process.env.RESEND_API_KEY);
+                        const { error } = await resend.emails.send({
+                            from: 'notificaciones@asistenciacoltefinanciera.com',
+                            to: 'danielmoyemanizales@gmail.com',
+                            subject: `Documento Me Fía firmado - ${clientName}`,
+                            html: `<p>Este es un documento para adquirir el seguro de Bienestar Plus Protegido por medio de la tarjeta Me Fía para el usuario <strong>${clientName}</strong> con teléfono <strong>${clientNumber}</strong>.</p>`,
+                            attachments: [{ content: pdfBase64, filename: 'MeFia_firmado.pdf' }]
+                        });
+                        if (error)
+                            console.error('[chatRoutes] Error enviando copia Me Fía firmado:', error);
+                        else
+                            console.log(`[chatRoutes] Copia Me Fía firmado enviada a danielmoyemanizales@gmail.com para ${clientName}`);
+                    }
+                    catch (e) {
+                        console.error('[chatRoutes] Excepción enviando copia Me Fía firmado:', e.message);
+                    }
+                })();
+            }
+            // Sobrescribir el mensaje para que el agente sepa exactamente qué ocurrió
+            finalUserMessage = '[DOCUMENTO_PDF_RECIBIDO] El cliente acaba de enviar un documento PDF firmado por WhatsApp. Este es el documento que le pediste firmar y devolver. NO generes ni envíes el PDF de nuevo.';
+        }
         console.log(`IA procesando...`);
         let botResponse;
         try {
@@ -115,9 +155,10 @@ router.post('/seguros-colte/receive-message', async (req, res) => {
                 messages: [new HumanMessage(finalUserMessage)]
             };
             console.log(`📋 Invocando grafo con thread_id: ${conversation.id}`);
+            trackThreadActivity(conversation.id.toString());
             // Agregar timeout para evitar que se quede colgado
             const timeoutPromise = new Promise((_, reject) => {
-                setTimeout(() => reject(new Error('⏱️ Timeout: El grafo tardó más de 45 segundos')), 45000);
+                setTimeout(() => reject(new Error('⏱️ Timeout: El grafo tardó más de 90 segundos')), 90000);
             });
             const graphPromise = graph.invoke(inputs, config);
             const output = await Promise.race([graphPromise, timeoutPromise]);
@@ -366,7 +407,7 @@ router.post('/seguros-colte/chat-dashboard', async (req, res) => {
                     body: "Audio message",
                     to: `whatsapp:${clientNumber}`,
                     from: `whatsapp:+5742044840`,
-                    // from: 'whatsapp:+14155238886', 
+                    //from: 'whatsapp:+14155238886',
                     mediaUrl: [audioUrl],
                 });
                 // Limpiar archivos temporales
@@ -383,7 +424,7 @@ router.post('/seguros-colte/chat-dashboard', async (req, res) => {
                 body: 'Mensaje con archivo',
                 to: `whatsapp:${clientNumber}`,
                 from: `whatsapp:+5742044840`,
-                // from: 'whatsapp:+14155238886', 
+                //from: 'whatsapp:+14155238886',
                 mediaUrl: [newMessage],
             });
             console.log('File message sent successfully:', message.sid);
@@ -393,7 +434,7 @@ router.post('/seguros-colte/chat-dashboard', async (req, res) => {
         else {
             // Enviar mensaje a través de Twilio
             const message = await client.messages.create({
-                // from: 'whatsapp:+14155238886', // Número de Twilio de pruebas
+                //from: 'whatsapp:+14155238886', // Número de Twilio de pruebas
                 from: `whatsapp:+5742044840`, // Número de Coltefinanciera
                 to: `whatsapp:${clientNumber}`,
                 body: newMessage
@@ -430,7 +471,7 @@ router.post('/seguros-colte/send-template', async (req, res) => {
         console.log(`Enviando plantilla ${templateId} a ${to}`);
         const message = await client.messages.create({
             from: `whatsapp:+5742044840`,
-            // from: 'whatsapp:+14155238886',
+            //from: 'whatsapp:+14155238886',
             to: `whatsapp:${to}`,
             messagingServiceSid: "MG81f7782c09f199d0ddde5d5bf1a25a3d",
             contentSid: templateId,

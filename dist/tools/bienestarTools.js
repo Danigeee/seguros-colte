@@ -2,6 +2,7 @@ import { tool } from "@langchain/core/tools";
 import { z } from "zod";
 import { searchBienestarDocuments } from "../functions/bienestarFunctions.js";
 import { smartSearchBienestar } from "../functions/advancedRetrievers.js";
+import { procesarPagoMeFiaTool } from "./procesarPagoMeFiaTool.js";
 /**
  * Herramienta para consultar información oficial de Bienestar Plus
  * Esta herramienta busca en la base de datos de documentos oficiales
@@ -95,5 +96,6 @@ ${resultado}`;
 export const bienestarTools = [
     consultBienestarSpecialistTool,
     searchBienestarDocumentsTool,
+    procesarPagoMeFiaTool
     // consultBienestarSmartTool //! <-- No está en uso aún
 ];

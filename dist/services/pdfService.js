@@ -1,6 +1,8 @@
 import PdfPrinter from 'pdfmake';
 import path from 'path';
 import { supabase } from '../config/supabase.js';
+import { PDFDocument } from 'pdf-lib';
+import fs from 'fs/promises';
 // Configuración de fuentes para PDFMake
 // Asegúrate de tener la carpeta 'fonts' en la raíz del proyecto con estos archivos
 const fonts = {
@@ -314,5 +316,65 @@ export const pdfService = {
             pdfDoc.on('error', (err) => reject(err));
             pdfDoc.end();
         });
+    },
+    async fillPdfForm(templatePath, fieldMapping, fallbackInfo = [], fallbackTitle = 'Documento Generado') {
+        try {
+            let pdfDoc;
+            let usedTemplate = false;
+            try {
+                const templateBuffer = await fs.readFile(templatePath);
+                pdfDoc = await PDFDocument.load(templateBuffer);
+                usedTemplate = true;
+            }
+            catch (error) {
+                console.warn(`[PDFService] Template not found at ${templatePath}. Generating simple PDF.`);
+                pdfDoc = await PDFDocument.create();
+                const page = pdfDoc.addPage();
+                const { width, height } = page.getSize();
+                page.drawText(fallbackTitle, { x: 50, y: height - 50, size: 24 });
+                let yPos = height - 100;
+                const lineHeight = 20;
+                for (const line of fallbackInfo) {
+                    page.drawText(line, { x: 50, y: yPos, size: 12 });
+                    yPos -= lineHeight;
+                }
+            }
+            if (usedTemplate) {
+                const form = pdfDoc.getForm();
+                for (const [fieldName, value] of Object.entries(fieldMapping)) {
+                    try {
+                        const field = form.getTextField(fieldName);
+                        if (field)
+                            field.setText(value || '');
+                    }
+                    catch (e) {
+                        // Campo no encontrado en el form, ignorar o loguear
+                        // console.debug(`Field ${fieldName} not found in PDF template`);
+                    }
+                }
+                /*
+                 * COMENTADO TEMPORALMENTE
+                 * flatten() convierte los campos editables en texto estático.
+                 * En procesarPagoMeFiaTool.ts NO SE USA, y allí sí funciona.
+                 * Al usar PDF con valores predeterminados (que son los labels), si flatten() se ejecuta antes
+                 * de una actualización correcta del campo, o si hay un problema con la renderización,
+                 * puede quedar el texto del label quemado.
+                 * Para asegurar consistencia con el flujo exitoso de WhatsApp, omitimos flatten().
+                 */
+                /*
+                try {
+                    form.flatten();
+                } catch(e) {
+                    console.warn("Could not flatten form", e);
+                }
+                */
+            }
+            const pdfBytes = await pdfDoc.save();
+            return Buffer.from(pdfBytes);
+        }
+        catch (error) {
+            console.error("Error generating filled PDF:", error);
+            throw error;
+        }
     }
 };
