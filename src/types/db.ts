@@ -288,6 +288,48 @@ export type Database = {
         }
         Relationships: []
       }
+      pensionados_datos: {
+        Row: {
+          cedula: string
+          tipo_documento: string | null
+          nombres: string | null
+          apellidos: string | null
+          fecha_nacimiento: string | null
+          sexo: string | null
+          telefono: string | null
+          email: string | null
+          fondo_pension: string | null
+          pais: string | null
+          departamento: string | null
+        }
+        Insert: {
+          cedula: string
+          tipo_documento?: string | null
+          nombres?: string | null
+          apellidos?: string | null
+          fecha_nacimiento?: string | null
+          sexo?: string | null
+          telefono?: string | null
+          email?: string | null
+          fondo_pension?: string | null
+          pais?: string | null
+          departamento?: string | null
+        }
+        Update: {
+          cedula?: string
+          tipo_documento?: string | null
+          nombres?: string | null
+          apellidos?: string | null
+          fecha_nacimiento?: string | null
+          sexo?: string | null
+          telefono?: string | null
+          email?: string | null
+          fondo_pension?: string | null
+          pais?: string | null
+          departamento?: string | null
+        }
+        Relationships: []
+      }
       chat_history: {
         Row: {
           id: number // bigint

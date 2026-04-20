@@ -185,7 +185,7 @@ router.post('/seguros-colte/receive-message', async (req: Request, res: Response
 
       // Agregar timeout para evitar que se quede colgado
       const timeoutPromise = new Promise<never>((_, reject) => {
-        setTimeout(() => reject(new Error('⏱️ Timeout: El grafo tardó más de 45 segundos')), 45000);
+        setTimeout(() => reject(new Error('⏱️ Timeout: El grafo tardó más de 90 segundos')), 90000);
       });
 
       const graphPromise = graph.invoke(inputs, config);

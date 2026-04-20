@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "start": "node dist/index.js",
-    "dev": "nodemon --watch src --ext ts --exec \"node --max-old-space-size=1280 node_modules/.bin/tsx src/index.ts\"",
+    "dev": "nodemon --watch src --ext ts --exec \"node --max-old-space-size=1280 node_modules/tsx/dist/cli.mjs src/index.ts\"",
     "build": "tsc",
     "test": "tsx src/test-agents.ts",
     "test:logs": "tsx src/test-logs.ts",
