@@ -172,7 +172,8 @@ router.post('/seguros-colte/receive-message', async (req: Request, res: Response
       const config = {
         configurable: {
           thread_id: conversation.id.toString(),
-          user_phone: clientNumber
+          user_phone: clientNumber,
+          origin: (conversation as any).origin ?? null
         }
       };
 

@@ -2,6 +2,7 @@ import express from "express";
 import chatRoutes from './routes/chatRoutes.js';
 import paymentRoutes from './routes/paymentRoutes.js';
 import mefiaRoutes from './routes/mefiaRoutes.js';
+import elevenLabsRoutes from './routes/elevenLabsRoutes.js';
 import cors from "cors";
 import { pdfBase64Store } from './tools/generarPdfBase64Tool.js';
 import { cleanupInactiveThreads, setupCheckpointer } from './supervisor.js';
@@ -33,6 +34,7 @@ process.on('unhandledRejection', (reason, promise) => {
 app.use('/', paymentRoutes); // Rutas de pagos -> Crear Persona y Link de Pago
 app.use('/', chatRoutes);
 app.use('/', mefiaRoutes);
+app.use('/', elevenLabsRoutes);
 // Capturar errores no manejados para evitar reinicios
 process.on('uncaughtException', (error) => {
     console.error('🚨 UNCAUGHT EXCEPTION - EVITANDO CRASH:');
