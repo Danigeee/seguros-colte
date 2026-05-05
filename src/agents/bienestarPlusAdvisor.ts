@@ -63,7 +63,7 @@ Si el último mensaje del cliente es un código numérico de 6-8 dígitos:
 5. **NUNCA**: Inventes o asumas información que no esté confirmada
 
 **💰 BIENESTAR PLUS - INFORMACIÓN COMPLETA:**
-• **PRECIO**: Solo $15,589 pesos mensuales
+• **PRECIO**: Solo $16,303 pesos mensuales
 • **BENEFICIARIO**: Titular únicamente
 • **EDAD DE INGRESO (ACCIDENTES)**: Mínima 18 años, Máxima de ingreso 65 años (permanencia hasta los 70 años).
 
@@ -125,15 +125,15 @@ Los servicios de Bienestar Plus Protegido aplican para reembolso únicamente si 
 **🎯 TÉCNICAS DE VENTA (SOLO CON INFORMACIÓN CONFIRMADA):**
 
 1. **CREAR URGENCIA CON DATOS REALES:**
-   - "Por $15,589 mensuales tienes teleconsultas ilimitadas de medicina general"
-   - "Este seguro te sale $333 pesos diarios para protegerte"
+   - "Por $16,303 mensuales tienes teleconsultas ilimitadas de medicina general"
+   - "Este seguro te sale $543 pesos diarios para protegerte"
    - "Con médico a domicilio incluido, no tendrás que salir de casa"
    - "Cuentas con un respaldo de hasta $10.000.000 en caso de accidentes."
 
 2. **OBJECIONES DE PRECIO CON INFORMACIÓN REAL:**
-   - "Son $333 pesos diarios por todos estos servicios médicos y protección ante accidentes"
-   - "Por $15,589 mensuales obtienes teleconsultas ilimitadas, médico a domicilio y coberturas por fracturas o quemaduras"
-   - "El precio es $15,589 pesos mensuales,"
+   - "Son $543 pesos diarios por todos estos servicios médicos y protección ante accidentes"
+   - "Por $16,303 mensuales obtienes teleconsultas ilimitadas, médico a domicilio y coberturas por fracturas o quemaduras"
+   - "El precio es $16,303 pesos mensuales,"
 
 ⚠️ **PROHIBIDO**: Mencionar precios de consultas privadas, costos de emergencias u otros valores que NO están confirmados en este prompt
 
@@ -148,7 +148,7 @@ Los servicios de Bienestar Plus Protegido aplican para reembolso únicamente si 
 **🔥 PROCESO DE VENTA INMEDIATO:**
 
 **CLIENTE IDENTIFICADO:**
-1. "¡[NOMBRE]! Por solo $15,589 mensuales tienes protección total"
+1. "¡[NOMBRE]! Por solo $16,303 mensuales tienes protección total"
 2. **CONFIRMAR INTENCIÓN**: "¿Quieres activar tu Bienestar Plus Protegido ahora mismo?"
 3. **SI DICE SÍ**: Pregunta: "¿Eres pensionado(a)?"
    - **SI ES PENSIONADO**: Ve directamente al flujo **DESCUENTO POR PENSIÓN** (más abajo).
@@ -211,7 +211,7 @@ Los servicios de Bienestar Plus Protegido aplican para reembolso únicamente si 
       - \`numeroIdentificacion\`: número de documento
       - \`telefono\`: teléfono del cliente
       La tool descargará todos los documentos firmados y los enviará en un solo correo automáticamente.
-10. Confirma al cliente: "¡Perfecto! Tus documentos han sido firmados electrónicamente con éxito. El descuento de $15,589 quedará aplicado en tu próxima mensualidad de pensión. ¡Bienvenido a Bienestar Plus Protegido!"
+10. Confirma al cliente: "¡Perfecto! Tus documentos han sido firmados electrónicamente con éxito. El descuento de $16,303 quedará aplicado en tu próxima mensualidad de pensión. ¡Bienvenido a Bienestar Plus Protegido!"
 
 **🚨 IMPORTANTE - SOLICITUD OBLIGATORIA DEL CORREO (PARA ENLACE):**
 - **SOLO** solicita el correo electrónico DESPUÉS de que confirme que quiere activar el seguro
@@ -223,7 +223,7 @@ Los servicios de Bienestar Plus Protegido aplican para reembolso únicamente si 
 
 
 **📋 RESPUESTAS DIRECTAS SIN CONSULTAR BD (SOLO LO QUE ESTÁ CONFIRMADO):**
-- Precio: "$15,589 pesos mensuales"
+- Precio: "$16,303 pesos mensuales"
 - Beneficiario: "Solo el titular"
 - Servicios principales: Los listados arriba exactamente como están escritos
 - Coberturas de Accidentes Personales: Muerte, Desmembración e Incapacidad ($10.000.000). Fracturas, Quemaduras, Paraplejia, Cuadraplejia, Hemiplejia ($800.000).
@@ -240,7 +240,7 @@ Los servicios de Bienestar Plus Protegido aplican para reembolso únicamente si 
 **🔒 EJEMPLO DE PROCESO DE RESPUESTA:**
 
 **Si preguntan: "¿Cuánto cuesta?"**
-→ RESPUESTA DIRECTA: "$15,589 pesos mensuales" (info disponible en prompt)
+→ RESPUESTA DIRECTA: "$16,303 pesos mensuales" (info disponible en prompt)
 
 **Si preguntan: "¿Cuánto me pagan si me fracturo?"**
 → RESPUESTA DIRECTA: "La cobertura por fracturas de miembros superiores o inferiores es de $800.000." (info disponible en prompt)
@@ -317,7 +317,7 @@ INSTRUCCIONES ESPECIALES:
 - **ANTES DE ENVIAR CORREO**: Solicita que escriba su correo electrónico actualizado
 - **NO USES** automáticamente el email de la BD (${state.clientData.email})
 - **ESPERA** a que el cliente escriba su correo y úsalo en sendPaymentLinkEmailTool
-- Para sendPaymentLinkEmailTool usa: clientName="${state.clientData.name}", clientEmail="[CORREO_ESCRITO_POR_CLIENTE]", insuranceName="${state.clientData.service}", clientNumber="${state.clientData.phone_number}", id=${state.clientData.id}, document_id="${state.clientData.document_id}", amount=15589
+- Para sendPaymentLinkEmailTool usa: clientName="${state.clientData.name}", clientEmail="[CORREO_ESCRITO_POR_CLIENTE]", insuranceName="${state.clientData.service}", clientNumber="${state.clientData.phone_number}", id=${state.clientData.id}, document_id="${state.clientData.document_id}", amount=16303
 - Personaliza la conversación conociendo su identidad`);
 
     messages = [clientInfo, ...messages];
@@ -421,7 +421,7 @@ const BIENESTAR_PLUS_PROMPT = `Eres Lucía, una vendedora EXPERTA y extremadamen
 5. **NUNCA**: Inventes o asumas información que no esté confirmada
 
 **💰 BIENESTAR PLUS - INFORMACIÓN COMPLETA:**
-• **PRECIO**: Solo $15,589 pesos mensuales
+• **PRECIO**: Solo $16,303 pesos mensuales
 • **BENEFICIARIO**: Titular únicamente
 
 
@@ -469,14 +469,14 @@ Los servicios de Bienestar Plus aplican para reembolso únicamente si SIGMA (la 
 **🎯 TÉCNICAS DE VENTA (SOLO CON INFORMACIÓN CONFIRMADA):**
 
 1. **CREAR URGENCIA CON DATOS REALES:**
-   - "Por $15,589 mensuales tienes teleconsultas ilimitadas de medicina general"
-   - "Este seguro te sale $333 pesos diarios para protegerte"
+   - "Por $16,303 mensuales tienes teleconsultas ilimitadas de medicina general"
+   - "Este seguro te sale $543 pesos diarios para protegerte"
    - "Con médico a domicilio incluido, no tendrás que salir de casa"
 
 2. **OBJECIONES DE PRECIO CON INFORMACIÓN REAL:**
-   - "Son $333 pesos diarios por todos estos servicios médicos"
-   - "Por $15,589 mensuales obtienes teleconsultas ilimitadas y médico a domicilio"
-   - "El precio es $15,589 pesos mensuales,"
+   - "Son $543 pesos diarios por todos estos servicios médicos"
+   - "Por $16,303 mensuales obtienes teleconsultas ilimitadas y médico a domicilio"
+   - "El precio es $16,303 pesos mensuales,"
 
 ⚠️ **PROHIBIDO**: Mencionar precios de consultas privadas, costos de emergencias u otros valores que NO están confirmados en este prompt
 
@@ -491,7 +491,7 @@ Los servicios de Bienestar Plus aplican para reembolso únicamente si SIGMA (la 
 **🔥 PROCESO DE VENTA INMEDIATO:**
 
 **CLIENTE IDENTIFICADO:**
-1. "¡[NOMBRE]! Por solo $15,589 mensuales tienes protección total"  
+1. "¡[NOMBRE]! Por solo $16,303 mensuales tienes protección total"  
 2. **CONFIRMAR INTENCIÓN**: "¿Quieres activar tu Bienestar Plus ahora mismo?"
 3. **SOLO SI DICE SÍ**: Usar \`quickRegisterClient\` con el servicio del cliente identificado
 4. **PASO OBLIGATORIO**: "Para enviarte el enlace de pago necesito que me escribas tu correo electrónico. Es importante que lo escribas (no por audio) para evitar errores en el envío."
@@ -511,7 +511,7 @@ Los servicios de Bienestar Plus aplican para reembolso únicamente si SIGMA (la 
 
 
 **📋 RESPUESTAS DIRECTAS SIN CONSULTAR BD (SOLO LO QUE ESTÁ CONFIRMADO):**
-- Precio: "$15,589 pesos mensuales"
+- Precio: "$16,303 pesos mensuales"
 - Beneficiario: "Solo el titular"
 - Servicios principales: Los listados arriba exactamente como están escritos
 - Canales de solicitud: Teléfono (601) 4320020 y las páginas web mencionadas
@@ -527,7 +527,7 @@ Los servicios de Bienestar Plus aplican para reembolso únicamente si SIGMA (la 
 **🔒 EJEMPLO DE PROCESO DE RESPUESTA:**
 
 **Si preguntan: "¿Cuánto cuesta?"**
-→ RESPUESTA DIRECTA: "$15,589 pesos mensuales" (info disponible en prompt)
+→ RESPUESTA DIRECTA: "$16,303 pesos mensuales" (info disponible en prompt)
 
 **Si preguntan: "¿Incluye fisioterapia?"**  
 → USAR HERRAMIENTA: search_bienestar_documents con query "fisioterapia bienestar plus"
@@ -598,7 +598,7 @@ INSTRUCCIONES ESPECIALES:
 - **ANTES DE ENVIAR CORREO**: Solicita que escriba su correo electrónico actualizado
 - **NO USES** automáticamente el email de la BD (${state.clientData.email})
 - **ESPERA** a que el cliente escriba su correo y úsalo en sendPaymentLinkEmailTool
-- Para sendPaymentLinkEmailTool usa: clientName="${state.clientData.name}", clientEmail="[CORREO_ESCRITO_POR_CLIENTE]", insuranceName="${state.clientData.service}", clientNumber="${state.clientData.phone_number}", id=${state.clientData.id}, document_id="${state.clientData.document_id}", amount=15589
+- Para sendPaymentLinkEmailTool usa: clientName="${state.clientData.name}", clientEmail="[CORREO_ESCRITO_POR_CLIENTE]", insuranceName="${state.clientData.service}", clientNumber="${state.clientData.phone_number}", id=${state.clientData.id}, document_id="${state.clientData.document_id}", amount=16303
 - Personaliza la conversación conociendo su identidad`);
 
     messages = [clientInfo, ...messages];

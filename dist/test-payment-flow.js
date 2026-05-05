@@ -9,8 +9,8 @@ async function testPaymentFlow() {
         identification: "1143939192",
         email: "daniel@ultimmarketing.com",
         phone: "3045655669",
-        amount: 15589,
-        description: "Prueba de Seguro Bienestar Plus - $15.589 COP",
+        amount: 16303,
+        description: "Prueba de Seguro Bienestar Plus - $16.303 COP",
         clientId: 12, // Usamos un ID de cliente existente o ficticio para la prueba
         totalInstallments: 4,
     };

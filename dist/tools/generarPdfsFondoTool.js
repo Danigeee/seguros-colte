@@ -15,7 +15,7 @@ import { pdfBase64Store } from "./generarPdfBase64Tool.js";
 //   text_5aem   → TELEFONO
 //   text_6lagk  → No. Crédito (tabla) — mismo valor que top-right
 //   text_7tolh  → Valor Capital (fijo $0)
-//   text_8wcas  → Cuota mensual (fija 15.589)
+//   text_8wcas  → Cuota mensual (fija 16.303)
 //   text_9qurk  → Plazo (fijo 12 meses)
 //   text_10dsqj → Tasa (fija 0%)
 //   text_11wxdk → Valor Futuro (fijo $0)
@@ -81,7 +81,7 @@ function buildLibranzaFields(d, transactionId, fechaPrimeraCuota, fechaActualLar
         'text_5aem': d.telefono,
         'text_6lagk': transactionId,
         'text_7tolh': '$0',
-        'text_8wcas': '15.589',
+        'text_8wcas': '16.303',
         'text_9qurk': '12 meses',
         'text_10dsqj': '0%',
         'text_11wxdk': '$0',
@@ -105,7 +105,7 @@ function buildAutorizacionFields(d, transactionId) {
     return {
         'text_1luco': d.nombresApellidos, // "Yo ___"
         'text_2tudq': d.numeroIdentificacion, // cédula número
-        'text_4oiwk': '$15.589', // "valor de ___" (cuota mensual)
+        'text_4oiwk': '$16.303', // "valor de ___" (cuota mensual)
         'text_5mpts': transactionId, // "a través de la libranza número ___"
         'text_6jgbh': todayDay, // "suscrita por mí el día ___"
         'text_7tgav': todayMonthName, // "del mes de ___" (firma)

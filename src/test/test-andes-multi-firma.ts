@@ -120,7 +120,7 @@ const LIBRANZA_TEXT_FIELDS: Record<string, string> = {
   'text_5aem':   CONFIG.celular,                                // TELEFONO
   'text_6lagk':  CONFIG.transactionId,                          // No. Crédito (tabla)
   'text_7tolh':  '$0',                                          // Valor Capital (fijo)
-  'text_8wcas':  '15.589',                                      // Cuota mensual (fijo)
+  'text_8wcas':  '16.303',                                      // Cuota mensual (fijo)
   'text_9qurk':  '12 meses',                                    // Plazo (fijo)
   'text_10dsqj': '0%',                                          // Tasa (fija)
   'text_11wxdk': '$0',                                          // Valor Futuro (fijo)

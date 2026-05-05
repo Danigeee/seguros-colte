@@ -50,7 +50,7 @@ export const sendPaymentLinkEmailTool = tool(
       clientNumber: z.string().describe("El número de teléfono del cliente (formato internacional, ej: +573001234567). Necesario para registrar el envío en el historial."),
       id: z.number().describe("id que identifica la fila en la cual se encuntra el cliente en la tabla dentix_clients."),
       document_id: z.string().describe("El documento de identificación del cliente. cedula din numero de identificacion ciudadana"),
-      amount: z.number().describe("El monto mensual del seguro en pesos colombianos (ej: 15589 para Bienestar Plus $15,589 COP)"),
+      amount: z.number().describe("El monto mensual del seguro en pesos colombianos (ej: 16303 para Bienestar Plus $16,303 COP)"),
     }),
   }
 );
