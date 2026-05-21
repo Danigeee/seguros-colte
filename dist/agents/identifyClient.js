@@ -29,15 +29,11 @@ export async function identifyClientNode(state, config) {
         console.log(`📱 Número formateado: ${formattedPhone}`);
         // Buscar el cliente en la base de datos
         const clientData = await getClientByPhoneNumber(formattedPhone);
-        const origin = config?.configurable?.origin;
-        const yaTienePensionadoCtx = state.messages?.some((msg) => msg._getType() === 'system' &&
-            String(msg.content).includes('CONTEXTO PENSIONADO ELEVENLABS'));
         if (clientData) {
             console.log(`✅ Cliente identificado: ${clientData.name}`);
             console.log(`  Email: ${clientData.email}`);
             console.log(`   Documento: ${clientData.document_id}`);
             console.log(`   ID: ${clientData.id}`);
-            // Añadir mensaje de sistema con información del cliente
             const systemMessage = new SystemMessage(`INFORMACIÓN DEL CLIENTE IDENTIFICADO:
         - Nombre: ${clientData.name}
         - Email: ${clientData.email}
@@ -51,22 +47,9 @@ export async function identifyClientNode(state, config) {
         - Dirígete al cliente por su nombre (${clientData.name})
         - Tienes su email (${clientData.email}) para usar en sendPaymentLinkEmailTool
         - Personaliza la conversación conociendo su identidad`);
-            const mensajesARetornar = [systemMessage];
-            let clientDataFinal = clientData;
-            if (origin === 'elevenlabs_pensionado' && !yaTienePensionadoCtx) {
-                console.log('🎙️  Origen ElevenLabs detectado: inyectando contexto pensionado');
-                mensajesARetornar.push(new SystemMessage(`CONTEXTO PENSIONADO ELEVENLABS:
-- El cliente fue contactado por el agente de voz ElevenLabs y CONFIRMÓ ser PENSIONADO.
-- NO vuelvas a preguntarle si es pensionado. Ya lo confirmó en la llamada.
-- Salúdalo cálidamente, menciona que continúas el proceso iniciado por teléfono.
-- Primera pregunta obligatoria: "¿A qué fondo de pensión perteneces? Las opciones son: Casur, Cremil o Fiduprevisora."`));
-                if (!clientData.service) {
-                    clientDataFinal = { ...clientData, service: 'Bienestar Plus' };
-                }
-            }
             return {
-                clientData: clientDataFinal,
-                messages: mensajesARetornar
+                clientData,
+                messages: [systemMessage]
             };
         }
         else {
@@ -75,31 +58,9 @@ export async function identifyClientNode(state, config) {
 - Teléfono: ${formattedPhone}
 - Cliente nuevo o no registrado en la base de datos
 - Solicita información de contacto si necesitas enviar enlaces de pago`);
-            const mensajesARetornar = [systemMessage];
-            if (origin === 'elevenlabs_pensionado' && !yaTienePensionadoCtx) {
-                console.log('🎙️  Origen ElevenLabs detectado (cliente no en DB): inyectando contexto pensionado');
-                mensajesARetornar.push(new SystemMessage(`CONTEXTO PENSIONADO ELEVENLABS:
-- El cliente fue contactado por el agente de voz ElevenLabs y CONFIRMÓ ser PENSIONADO.
-- NO vuelvas a preguntarle si es pensionado. Ya lo confirmó en la llamada.
-- Salúdalo cálidamente, menciona que continúas el proceso iniciado por teléfono.
-- Primera pregunta obligatoria: "¿A qué fondo de pensión perteneces? Las opciones son: Casur, Cremil o Fiduprevisora."`));
-                // Stub de clientData para forzar routing determinístico a bienestar_plus_advisor
-                return {
-                    clientData: {
-                        name: 'Pensionado',
-                        email: null,
-                        document_id: null,
-                        phone_number: formattedPhone,
-                        service: 'Bienestar Plus',
-                        product: null,
-                        id: 0
-                    },
-                    messages: mensajesARetornar
-                };
-            }
             return {
                 clientData: null,
-                messages: mensajesARetornar
+                messages: [systemMessage]
             };
         }
     }
