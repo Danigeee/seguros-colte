@@ -109,6 +109,8 @@ SI el usuario menciona CUALQUIERA de estos temas:
 - "grúa", "auxilio mecánico", "asistencia vial", "conductor elegido"
 - "proteger mi carro", "asegurar mi auto", "cobertura completa"
 - "marca", "modelo", "año del vehículo" (en contexto de seguro)
+- "carro", "carros", "auto", "autos", "vehículo", "vehículos" (en contexto de seguro/protección/aseguramiento)
+- "moto", "motos", "motocicleta", "motocicletas" (en contexto de seguro/protección/aseguramiento, DISTINTO de trámites de SOAT/papeles)
 -> RETURN JSON: { "next": "seguro_autos_advisor" }
 
 **CASO 5: ASESOR DENTIX (PRIORIDAD ALTA)**
