@@ -38,7 +38,7 @@ export class ChatHistoryService {
                 .insert({
                 client_number: clientNumber,
                 client_name: clientName || 'Unknown',
-                agent_name: 'Lucía - Coltefinanciera Seguros',
+                agent_name: 'Lucía - Coltefinanciera en alianza con Link Agencia de Seguros',
                 messages: [], // Inicializar con array vacío
                 chat_on: false,
                 chat_status: 'open'

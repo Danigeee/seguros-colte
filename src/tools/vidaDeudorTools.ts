@@ -155,13 +155,13 @@ Tu asistencia incluye:
 Tu cobertura está activa desde este momento y no requiere ningún pago adicional durante los primeros 3 meses.
 
 
-Gracias por confiar en Coltefinanciera Seguros.
+Gracias por confiar en Coltefinanciera en alianza con Link Agencia de Seguros.
 
 
 Saludos,
 Lucia
 Asesora de Seguros
-Coltefinanciera Seguros`,
+Coltefinanciera en alianza con Link Agencia de Seguros`,
             html: `<!DOCTYPE html>
 <html>
 <head>
@@ -195,13 +195,13 @@ Coltefinanciera Seguros`,
         </p>
 
 
-        <p>Gracias por confiar en Coltefinanciera Seguros.</p>
+        <p>Gracias por confiar en Coltefinanciera en alianza con Link Agencia de Seguros.</p>
 
 
         <p>Saludos,<br>
         <strong>Lucia</strong><br>
         Asesora de Seguros<br>
-        Coltefinanciera Seguros</p>
+        Coltefinanciera en alianza con Link Agencia de Seguros</p>
 
 
         <hr style="margin: 20px 0;">

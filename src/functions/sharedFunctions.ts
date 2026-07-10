@@ -150,7 +150,7 @@ export const sendPaymentLinkEmail = async (clientName: string, clientEmail: stri
       cc: ["legal@ultimmarketing.com", "andres.c@ultimmarketing.com"],
       from: {
         email: process.env.SENDGRID_FROM_EMAIL || 'no-reply@coltefinanciera.com',
-        name: 'Coltefinanciera Seguros'
+        name: 'Coltefinanciera en alianza con Link Agencia de Seguros'
       },
       subject: `🛡️ Finaliza tu compra - Seguro ${insuranceName}`,
       html: `
@@ -188,7 +188,7 @@ export const sendPaymentLinkEmail = async (clientName: string, clientEmail: stri
           
           <div style="border-top: 2px solid #ecf0f1; padding-top: 20px; text-align: center;">
             <p style="font-size: 12px; color: #7f8c8d; margin-bottom: 5px;">
-              <strong>Coltefinanciera Seguros</strong> - Protegiendo lo que más valoras
+              <strong>Coltefinanciera en alianza con Link Agencia de Seguros</strong> - Protegiendo lo que más valoras
             </p>
             <p style="font-size: 12px; color: #7f8c8d;">
               ¿Tienes preguntas? Responde este correo o contáctanos por WhatsApp
@@ -205,7 +205,7 @@ export const sendPaymentLinkEmail = async (clientName: string, clientEmail: stri
         
         ¡Protege lo que más quieres hoy mismo!
         
-        Coltefinanciera Seguros
+        Coltefinanciera en alianza con Link Agencia de Seguros
       `
     };
 
