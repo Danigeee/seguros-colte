@@ -43,6 +43,100 @@ export async function getClientByPhoneNumber(phoneNumber) {
         return null;
     }
 }
+const CLIENT_FIELDS = 'id, name, email, document_id, phone_number, service, product';
+const mapClient = (row) => ({
+    name: row.name || 'Cliente',
+    email: row.email || '',
+    document_id: row.document_id || '',
+    phone_number: row.phone_number || '',
+    service: row.service || undefined,
+    product: row.product || undefined,
+    id: row.id || undefined
+});
+/**
+ * Busca un cliente por su id de dentix_clients. Usado por el flujo del asesor,
+ * donde la interfaz ya seleccionó al cliente del buscador.
+ */
+export async function getClientById(clientId) {
+    const { data, error } = await supabase
+        .from('dentix_clients')
+        .select(CLIENT_FIELDS)
+        .eq('id', clientId)
+        .maybeSingle();
+    if (error) {
+        console.error('Error buscando cliente por id:', error.message);
+        return null;
+    }
+    return data ? mapClient(data) : null;
+}
+/**
+ * Busca un cliente por cédula. Se usa antes de aceptar datos manuales del asesor:
+ * si el cliente sí existe pero lo buscó con otro formato de teléfono o el nombre mal
+ * escrito, preferimos amarrar la suscripción a su registro real.
+ */
+export async function getClientByDocument(documentId) {
+    const { data, error } = await supabase
+        .from('dentix_clients')
+        .select(CLIENT_FIELDS)
+        .eq('document_id', documentId.trim())
+        .limit(1)
+        .maybeSingle();
+    if (error) {
+        console.error('Error buscando cliente por documento:', error.message);
+        return null;
+    }
+    return data ? mapClient(data) : null;
+}
+/**
+ * Busca clientes por cédula, celular o nombre, para el buscador de la interfaz.
+ * Devuelve varios resultados para que el asesor elija.
+ */
+export async function searchClients(term, limit = 10) {
+    const query = term.trim();
+    if (!query)
+        return [];
+    const digits = query.replace(/\D/g, '');
+    const esNumerico = digits.length > 0 && /^[\d+\s-]+$/.test(query);
+    // El teléfono se guarda como +57XXXXXXXXXX; la cédula tal cual.
+    const filtro = esNumerico
+        ? [
+            `document_id.eq.${digits}`,
+            `phone_number.eq.+57${digits.replace(/^57/, '')}`,
+            `phone_number.like.%${digits.replace(/^57/, '')}`
+        ].join(',')
+        : `name.ilike.%${query}%`;
+    const { data, error } = await supabase
+        .from('dentix_clients')
+        .select(CLIENT_FIELDS)
+        .or(filtro)
+        .limit(limit);
+    if (error) {
+        console.error('Error buscando clientes:', error.message);
+        return [];
+    }
+    return (data || []).map(mapClient);
+}
+/**
+ * Payments Way exige firstname y lastname por separado, pero dentix_clients guarda el
+ * nombre completo en un solo campo:
+ *   "María Fernanda González" -> firstname: "María", lastname: "Fernanda González"
+ */
+export function splitFullName(fullName) {
+    const parts = (fullName || '').trim().split(/\s+/).filter(Boolean);
+    if (parts.length === 0)
+        return { firstname: 'Cliente', lastname: 'Cliente' };
+    if (parts.length === 1)
+        return { firstname: parts[0], lastname: parts[0] };
+    return { firstname: parts[0], lastname: parts.slice(1).join(' ') };
+}
+/**
+ * Normaliza un celular colombiano al formato +57XXXXXXXXXX de dentix_clients.
+ * Devuelve null si no quedan 10 dígitos válidos.
+ */
+export function normalizeColombianPhone(phone) {
+    const national = (phone || '').replace(/\D/g, '').replace(/^57/, '');
+    return national.length === 10 ? `+57${national}` : null;
+}
 /**
  * Extrae el número de teléfono de un mensaje de WhatsApp (formato: whatsapp:+573137249770)
  */

@@ -49,7 +49,7 @@ export const notifySupervisorPaymentLink = async (
     phone?: string;
     amount?: number;
     description?: string;
-    clientId?: number;
+    clientId?: number | null;
     totalInstallments?: number;
   },
   paymentLink: string

@@ -452,12 +452,17 @@ export type Database = {
           last_payment_date: string | null
           initial_transaction_id: string | null
           response_data: Json | null
+          /** Producto: 'mascotas' | 'bienestar_plus' | 'exequias' | 'hdi_seguro' */
+          service_type: string | null
+          /** jsonb con { link_generado, link_corto, ... } - compartido con otros backends */
+          link_data: Json | null
         }
         Insert: {
           id?: string
           created_at?: string
           updated_at?: string
-          client_id: number
+          /** null en productos que no usan dentix_clients (exequias, hdi_seguro) */
+          client_id?: number | null
           payment_person_id: string
           identification_doc: string
           amount: number
@@ -469,12 +474,14 @@ export type Database = {
           last_payment_date?: string | null
           initial_transaction_id?: string | null
           response_data?: Json | null
+          service_type?: string | null
+          link_data?: Json | null
         }
         Update: {
           id?: string
           created_at?: string
           updated_at?: string
-          client_id?: number
+          client_id?: number | null
           payment_person_id?: string
           identification_doc?: string
           amount?: number
@@ -486,6 +493,8 @@ export type Database = {
           last_payment_date?: string | null
           initial_transaction_id?: string | null
           response_data?: Json | null
+          service_type?: string | null
+          link_data?: Json | null
         }
         Relationships: [
           {

@@ -1,6 +1,7 @@
 import express from "express";
 import chatRoutes from './routes/chatRoutes.js';
 import paymentRoutes from './routes/paymentRoutes.js';
+import advisorRoutes from './routes/advisorRoutes.js';
 import cors from "cors";
 
 const app = express();
@@ -36,6 +37,7 @@ process.on('unhandledRejection', (reason, promise) => {
 });
 
 app.use('/', paymentRoutes); // Rutas de pagos -> Crear Persona y Link de Pago
+app.use('/', advisorRoutes); // Rutas del asesor humano -> Buscar cliente y crear link
 app.use('/', chatRoutes);
 
 // Capturar errores no manejados para evitar reinicios

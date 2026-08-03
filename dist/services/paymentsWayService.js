@@ -44,6 +44,61 @@ export const createPaymentLink = async (data) => {
     }
 };
 /**
+ * Lee la columna link_data. Es jsonb, así que supabase-js devuelve un objeto; el caso
+ * string se tolera por si alguna fila quedó guardada como texto.
+ */
+export const leerLinkData = (raw) => {
+    if (!raw)
+        return null;
+    if (typeof raw === 'string') {
+        try {
+            return JSON.parse(raw);
+        }
+        catch {
+            return null;
+        }
+    }
+    return raw;
+};
+/**
+ * Busca la suscripción pendiente del primer pago de una cédula para un producto.
+ * Se usa para reutilizar la fila cuando el asesor regenera un link vencido.
+ */
+export const buscarSuscripcionPendiente = async (identificationDoc, serviceType) => {
+    const { data, error } = await supabase
+        .from('suscripciones')
+        .select('id, client_id, payment_person_id, identification_doc, amount, description, total_installments, service_type, link_data, created_at')
+        .eq('identification_doc', identificationDoc)
+        .eq('service_type', serviceType)
+        .eq('status', 'pending_first_payment')
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+    if (error) {
+        console.error('Error consultando suscripción pendiente:', error.message);
+        return null; // Ante la duda se crea una nueva: nunca bloquear la generación del link
+    }
+    return data;
+};
+/**
+ * Lista las suscripciones pendientes de una cédula, para mostrárselas al asesor
+ * antes de que genere un link nuevo.
+ */
+export const listarSuscripcionesPendientes = async (identificationDoc, serviceTypes) => {
+    const { data, error } = await supabase
+        .from('suscripciones')
+        .select('id, client_id, payment_person_id, identification_doc, amount, description, total_installments, service_type, link_data, created_at')
+        .eq('identification_doc', identificationDoc)
+        .in('service_type', serviceTypes)
+        .eq('status', 'pending_first_payment')
+        .order('created_at', { ascending: false });
+    if (error) {
+        console.error('Error listando suscripciones pendientes:', error.message);
+        return [];
+    }
+    return data || [];
+};
+/**
  * Flujo completo: Crea persona y luego genera el link de pago
  */
 export const generatePaymentLinkFlow = async (data) => {
@@ -91,20 +146,80 @@ export const generatePaymentLinkFlow = async (data) => {
         };
         const linkResponse = await createPaymentLink(linkData);
         // 3. Registrar en la tabla suscripciones
-        const { error: subscriptionError } = await supabase
-            .from('suscripciones')
-            .insert({
-            client_id: data.clientId,
-            payment_person_id: String(personResponse.id),
-            identification_doc: data.identification,
-            amount: data.amount,
-            description: data.description,
-            total_installments: data.totalInstallments || 12,
-            status: 'pending_first_payment'
-        });
-        if (subscriptionError) {
-            console.error('Error creating subscription record:');
-            // No lanzamos error para no bloquear el retorno del link, pero lo logueamos
+        //
+        //    link_data y service_type ya existen en la tabla y los usan exequias y
+        //    hdi_seguro; hasta ahora este flujo las dejaba en null, así que el link
+        //    generado no quedaba asociado a la suscripción.
+        const nuevoLinkData = {
+            link_generado: linkResponse.linkgenerado,
+            link_corto: linkResponse.linkcorto || null,
+            fecha_vencimiento: fechaVencimiento
+        };
+        // Pre-consulta: ¿ya existe una suscripción pendiente de este producto para esta
+        // cédula? Si el asesor está regenerando un link vencido, se actualiza esa fila en
+        // lugar de crear otra, y así el pago siempre apunta a una sola suscripción.
+        //
+        // Solo aplica cuando se envía serviceType (flujo del asesor). Sin él el
+        // comportamiento es el original: insertar y listo.
+        const suscripcionExistente = data.serviceType
+            ? await buscarSuscripcionPendiente(data.identification, data.serviceType)
+            : null;
+        if (suscripcionExistente) {
+            // El link nuevo tiene su propia persona en Payments Way, así que hay que
+            // actualizar payment_person_id junto con el link: si no, la fila seguiría
+            // apuntando a la persona vieja y el pago del link nuevo no haría match.
+            const linkDataPrevio = leerLinkData(suscripcionExistente.link_data);
+            const historial = [
+                ...(linkDataPrevio?.links_anteriores || []),
+                ...(linkDataPrevio?.link_generado
+                    ? [{
+                            link_generado: linkDataPrevio.link_generado,
+                            payment_person_id: suscripcionExistente.payment_person_id,
+                            reemplazado_en: new Date().toISOString()
+                        }]
+                    : [])
+            ];
+            const { error: updateError } = await supabase
+                .from('suscripciones')
+                .update({
+                payment_person_id: String(personResponse.id),
+                amount: data.amount,
+                description: data.description,
+                total_installments: data.totalInstallments || 12,
+                client_id: data.clientId,
+                link_data: {
+                    ...nuevoLinkData,
+                    actualizado_en: new Date().toISOString(),
+                    links_anteriores: historial
+                },
+                updated_at: new Date().toISOString()
+            })
+                .eq('id', suscripcionExistente.id);
+            if (updateError) {
+                console.error(`Error actualizando la suscripción ${suscripcionExistente.id}:`, updateError.message);
+            }
+            else {
+                console.log(`🔁 Suscripción ${suscripcionExistente.id} actualizada con el link nuevo (persona ${personResponse.id})`);
+            }
+        }
+        else {
+            const { error: subscriptionError } = await supabase
+                .from('suscripciones')
+                .insert({
+                client_id: data.clientId,
+                payment_person_id: String(personResponse.id),
+                identification_doc: data.identification,
+                amount: data.amount,
+                description: data.description,
+                total_installments: data.totalInstallments || 12,
+                status: 'pending_first_payment',
+                service_type: data.serviceType || null,
+                link_data: nuevoLinkData
+            });
+            if (subscriptionError) {
+                console.error('Error creating subscription record:', subscriptionError.message);
+                // No lanzamos error para no bloquear el retorno del link, pero lo logueamos
+            }
         }
         // Notificar al supervisor sobre el nuevo enlace de pago
         await notifySupervisorPaymentLink(data, linkResponse.linkgenerado);
