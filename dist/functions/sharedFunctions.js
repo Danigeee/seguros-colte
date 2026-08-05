@@ -44,11 +44,11 @@ export const notifySupervisorPaymentLink = async (paymentData, paymentLink) => {
                 email: process.env.SENDGRID_FROM_EMAIL || 'no-reply@coltefinanciera.com',
                 name: 'Sistema Coltefinanciera'
             },
-            subject: `🔔 Nueva Compra: ${productName} - ${fullName}`,
+            subject: `🔔 Nuevo Link de Pago Creado: ${productName} - ${fullName}`,
             html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f8f9fa;">
           <div style="text-align: center; margin-bottom: 30px;">
-            <h1 style="color: #2c3e50; margin-bottom: 10px;">📋 Nueva Compra Iniciada</h1>
+            <h1 style="color: #2c3e50; margin-bottom: 10px;">📋 Nuevo Link de Pago Creado</h1>
             <h2 style="color: #3498db; font-weight: normal;">Enlace de pago generado</h2>
             <div style="background-color: #e74c3c; color: white; padding: 15px; border-radius: 8px; margin: 15px 0; font-size: 18px; font-weight: bold;">
               🛡️ PRODUCTO: ${productName}
